@@ -43,7 +43,7 @@ const WeedPage = () => {
     <Layout>
       <div className="p-6 max-w-3xl mx-auto rounded-xl mt-10">
         <h1 className="text-3xl font-bold text-center mb-6 text-green-800">
-          🌱 Weed Tracker: Conquer Your Challenge! 🌱
+          🍃 Weed Tracker: Conquer Your Challenge! 🍃
         </h1>
 
         <div className="bg-gradient-to-br from-peach-500 to-orange-600 p-6 rounded-lg shadow-lg transform transition-all duration-500 ease-in-out hover:scale-105">
@@ -78,7 +78,7 @@ const WeedPage = () => {
               const dateStr = format(dateObj, "yyyy-MM-dd");
               const isToday = isSameDay(dateObj, new Date());
               const weedCount = weedData[dateStr] || 0;
-              const emoji = weedCount > 0 ? ` 🌿${weedCount}` : "";
+              const emoji = weedCount > 0 ? ` 🌿🚬${weedCount}` : "";
 
               return (
                 <button

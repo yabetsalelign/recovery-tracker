@@ -32,33 +32,41 @@ const AddAddiction = () => {
         localStorage.setItem("addictions", JSON.stringify(addictions));
       }
 
+      // Only set initial flags, navigation handled by submit functions
       if (newAddiction.trim().toLowerCase() === "sesh") {
         localStorage.setItem("hasSesh", "true");
         localStorage.setItem("seshData", "{}"); // Initialize seshData if not exists
       }
-      if (newAddiction.trim().toLowerCase() === "weed") { // New logic for weed
+      if (newAddiction.trim().toLowerCase() === "weed") {
         localStorage.setItem("hasWeed", "true");
         localStorage.setItem("weedData", "{}"); // Initialize weedData
       }
 
+      // Clear input but don't navigate yet if tracker is shown
       setNewAddiction("");
-      navigate("/home");
+      if (!showSeshTracker && !showWeedTracker) {
+        navigate("/home");
+      }
     }
   };
 
   const handleSeshSubmit = (e) => {
     e.preventDefault();
     if (seshCount > 0) {
+      localStorage.setItem("seshData", JSON.stringify({})); // Update with actual data if needed later
       handleAddAddiction();
       setShowSeshTracker(false);
+      navigate("/home");
     }
   };
 
-  const handleWeedSubmit = (e) => { // New handler for weed
+  const handleWeedSubmit = (e) => { // Updated to handle navigation
     e.preventDefault();
     if (weedCount > 0) {
+      localStorage.setItem("weedData", JSON.stringify({})); // Update with actual data if needed later
       handleAddAddiction();
       setShowWeedTracker(false);
+      navigate("/home");
     }
   };
 
@@ -166,7 +174,7 @@ const AddAddiction = () => {
           {showWeedTracker && ( // New weed tracker modal
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
               <div className="bg-gradient-to-br from-peach-500 to-orange-600 p-6 rounded-lg shadow-lg w-96 transform transition-all duration-500 ease-in-out hover:scale-105">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4 text-center">🌱 Weed Tracker: Hidden Level Unlocked! 🌱</h2>
+                <h2 className="text-2xl font-bold text-gray-800 mb-4 text-center">🍃 Weed Tracker: Hidden Level Unlocked! 🍃</h2>
                 <p className="text-gray-800 mb-4 text-center">Enter your weed count to conquer this addiction!</p>
                 <form onSubmit={handleWeedSubmit} className="space-y-4">
                   <input
@@ -189,7 +197,7 @@ const AddAddiction = () => {
                         : "hover:bg-peach-400"
                     } transition-colors duration-200`}
                   >
-                    💨 Submit Weed Count & Proceed!
+                    🌿 Submit Weed Count & Proceed!
                   </button>
                   <button
                     type="button"
