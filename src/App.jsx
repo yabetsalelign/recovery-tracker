@@ -13,7 +13,7 @@ import Streaks from "./Streaks";
 import AddAddiction from "./AddAddiction";
 import Counter from "./Counter";
 import SeshPage from "./SeshPage";
-
+import WeedPage from "./WeedPage";
 
 const App = () => {
   return (
@@ -22,6 +22,7 @@ const App = () => {
         <BrowserRouter>
           <ThemeModal />
           <Routes>
+            <Route path="/weed" element={<WeedPage />} />
             <Route path="/" element={<Welcome />} />
             <Route path="/home" element={<Home />} />
             <Route path="/calendar" element={<Calendar />} />
