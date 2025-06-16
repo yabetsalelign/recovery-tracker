@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-peach-50: #fff5f0;
+    --color-peach-100: #ffe0d3;
+    --color-peach-300: #fcd9b6;
+    --color-peach-500: #f97316;
+    --color-peach-600: #ea580c;
+    --color-peach-800: #9a3412;
+    --color-cream-50: #fdfaf6;
+    --color-coral-100: #ffe4e6;
+    --color-coral-600: #f43f5e;
+    --background-image: url('https://source.unsplash.com/800x600/?sunrise');
+  }
+  body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-image: var(--background-image);
+    background-size: cover;
+    background-position: center;
+  }
+}
+.calendar-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px; /* Space between number and emoji */
+}
+@layer utilities {
+  .bg-peach-50 { background-color: var(--color-peach-50); }
+  .bg-peach-100 { background-color: var(--color-peach-100); }
+  .bg-peach-300 { background-color: var(--color-peach-300); }
+  .bg-peach-500 { background-color: var(--color-peach-500); }
+  .bg-peach-600 { background-color: var(--color-peach-600); }
+  .text-peach-800 { color: var(--color-peach-800); }
+  .text-coral-600 { color: var(--color-coral-600); }
+  .border-peach-300 { border-color: var(--color-peach-300); }
+  .font-pacifico { font-family: 'Pacifico', cursive; }
+}
