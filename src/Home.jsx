@@ -48,21 +48,21 @@ const Home = () => {
         <div className="bg-gradient-to-br from-peach-500 to-orange-600 p-6 rounded-lg shadow-lg transform transition-all duration-500 ease-in-out hover:scale-105">
           <button
             onClick={() => navigate("/add-addiction")}
-            className="mt-6 w-full px-4 py-2 text-sm rounded-md font-medium bg-peach-300 text-black-800 hover:bg-peach-400 transition-colors duration-200"
+            className="mt-6 w-full px-4 py-2 text-sm rounded-md font-medium bg-peach-300 text-black-800 hover:bg-peach-400 transition-colors duration-200 transform transition-all duration-500 ease-in-out hover:scale-105"
             aria-label="Add new addiction"
           >
             Add New Addiction
           </button>
           <button
             onClick={() => navigate("/calendar")}
-            className="mt-2 w-full px-4 py-2 text-sm rounded-md font-medium bg-peach-300 text-gray-800 hover:bg-peach-400 transition-colors duration-200"
+            className="mt-2 w-full px-4 py-2 text-sm rounded-md font-medium bg-peach-300 text-gray-800 hover:bg-peach-400 transition-colors duration-200 transform transition-all duration-500 ease-in-out hover:scale-105"
             aria-label="Start tracking"
           >
             Start Tracking
           </button>
           <button
             onClick={() => navigate("/notes")}
-            className="mt-2 w-full px-4 py-2 text-sm rounded-md font-medium bg-peach-300 text-gray-800 hover:bg-peach-400 transition-colors duration-200"
+            className="mt-2 w-full px-4 py-2 text-sm rounded-md font-medium bg-peach-300 text-gray-800 hover:bg-peach-400 transition-colors duration-200 transform transition-all duration-500 ease-in-out hover:scale-105"
             aria-label="View notes"
           >
             View Notes
@@ -70,7 +70,7 @@ const Home = () => {
           {hasSesh && (
             <button
               onClick={() => navigate("/sesh")}
-              className="mt-2 w-full px-4 py-2 text-sm rounded-md font-medium bg-peach-300 text-gray-800 hover:bg-peach-400 transition-colors duration-200"
+              className="mt-2 w-full px-4 py-2 text-sm rounded-md font-medium bg-peach-300 text-gray-800 hover:bg-peach-400 transition-colors duration-200 transform transition-all duration-500 ease-in-out hover:scale-105"
               aria-label="Track sesh intake"
             >
               Track Sesh Intake
@@ -79,7 +79,7 @@ const Home = () => {
           {hasWeed && ( // New button for weed
             <button
               onClick={() => navigate("/weed")}
-              className="mt-2 w-full px-4 py-2 text-sm rounded-md font-medium bg-peach-300 text-gray-800 hover:bg-peach-400 transition-colors duration-200"
+              className="mt-2 w-full px-4 py-2 text-sm rounded-md font-medium bg-peach-300 text-gray-800 hover:bg-peach-400 transition-colors duration-200 transform transition-all duration-500 ease-in-out hover:scale-105"
               aria-label="Track weed intake"
             >
               Track Weed Intake

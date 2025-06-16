@@ -103,7 +103,7 @@ const AddAddiction = () => {
               isTouched
                 ? "bg-blue-300 hover:bg-blue-400 text-gray-800"
                 : "bg-peach-300 hover:bg-peach-400 text-gray-800"
-            } transition-colors duration-200`}
+            } transition-colors duration-200 transform transition-all duration-500 ease-in-out hover:scale-105`}
             disabled={!newAddiction.trim()}
             aria-label="Add addiction"
           >
@@ -119,7 +119,7 @@ const AddAddiction = () => {
               isTouched
                 ? "bg-blue-300 hover:bg-blue-400 text-gray-800"
                 : "bg-peach-300 hover:bg-peach-400 text-gray-800"
-            } transition-colors duration-200`}
+            } transition-colors duration-200 transform transition-all duration-500 ease-in-out hover:scale-105`}
             aria-label="Back to home"
           >
             Back to Home
@@ -148,7 +148,7 @@ const AddAddiction = () => {
                       isTouched
                         ? "bg-blue-300 hover:bg-blue-400"
                         : "hover:bg-peach-400"
-                    } transition-colors duration-200`}
+                    } transition-colors duration-200 transform transition-all duration-500 ease-in-out hover:scale-105`}
                   >
                     😮‍💨 Submit Sesh Count & Proceed!
                   </button>
@@ -163,7 +163,7 @@ const AddAddiction = () => {
                       isTouched
                         ? "bg-blue-300 hover:bg-blue-400"
                         : "hover:bg-peach-600"
-                    } transition-colors duration-200`}
+                    } transition-colors duration-200 transform transition-all duration-500 ease-in-out hover:scale-105`}
                   >
                     Cancel
                   </button>
@@ -195,7 +195,7 @@ const AddAddiction = () => {
                       isTouched
                         ? "bg-blue-300 hover:bg-blue-400"
                         : "hover:bg-peach-400"
-                    } transition-colors duration-200`}
+                    } transition-colors duration-200 transform transition-all duration-500 ease-in-out hover:scale-105`}
                   >
                     🌿 Submit Weed Count & Proceed!
                   </button>
@@ -210,7 +210,7 @@ const AddAddiction = () => {
                       isTouched
                         ? "bg-blue-300 hover:bg-blue-400"
                         : "hover:bg-peach-600"
-                    } transition-colors duration-200`}
+                    } transition-colors duration-200 transform transition-all duration-500 ease-in-out hover:scale-105`}
                   >
                     Cancel
                   </button>

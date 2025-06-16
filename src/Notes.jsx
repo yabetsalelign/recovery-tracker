@@ -161,7 +161,7 @@ const Notes = () => {
 
         <button
           onClick={() => navigate("/calendar")}
-          className="mt-6 w-full px-4 py-2 text-sm rounded-md font-medium bg-peach-300 text-gray-800 hover:bg-peach-400 transition-colors duration-200"
+          className="mt-6 w-full px-4 py-2 text-sm rounded-md font-medium bg-peach-300 text-gray-800 hover:bg-peach-400 transition-colors duration-200 transform transition-all duration-500 ease-in-out hover:scale-105"
           aria-label="Back to calendar"
         >
           Back to Calendar
