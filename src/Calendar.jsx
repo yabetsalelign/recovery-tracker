@@ -76,7 +76,7 @@ const Calendar = () => {
           <div className="flex justify-between mb-4">
             <button
               onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-              className="px-3 py-1 text-sm rounded-md font-medium bg-peach-300 text-gray-800 hover:bg-peach-400 transition-colors duration-200"
+              className="px-3 py-1 text-sm rounded-md font-medium bg-peach-300 text-gray-800 hover:bg-peach-400 transition-colors duration-200 transform transition-all duration-500 ease-in-out hover:scale-105"
             >
               Previous
             </button>
@@ -85,7 +85,7 @@ const Calendar = () => {
             </h2>
             <button
               onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-              className="px-3 py-1 text-sm rounded-md font-medium bg-peach-300 text-gray-800 hover:bg-peach-400 transition-colors duration-200"
+              className="px-3 py-1 text-sm rounded-md font-medium bg-peach-300 text-gray-800 hover:bg-peach-400 transition-colors duration-200 transform transition-all duration-500 ease-in-out hover:scale-105"
             >
               Next
             </button>
@@ -117,7 +117,7 @@ const Calendar = () => {
                   className={`rounded-lg h-12 flex items-center justify-center text-sm font-medium border 
                     ${selectedDate === dateStr ? "bg-peach-500 text-gray-800" : "bg-peach-100 text-gray-800"} 
                     ${isToday ? "border-peach-300" : "border-transparent"} 
-                    hover:bg-opacity-80 transition-all duration-200`}
+                    hover:bg-peach-400 hover:bg-opacity-80 transition-colors duration-200 transform transition-all duration-500 ease-in-out hover:scale-105`}
                 >
                   {format(dateObj, "d")}
                   {emoji}
@@ -127,29 +127,21 @@ const Calendar = () => {
           </div>
         </div>
 
-        <div className="mb-4">
-          {trackers.map((tracker, index) => (
-            <p key={tracker.id} className="text-gray-800 text-sm">
-              {tracker.name}: {streaks[index]} day streak!
-            </p>
-          ))}
-        </div>
-
         <button
           onClick={() => navigate("/progress")}
-          className="mt-6 w-full px-4 py-2 text-sm rounded-md font-medium bg-peach-300 text-gray-800 hover:bg-peach-400 transition-colors duration-200"
+          className="mt-6 w-full px-4 py-2 text-sm rounded-md font-medium bg-peach-300 text-gray-800 hover:bg-peach-400 transition-colors duration-200 transform transition-all duration-500 ease-in-out hover:scale-105"
         >
           View Progress
         </button>
         <button
           onClick={() => navigate("/home")}
-          className="mt-2 w-full px-4 py-2 text-sm rounded-md font-medium bg-peach-300 text-gray-800 hover:bg-peach-400 transition-colors duration-200"
+          className="mt-2 w-full px-4 py-2 text-sm rounded-md font-medium bg-peach-300 text-gray-800 hover:bg-peach-400 transition-colors duration-200 transform transition-all duration-500 ease-in-out hover:scale-105"
         >
           Edit Addictions
         </button>
         <button
           onClick={() => navigate("/notes")}
-          className="mt-2 w-full px-4 py-2 text-sm rounded-md font-medium bg-peach-300 text-gray-800 hover:bg-peach-400 transition-colors duration-200"
+          className="mt-2 w-full px-4 py-2 text-sm rounded-md font-medium bg-peach-300 text-gray-800 hover:bg-peach-400 transition-colors duration-200 transform transition-all duration-500 ease-in-out hover:scale-105"
         >
           View Notes
         </button>

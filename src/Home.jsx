@@ -11,11 +11,16 @@ const Home = () => {
     const savedAddictions = JSON.parse(localStorage.getItem("addictions") || "[]");
     return savedAddictions.includes("sesh");
   });
+  const [hasWeed, setHasWeed] = useState(() => { // New state for weed
+    const savedAddictions = JSON.parse(localStorage.getItem("addictions") || "[]");
+    return savedAddictions.includes("weed");
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
     localStorage.setItem("addictions", JSON.stringify(addictions));
     setHasSesh(addictions.includes("sesh"));
+    setHasWeed(addictions.includes("weed")); // Update hasWeed state
   }, [addictions]);
 
   const handleDeleteAddiction = (addictionToDelete) => {
@@ -26,6 +31,10 @@ const Home = () => {
     if (addictionToDelete.toLowerCase() === "sesh") {
       localStorage.removeItem("hasSesh");
       localStorage.removeItem("seshData");
+    }
+    if (addictionToDelete.toLowerCase() === "weed") { // New cleanup for weed
+      localStorage.removeItem("hasWeed");
+      localStorage.removeItem("weedData");
     }
   };
 
@@ -65,6 +74,15 @@ const Home = () => {
               aria-label="Track sesh intake"
             >
               Track Sesh Intake
+            </button>
+          )}
+          {hasWeed && ( // New button for weed
+            <button
+              onClick={() => navigate("/weed")}
+              className="mt-2 w-full px-4 py-2 text-sm rounded-md font-medium bg-peach-300 text-gray-800 hover:bg-peach-400 transition-colors duration-200"
+              aria-label="Track weed intake"
+            >
+              Track Weed Intake
             </button>
           )}
         </div>
