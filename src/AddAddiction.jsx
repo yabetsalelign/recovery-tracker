@@ -46,6 +46,7 @@ const AddAddiction = () => {
     <Layout>
       <div className="p-6 max-w-3xl mx-auto rounded-xl mt-10">
         <h1 className="text-3xl font-bold text-center mb-6 text-green-800"> Add New Addiction </h1>
+        
         <div className="bg-gradient-to-br from-peach-500 to-orange-600 p-6 rounded-lg shadow-lg transform transition-all duration-500 ease-in-out hover:scale-105">
           <input
             type="text"
@@ -88,7 +89,7 @@ const AddAddiction = () => {
                     type="submit"
                     className="w-full px-4 py-2 bg-peach-300 text-gray-800 font-bold rounded-md hover:bg-peach-400 transition-colors duration-200"
                   >
-                    💥 Submit Sesh Count & Proceed!
+                    😮‍💨 Submit Sesh Count & Proceed!
                   </button>
                   <button
                     type="button"

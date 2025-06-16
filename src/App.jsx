@@ -14,6 +14,7 @@ import AddAddiction from "./AddAddiction";
 import Counter from "./Counter";
 import SeshPage from "./SeshPage";
 
+
 const App = () => {
   return (
     <ThemeProvider>
@@ -39,3 +40,6 @@ const App = () => {
 };
 
 export default App;
+
+
+

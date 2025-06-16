@@ -42,7 +42,7 @@ const SeshPage = () => {
   return (
     <Layout>
       <div className="p-6 max-w-3xl mx-auto rounded-xl mt-10">
-        <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">
+        <h1 className="text-3xl font-bold text-center mb-6 text-green-800">
           🚬 Sesh Tracker: Conquer Your Challenge! 🚬
         </h1>
 
