@@ -27,7 +27,7 @@ const Progress = () => {
     start: startOfMonth(new Date()),
     end: endOfMonth(new Date()),
   });
-  const addictions = JSON.parse(localStorage.getItem("addictions") || "[]");
+  const addictions = JSON.parse(localStorage.getItem("addictions")) || [];
   const [quote, setQuote] = useState("");
 
   const quotes = [
@@ -105,8 +105,8 @@ const Progress = () => {
       const b = Math.floor(Math.random() * 255);
       return {
         data: [successPercentage, 100 - successPercentage],
-        backgroundColor: [`rgba(${r}, ${g}, ${b}, 0.6)`, "rgba(200, 200, 200, 0.6)"],
-        borderColor: [`rgba(${r}, ${g}, ${b}, 1)`, "rgba(200, 200, 200, 1)"],
+        backgroundColor: [`rgba(${r}, ${g}, ${b}, 0.6)`, "rgba(220, 220, 220, 0.6)"],
+        borderColor: [`rgba(${r}, ${g}, ${b}, 1)`, "rgba(220, 220, 220, 1)"],
         borderWidth: 1,
       };
     });
@@ -116,15 +116,17 @@ const Progress = () => {
     };
   };
 
-  if (loading) return <div className="text-center text-gray-800 dark:text-gray-200">Loading...</div>;
+  if (loading) return <div className="text-center text-green-800">Loading...</div>;
 
   return (
     <Layout>
       <div className="p-6 max-w-3xl mx-auto rounded-xl mt-10">
-        <h1 className="text-3xl font-bold text-center mb-6 text-gray-800 dark:text-gray-200">🚬 Recovery Progress 🚬</h1>
-        <div className="bg-gradient-to-br from-peach-500 to-orange-600 p-6 rounded-lg shadow-lg transform transition-all duration-500 ease-in-out hover:scale-105">
+        <h1 className="text-3xl font-bold text-center mb-6 text-green-800">
+          Recovery Progress
+        </h1>
+        <div className="bg-gradient-to-br from-green-400 to-green-600 p-6 rounded-lg shadow-lg transform transition-all duration-500 ease-in-out hover:scale-105">
           <div className="mb-8">
-            <h2 className="text-xl font-semibold text-center mb-4 text-gray-800 dark:text-gray-200">
+            <h2 className="text-xl font-semibold text-center mb-4 text-white">
               Daily Check-In Success (Bar Chart)
             </h2>
             <Bar
@@ -148,7 +150,7 @@ const Progress = () => {
             />
           </div>
           <div>
-            <h2 className="text-xl font-semibold text-center mb-4 text-gray-800 dark:text-gray-200">
+            <h2 className="text-xl font-semibold text-center mb-4 text-white">
               Success Percentage (Pie Chart)
             </h2>
             <Pie
@@ -161,21 +163,21 @@ const Progress = () => {
               }}
             />
           </div>
-          {quote && <p className="mt-6 text-center text-gray-800 dark:text-gray-200 italic">{quote}</p>}
+          {quote && <p className="mt-6 text-center text-white italic">{quote}</p>}
         </div>
         <button
           onClick={() => {
             console.log("Navigating to /streaks");
             navigate("/streaks");
           }}
-          className="mt-6 w-full px-4 py-2 text-sm rounded-md font-medium bg-peach-300 text-gray-800 dark:text-black-200 hover:bg-peach-400 transition-colors duration-200 transform transition-all duration-500 ease-in-out hover:scale-105"
+          className="mt-6 w-full px-4 py-2 text-sm rounded-md font-medium bg-peach-300 text-gray-800 hover:bg-peach-400 transition-colors duration-200 transform transition-all duration-500 ease-in-out hover:scale-105"
           aria-label="View streaks"
         >
           View Streaks
         </button>
         <button
           onClick={exportData}
-          className="mt-2 w-full px-4 py-2 text-sm rounded-md font-medium bg-peach-300 text-gray-800 dark:text-black-200 hover:bg-peach-400 transition-colors duration-200 transform transition-all duration-500 ease-in-out hover:scale-105"
+          className="mt-2 w-full px-4 py-2 text-sm rounded-md font-medium bg-peach-300 text-gray-800 hover:bg-peach-400 transition-colors duration-200 transform transition-all duration-500 ease-in-out hover:scale-105"
           aria-label="Export tracking data"
         >
           Export Data
@@ -185,7 +187,7 @@ const Progress = () => {
             console.log("Navigating to /");
             navigate("/");
           }}
-          className="mt-2 w-full px-4 py-2 text-sm rounded-md font-medium bg-peach-300 text-gray-800 dark:text-blackca-200 hover:bg-peach-400 transition-colors duration-200 transform transition-all duration-500 ease-in-out hover:scale-105"
+          className="mt-2 w-full px-4 py-2 text-sm rounded-md font-medium bg-peach-300 text-gray-800 hover:bg-peach-400 transition-colors duration-200 transform transition-all duration-500 ease-in-out hover:scale-105"
           aria-label="Back to welcome"
         >
           Back to Welcome

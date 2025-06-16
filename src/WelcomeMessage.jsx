@@ -21,7 +21,7 @@ const WelcomeMessage = ({ name, onProceed }) => {
           <p className="text-center text-gray-800 mt-4 italic">{randomAffirmation}</p>
           <button
             onClick={onProceed}
-            className="mt-6 w-full px-4 py-2 text-sm rounded-md font-medium bg-peach-300 text-gray-800 hover:bg-peach-400 transition-colors duration-200"
+            className="mt-6 w-full px-4 py-2 text-sm rounded-md font-medium bg-peach-300 text-gray-800 hover:bg-peach-400 transition-colors duration-200 transform transition-all duration-500 ease-in-out hover:scale-105"
             aria-label="Proceed to recovery tracker"
           >
             Proceed to Tracker

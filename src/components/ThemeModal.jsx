@@ -32,13 +32,13 @@ const ThemeModal = () => {
         <div className="flex justify-center gap-4">
           <button
             onClick={() => handleThemeSelect("light")}
-            className="px-4 py-2 text-sm rounded-md font-medium bg-peach-500 text-white hover:bg-peach-600"
+            className="px-4 py-2 text-sm rounded-md font-medium bg-peach-300 text-gray-800 hover:bg-peach-400 transition-colors duration-200 transform transition-all duration-500 ease-in-out hover:scale-105"
           >
             Light Mode
           </button>
           <button
             onClick={() => handleThemeSelect("dark")}
-            className="px-4 py-2 text-sm rounded-md font-medium bg-peach-500 text-white hover:bg-peach-600"
+            className="px-4 py-2 text-sm rounded-md font-medium bg-peach-300 text-gray-800 hover:bg-peach-400 transition-colors duration-200 transform transition-all duration-500 ease-in-out hover:scale-105"
           >
             Dark Mode
           </button>
