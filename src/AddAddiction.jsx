@@ -174,8 +174,8 @@ const AddAddiction = () => {
           {showWeedTracker && ( // New weed tracker modal
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
               <div className="bg-gradient-to-br from-peach-500 to-orange-600 p-6 rounded-lg shadow-lg w-96 transform transition-all duration-500 ease-in-out hover:scale-105">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4 text-center">🍃 Weed Tracker: Hidden Level Unlocked! 🍃</h2>
-                <p className="text-gray-800 mb-4 text-center">Enter your weed count to conquer this addiction!</p>
+                <h2 className="text-2xl font-bold text-gray-800 mb-4 text-center">🍃 Weed Tracker: Hidden feature Unlocked 🍃</h2>
+                <p className="text-gray-800 mb-4 text-center">Enter your daily weed intake to start </p>
                 <form onSubmit={handleWeedSubmit} className="space-y-4">
                   <input
                     type="number"
@@ -197,7 +197,7 @@ const AddAddiction = () => {
                         : "hover:bg-peach-400"
                     } transition-colors duration-200 transform transition-all duration-500 ease-in-out hover:scale-105`}
                   >
-                    🌿 Submit Weed Count & Proceed!
+                    🌿 Submit Weed Count & Proceed
                   </button>
                   <button
                     type="button"
