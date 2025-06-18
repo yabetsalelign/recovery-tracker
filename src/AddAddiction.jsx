@@ -127,7 +127,7 @@ const AddAddiction = () => {
           {showSeshTracker && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
               <div className="bg-gradient-to-br from-peach-500 to-orange-600 p-6 rounded-lg shadow-lg w-96 transform transition-all duration-500 ease-in-out hover:scale-105">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4 text-center">🚬 Sesh Tracker: Hidden Level Unlocked! 🚬</h2>
+                <h2 className="text-2xl font-bold text-gray-800 mb-4 text-center">🚬 Sesh Tracker: Hidden feature Unlocked 🚬</h2>
                 <p className="text-gray-800 mb-4 text-center">Enter your sesh count to conquer this addiction!</p>
                 <form onSubmit={handleSeshSubmit} className="space-y-4">
                   <input
