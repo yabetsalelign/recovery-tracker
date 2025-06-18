@@ -78,7 +78,7 @@ const WeedPage = () => {
               const dateStr = format(dateObj, "yyyy-MM-dd");
               const isToday = isSameDay(dateObj, new Date());
               const weedCount = weedData[dateStr] || 0;
-              const emoji = weedCount > 0 ? ` 🌿🚬${weedCount}` : "";
+              const emoji = weedCount > 0 ? ` 🌿🚬${weedCount}` : "✅";
 
               return (
                 <button

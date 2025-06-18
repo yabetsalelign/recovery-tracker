@@ -78,7 +78,7 @@ const SeshPage = () => {
               const dateStr = format(dateObj, "yyyy-MM-dd");
               const isToday = isSameDay(dateObj, new Date());
               const seshCount = seshData[dateStr] || 0;
-              const emoji = seshCount > 0 ? ` 🚬${seshCount}` : "";
+              const emoji = seshCount > 0 ? ` 🚬${seshCount}` : "✅";
 
               return (
                 <button
@@ -100,7 +100,7 @@ const SeshPage = () => {
           onClick={() => navigate("/home")}
           className="mt-6 w-full px-4 py-2 text-sm rounded-md font-medium bg-peach-300 text-gray-800 hover:bg-peach-400 transition-colors duration-200"
         >
-           Back to Home
+          Back to Home
         </button>
       </div>
     </Layout>
