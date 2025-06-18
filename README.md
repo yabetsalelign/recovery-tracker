@@ -8,7 +8,5 @@ A simple addiction recovery tracker built with React + Tailwind.
 - 🗒️ Per-day journaling
 - 🔒 Local storage support
 
-## Getting Started
 
-Install dependencies:
 
