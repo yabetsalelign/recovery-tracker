@@ -85,8 +85,8 @@ const SeshPage = () => {
                   key={dateStr}
                   onClick={() => handleDayClick(dateStr)}
                   className={`rounded-lg h-12 flex items-center justify-center text-sm font-medium border 
-                    ${isToday ? "border-peach-300" : "border-transparent"} 
-                    ${seshCount > 0 ? "bg-peach-200" : "bg-orange-100"} text-gray-800 hover:bg-opacity-80 transition-all duration-200`}
+                    ${isToday ? "bg-green-200 border-green-400 scale-105" : seshCount > 0 ? "bg-peach-200 border-transparent" : "bg-orange-100 border-transparent"} 
+                    text-gray-800 hover:bg-opacity-80 transition-all duration-200`}
                 >
                   {format(dateObj, "d")}
                   {emoji}
