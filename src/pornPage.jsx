@@ -11,17 +11,17 @@ import {
 import { useNavigate } from "react-router-dom";
 import Layout from "./components/Layout";
 
-const WeedPage = () => {
+const PornPage = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  const [weedData, setWeedData] = useState(() => {
-    const saved = localStorage.getItem("weedData");
+  const [pornData, setPornData] = useState(() => {
+    const saved = localStorage.getItem("pornData");
     return saved ? JSON.parse(saved) : {};
   });
   const navigate = useNavigate();
 
   useEffect(() => {
-    localStorage.setItem("weedData", JSON.stringify(weedData));
-  }, [weedData]);
+    localStorage.setItem("pornData", JSON.stringify(pornData));
+  }, [pornData]);
 
   const daysThisMonth = eachDayOfInterval({
     start: startOfMonth(currentMonth),
@@ -29,10 +29,10 @@ const WeedPage = () => {
   });
 
   const handleDayClick = (dateStr) => {
-    const newCount = prompt("Enter number of weed for this day:", weedData[dateStr] || 0);
+    const newCount = prompt("Enter number of times for this day:", pornData[dateStr] || 0);
     if (newCount !== null) {
       const count = parseInt(newCount) || 0;
-      setWeedData((prev) => ({
+      setPornData((prev) => ({
         ...prev,
         [dateStr]: count,
       }));
@@ -41,35 +41,33 @@ const WeedPage = () => {
 
   return (
     <Layout>
-      <div className="p-6 max-w-3xl mx-auto rounded-xl mt-10">
-        <h1 className="text-3xl font-bold text-center mb-6 text-pink-800">
-          🍃 Weed Tracker: Keep track of your intake 🍃
-        </h1>
+      <div className="p-6 max-w-3xl mx-auto">
+        <h1 className="text-2xl font-bold text-center mb-4">Porn Tracker</h1>
 
-        <div className="bg-gradient-to-br from-pink-300 to-amber-300 p-6 rounded-lg shadow-lg transform transition-all duration-500 ease-in-out hover:scale-105">
-          <div className="flex justify-between mb-4">
+        <div className="bg-white p-4 rounded shadow">
+          <div className="flex justify-between mb-2">
             <button
               onClick={() => setCurrentMonth((prev) => subMonths(prev, 1))}
-              className="px-3 py-1 text-sm rounded-md font-medium bg-pink-200 text-gray-800 hover:bg-pink-300 transition-colors duration-200"
+              className="px-2 py-1 text-sm rounded bg-gray-200 hover:bg-gray-300"
             >
               Previous
             </button>
-            <h2 className="text-xl font-semibold text-gray-800">
+            <h2 className="text-lg font-medium">
               {format(currentMonth, "MMMM yyyy")}
             </h2>
             <button
               onClick={() => setCurrentMonth((prev) => addMonths(prev, 1))}
-              className="px-3 py-1 text-sm rounded-md font-medium bg-pink-200 text-gray-800 hover:bg-pink-300 transition-colors duration-200"
+              className="px-2 py-1 text-sm rounded bg-gray-200 hover:bg-gray-300"
             >
               Next
             </button>
           </div>
 
-          <div className="grid grid-cols-7 gap-2 mb-8">
+          <div className="grid grid-cols-7 gap-1">
             {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
               <div
                 key={day}
-                className="text-center font-semibold text-sm text-gray-800"
+                className="text-center text-sm font-medium text-gray-700"
               >
                 {day}
               </div>
@@ -77,16 +75,17 @@ const WeedPage = () => {
             {daysThisMonth.map((dateObj) => {
               const dateStr = format(dateObj, "yyyy-MM-dd");
               const isToday = isSameDay(dateObj, new Date());
-              const weedCount = weedData[dateStr] || 0;
-              const emoji = weedCount > 0 ? ` 🌿🚬${weedCount}` : "✅";
+              const pornCount = pornData[dateStr] || 0;
+              const emoji = pornCount > 0 ? ` ${pornCount}` : " ✅";
 
               return (
                 <button
                   key={dateStr}
                   onClick={() => handleDayClick(dateStr)}
-                  className={`rounded-lg h-12 flex items-center justify-center text-sm font-medium border 
-                    ${isToday ? "bg-pink-100 border-pink-400 scale-105" : weedCount > 0 ? "bg-pink-200 border-transparent" : "bg-amber-50 border-transparent"} 
-                    text-gray-800 hover:bg-opacity-80 transition-all duration-200`}
+                  className={`w-10 h-10 flex items-center justify-center text-sm border 
+                    ${isToday ? "border-gray-400" : "border-transparent"} 
+                    ${pornCount > 0 ? "bg-gray-100" : "bg-white"} 
+                    text-gray-900 hover:bg-gray-200 rounded`}
                 >
                   {format(dateObj, "d")}
                   {emoji}
@@ -98,7 +97,7 @@ const WeedPage = () => {
 
         <button
           onClick={() => navigate("/home")}
-          className="mt-6 w-full px-4 py-2 text-sm rounded-md font-medium bg-pink-200 text-gray-800 hover:bg-pink-300 transition-colors duration-200"
+          className="mt-4 w-full px-4 py-2 text-sm rounded bg-gray-200 hover:bg-gray-300"
         >
           Back to Home
         </button>
@@ -107,4 +106,4 @@ const WeedPage = () => {
   );
 };
 
-export default WeedPage;
+export default PornPage;
