@@ -2,13 +2,6 @@
   "version": 2,
   "builds": [
     {
-      "src": "package.json",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": ["dist/**"]
-      }
-    },
-    {
       "src": "index.html",
       "use": "@vercel/static"
     }
@@ -21,8 +14,6 @@
   ],
   "build": {
     "command": "npm run build",
-    "environment": {
-      "NODE_VERSION": "18"
-    }
+    "outputDirectory": "dist"
   }
 }
