@@ -11,9 +11,13 @@ const Home = () => {
     const savedAddictions = JSON.parse(localStorage.getItem("addictions") || "[]");
     return savedAddictions.includes("sesh");
   });
-  const [hasWeed, setHasWeed] = useState(() => { // New state for weed
+  const [hasWeed, setHasWeed] = useState(() => { 
     const savedAddictions = JSON.parse(localStorage.getItem("addictions") || "[]");
     return savedAddictions.includes("weed");
+  });
+  const [hasPorn, setHasPorn] = useState(() => { // New state for porn
+    const savedAddictions = JSON.parse(localStorage.getItem("addictions") || "[]");
+    return savedAddictions.includes("porn");
   });
   const navigate = useNavigate();
 
@@ -21,6 +25,7 @@ const Home = () => {
     localStorage.setItem("addictions", JSON.stringify(addictions));
     setHasSesh(addictions.includes("sesh"));
     setHasWeed(addictions.includes("weed")); // Update hasWeed state
+    setHasPorn(addictions.includes("porn")); // Update hasPorn state
   }, [addictions]);
 
   const handleDeleteAddiction = (addictionToDelete) => {
@@ -32,9 +37,13 @@ const Home = () => {
       localStorage.removeItem("hasSesh");
       localStorage.removeItem("seshData");
     }
-    if (addictionToDelete.toLowerCase() === "weed") { // New cleanup for weed
+    if (addictionToDelete.toLowerCase() === "weed") { 
       localStorage.removeItem("hasWeed");
       localStorage.removeItem("weedData");
+    }
+    if (addictionToDelete.toLowerCase() === "porn") { // New cleanup for porn
+      localStorage.removeItem("hasPorn");
+      localStorage.removeItem("pornData");
     }
   };
 
@@ -76,13 +85,22 @@ const Home = () => {
               Track Sesh Intake
             </button>
           )}
-          {hasWeed && ( // New button for weed
+          {hasWeed && ( 
             <button
               onClick={() => navigate("/weed")}
               className="mt-2 w-full px-4 py-2 text-sm rounded-md font-medium bg-peach-300 text-gray-800 hover:bg-peach-400 transition-colors duration-200 transform transition-all duration-500 ease-in-out hover:scale-105"
               aria-label="Track weed intake"
             >
               Track Weed Intake
+            </button>
+          )}
+          {hasPorn && ( // New button for porn
+            <button
+              onClick={() => navigate("/porn")}
+              className="mt-2 w-full px-4 py-2 text-sm rounded-md font-medium bg-peach-300 text-gray-800 hover:bg-peach-400 transition-colors duration-200 transform transition-all duration-500 ease-in-out hover:scale-105"
+              aria-label="Track porn usage"
+            >
+              Track Porn Usage
             </button>
           )}
         </div>
