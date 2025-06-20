@@ -9,6 +9,7 @@ import {
   addMonths,
 } from "date-fns";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import Layout from "./components/Layout";
 
 const WeedPage = () => {
@@ -42,34 +43,44 @@ const WeedPage = () => {
   return (
     <Layout>
       <div className="p-6 max-w-3xl mx-auto rounded-xl mt-10">
-        <h1 className="text-3xl font-bold text-center mb-6 text-pink-800">
-          🍃 Weed Tracker: Keep track of your intake 🍃
+        <h1 className="text-3xl font-bold text-center mb-6 text-lime-700">
+          🌿 Blunt Tracker: Ride the Rasta Road! 🌿
         </h1>
 
-        <div className="bg-gradient-to-br from-pink-300 to-amber-300 p-6 rounded-lg shadow-lg transform transition-all duration-500 ease-in-out hover:scale-105">
+        <motion.div
+          className="bg-gradient-to-br from-lime-500 via-yellow-400 to-red-500 p-6 rounded-lg shadow-lg"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+        >
           <div className="flex justify-between mb-4">
             <button
               onClick={() => setCurrentMonth((prev) => subMonths(prev, 1))}
-              className="px-3 py-1 text-sm rounded-md font-medium bg-pink-200 text-gray-800 hover:bg-pink-300 transition-colors duration-200"
+              className="px-3 py-1 text-sm rounded-md font-medium bg-lime-500 text-gray-900 hover:bg-lime-600 transition-colors duration-200"
             >
               Previous
             </button>
-            <h2 className="text-xl font-semibold text-gray-800">
+            <h2 className="text-xl font-semibold text-gray-900">
               {format(currentMonth, "MMMM yyyy")}
             </h2>
             <button
               onClick={() => setCurrentMonth((prev) => addMonths(prev, 1))}
-              className="px-3 py-1 text-sm rounded-md font-medium bg-pink-200 text-gray-800 hover:bg-pink-300 transition-colors duration-200"
+              className="px-3 py-1 text-sm rounded-md font-medium bg-lime-500 text-gray-900 hover:bg-lime-600 transition-colors duration-200"
             >
               Next
             </button>
           </div>
 
-          <div className="grid grid-cols-7 gap-2 mb-8">
+          <motion.div
+            className="grid grid-cols-7 gap-2 mb-8"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
             {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
               <div
                 key={day}
-                className="text-center font-semibold text-sm text-gray-800"
+                className="text-center font-semibold text-sm text-gray-900"
               >
                 {day}
               </div>
@@ -78,27 +89,29 @@ const WeedPage = () => {
               const dateStr = format(dateObj, "yyyy-MM-dd");
               const isToday = isSameDay(dateObj, new Date());
               const weedCount = weedData[dateStr] || 0;
-              const emoji = weedCount > 0 ? ` 🌿🚬${weedCount}` : "✅";
+              const emoji = weedCount > 0 ? ` 🌿${weedCount}` : "✅";
 
               return (
-                <button
+                <motion.button
                   key={dateStr}
                   onClick={() => handleDayClick(dateStr)}
                   className={`rounded-lg h-12 flex items-center justify-center text-sm font-medium border 
-                    ${isToday ? "bg-pink-100 border-pink-400 scale-105" : weedCount > 0 ? "bg-pink-200 border-transparent" : "bg-amber-50 border-transparent"} 
-                    text-gray-800 hover:bg-opacity-80 transition-all duration-200`}
+                    ${isToday ? "bg-lime-200 border-lime-500 scale-110" : weedCount > 0 ? "bg-yellow-400 border-transparent" : "bg-emerald-50 border-transparent"} 
+                    text-gray-900 hover:bg-opacity-80 transition-all duration-200`}
+                  animate={isToday ? { scale: [1.1, 1.15, 1.1], transition: { repeat: Infinity, duration: 1.5 } } : {}}
+                  whileHover={{ scale: 1.05, rotate: 2 }}
                 >
                   {format(dateObj, "d")}
                   {emoji}
-                </button>
+                </motion.button>
               );
             })}
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
         <button
           onClick={() => navigate("/home")}
-          className="mt-6 w-full px-4 py-2 text-sm rounded-md font-medium bg-pink-200 text-gray-800 hover:bg-pink-300 transition-colors duration-200"
+          className="mt-6 w-full px-4 py-2 text-sm rounded-md font-medium bg-lime-500 text-gray-900 hover:bg-lime-600 transition-colors duration-200"
         >
           Back to Home
         </button>
