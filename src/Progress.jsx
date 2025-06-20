@@ -32,7 +32,6 @@ const Progress = () => {
     return saved ? JSON.parse(saved) : [];
   });
   const [quote, setQuote] = useState("");
-  const [unlockInput, setUnlockInput] = useState(""); // New state for unlock input
 
   const quotes = [
     "The best way out is always through. - Robert Frost",
@@ -120,18 +119,6 @@ const Progress = () => {
     };
   };
 
-  // Unlock porn by typing "porn" in the input
-  const handleUnlock = () => {
-    if (unlockInput.toLowerCase() === "porn" && !addictions.includes("porn")) {
-      setAddictions([...addictions, "porn"]);
-      localStorage.setItem("addictions", JSON.stringify([...addictions, "porn"]));
-      setUnlockInput(""); // Clear input after unlocking
-      alert("Porn tracking unlocked! Access it from the Home page.");
-    } else if (unlockInput.toLowerCase() !== "porn") {
-      alert("Incorrect input. Type 'porn' to unlock.");
-    }
-  };
-
   if (loading) return <div className="text-center text-green-800">Loading...</div>;
 
   return (
@@ -180,22 +167,6 @@ const Progress = () => {
             />
           </div>
           {quote && <p className="mt-6 text-center text-white italic">{quote}</p>}
-        </div>
-        {/* Unlock input for porn */}
-        <div className="mt-6">
-          <input
-            type="text"
-            value={unlockInput}
-            onChange={(e) => setUnlockInput(e.target.value)}
-            placeholder="Type to unlock hidden feature..."
-            className="w-full p-2 mb-2 rounded-md border border-gray-300"
-          />
-          <button
-            onClick={handleUnlock}
-            className="w-full px-4 py-2 text-sm rounded-md font-medium bg-peach-300 text-gray-800 hover:bg-peach-400 transition-colors duration-200"
-          >
-            Unlock
-          </button>
         </div>
         <button
           onClick={() => {

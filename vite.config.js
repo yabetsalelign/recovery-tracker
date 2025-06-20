@@ -5,7 +5,6 @@ export default defineConfig({
   plugins: [react()],
   build: {
     rollupOptions: {
-      external: ['framer-motion'], // Optional, if you plan to reintroduce framer-motion
       output: {
         manualChunks(id) {
           if (id.includes('node_modules')) {
@@ -14,6 +13,7 @@ export default defineConfig({
         },
       },
     },
-    chunkSizeWarningLimit: 1000, // Temporary increase to suppress warnings
+    chunkSizeWarningLimit: 1000,
   },
+  base: '/',
 });
