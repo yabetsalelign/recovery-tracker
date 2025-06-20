@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
   darkMode: "class",
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
@@ -21,19 +21,19 @@ module.exports = {
           50: "#fdfaf6",
         },
         lime: {
-          200: "#D9F99D", // Light green for today's button
-          500: "#84CC16", // Vibrant green for buttons and gradient
-          600: "#65A30D", // Hover state for buttons
-          700: "#4D7C0F", // Dark green for headers
+          200: "#D9F99D",
+          500: "#84CC16",
+          600: "#65A30D",
+          700: "#4D7C0F",
         },
         emerald: {
-          50: "#ECFDF5", // Very light green for zero-count days
+          50: "#ECFDF5",
         },
         yellow: {
-          400: "#FACC15", // Bright yellow for non-zero days and gradient
+          400: "#FACC15",
         },
         red: {
-          500: "#EF4444", // Red for gradient
+          500: "#EF4444",
         },
       },
     },
