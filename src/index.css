@@ -15,6 +15,7 @@
     --color-coral-600: #f43f5e;
     --background-image: url('https://source.unsplash.com/800x600/?sunrise');
   }
+
   body {
     font-family: 'Roboto', sans-serif;
     margin: 0;
@@ -23,13 +24,38 @@
     background-size: cover;
     background-position: center;
   }
+
+  .calendar-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  .neon-text {
+    text-shadow: 0 0 5px #FFD700, 0 0 10px #FFD700, 0 0 15px #FFD700;
+    animation: neonFlicker 1.5s infinite alternate;
+  }
+
+  .shadow-neon {
+    box-shadow: 0 0 10px #FDBA74, 0 0 20px #FDBA74, 0 0 30px #FDBA74;
+  }
+
+  .animate-spin-slow {
+    animation: spin 4s linear infinite;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes neonFlicker {
+    from { opacity: 1; }
+    to { opacity: 0.8; }
+  }
 }
-.calendar-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px; /* Space between number and emoji */
-}
+
 @layer utilities {
   .bg-peach-50 { background-color: var(--color-peach-50); }
   .bg-peach-100 { background-color: var(--color-peach-100); }
