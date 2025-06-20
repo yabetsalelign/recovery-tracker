@@ -14,7 +14,7 @@ import AddAddiction from "./AddAddiction";
 import Counter from "./Counter";
 import SeshPage from "./SeshPage";
 import WeedPage from "./WeedPage";
-
+import PornPage from "./PornPage";
 const App = () => {
   return (
     <ThemeProvider>
@@ -22,6 +22,7 @@ const App = () => {
         <BrowserRouter>
           <ThemeModal />
           <Routes>
+            <Route path="/porn" element={<PornPage />} />
             <Route path="/weed" element={<WeedPage />} />
             <Route path="/" element={<Welcome />} />
             <Route path="/home" element={<Home />} />
