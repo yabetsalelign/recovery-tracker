@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { addMonths, eachDayOfInterval, endOfMonth, format, getDay, isSameDay, startOfMonth, subMonths } from "date-fns";
 import type { CanonicalTrackerRecord } from "../types/tracker";
 import { evaluateDayRecord } from "../utils/unifiedCalculations";
@@ -7,7 +7,8 @@ interface Props { tracker: CanonicalTrackerRecord; selectedDate: string; onSelec
 const weekdayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
 const TrackerCalendar: React.FC<Props> = ({ tracker, selectedDate, onSelect }) => {
-  const [month, setMonth] = useState(() => startOfMonth(new Date()));
+  const [month, setMonth] = useState(() => startOfMonth(new Date(`${selectedDate}T12:00:00`)));
+  useEffect(() => { setMonth(startOfMonth(new Date(`${selectedDate}T12:00:00`))); }, [selectedDate]);
   const days = useMemo(() => eachDayOfInterval({ start: startOfMonth(month), end: endOfMonth(month) }), [month]);
   const blanks = (getDay(startOfMonth(month)) + 6) % 7;
   return <section className="vesper-card p-4 sm:p-5" aria-label="Tracker calendar">

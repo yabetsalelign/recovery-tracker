@@ -4,6 +4,7 @@ import Layout from "./components/Layout";
 import { useTheme } from "./context/ThemeContext";
 import { useRecovery } from "./context/RecoveryContext";
 import type { TrackerRecord } from "./types";
+import type { TrackerCategory, TrackingModality, TrackerTarget } from "./types/tracker";
 import { getHabitIcon } from "./utils/habitIcons";
 
 const AddAddiction: React.FC = () => {
@@ -22,6 +23,16 @@ const AddAddiction: React.FC = () => {
   // Form state
   const [goalTitle, setGoalTitle] = useState<string>("");
   const [startDate, setStartDate] = useState<string>(() => new Date().toISOString().slice(0, 10));
+  const [category, setCategory] = useState<TrackerCategory>("Personal Goal");
+  const [modality, setModality] = useState<TrackingModality>("abstinence");
+  const [frequencyRule, setFrequencyRule] = useState<"zero" | "at_most">("zero");
+  const [limit, setLimit] = useState("2");
+  const [frequencyUnit, setFrequencyUnit] = useState("");
+  const [useMinimum, setUseMinimum] = useState(false);
+  const [minimum, setMinimum] = useState("10");
+  const [habitUnit, setHabitUnit] = useState("pages");
+  const [cutoff, setCutoff] = useState("22:00");
+  const [rationale, setRationale] = useState("");
   const [formError, setFormError] = useState<string>("");
 
   // Edit modal state
@@ -52,17 +63,35 @@ const AddAddiction: React.FC = () => {
       return;
     }
 
-    const lower = trimmed.toLowerCase();
-    const modality = ["sesh", "weed", "porn"].includes(lower) ? "specialized" : "abstinence";
+    let target: TrackerTarget;
+    if (modality === "abstinence") target = { rule: "zero" };
+    else if (modality === "frequency") {
+      if (frequencyRule === "at_most" && (limit.trim() === "" || !Number.isFinite(Number(limit)) || Number(limit) < 0)) {
+        setFormError("Enter a valid maximum quantity of zero or more.");
+        return;
+      }
+      target = frequencyRule === "zero" ? { rule: "zero" } : { rule: "at_most", limit: Number(limit), ...(frequencyUnit.trim() ? { unit: frequencyUnit.trim() } : {}) };
+    } else if (modality === "daily_habit") {
+      if (useMinimum && (!Number.isFinite(Number(minimum)) || Number(minimum) <= 0)) {
+        setFormError("Enter a minimum quantity greater than zero.");
+        return;
+      }
+      target = { rule: "at_least", minimum: useMinimum ? Number(minimum) : 1, ...(useMinimum && habitUnit.trim() ? { unit: habitUnit.trim() } : {}) };
+    } else {
+      if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(cutoff)) {
+        setFormError("Choose a valid 24-hour cutoff time.");
+        return;
+      }
+      target = { rule: "before_time", cutoff };
+    }
 
     const res = addGoal({
       title: trimmed,
       modality,
-      category: "Personal Goal",
-      limitVal: 1,
-      curfewTime: "22:30",
-      startDate,
-      rationale: "",
+      category,
+      target,
+      ...(startDate ? { startDate } : {}),
+      rationale,
     });
 
     if (!res.success) {
@@ -71,6 +100,7 @@ const AddAddiction: React.FC = () => {
     }
 
     setGoalTitle("");
+    setRationale("");
     setActiveTab("active");
   };
 
@@ -141,7 +171,7 @@ const AddAddiction: React.FC = () => {
                 : "text-[#78564F] dark:text-[#A99A8F] hover:text-[#261810] dark:hover:text-[#F4EFEA]"
             }`}
           >
-            <span>Manage goals</span>
+            <span>Manage trackers</span>
             <span className="text-xs opacity-75">({trackers.length})</span>
           </button>
           <button
@@ -158,7 +188,7 @@ const AddAddiction: React.FC = () => {
                 : "text-[#78564F] dark:text-[#A99A8F] hover:text-[#261810] dark:hover:text-[#F4EFEA]"
             }`}
           >
-            <span>Add a goal</span>
+            <span>Add a tracker</span>
           </button>
         </div>
 
@@ -168,14 +198,14 @@ const AddAddiction: React.FC = () => {
             {trackers.length === 0 ? (
               <div className="bg-white dark:bg-[#24201D] rounded-2xl p-6 text-center border border-[#D2C3BE] dark:border-[#39302B] shadow-[0_1px_3px_rgba(38,24,16,0.04)] space-y-3">
                 <p className="text-xs text-[#78564F] dark:text-[#A99A8F]">
-                  No trackers yet. Add your first goal to get started.
+                  No trackers yet. Add your first tracker to get started.
                 </p>
                 <button
                   type="button"
                   onClick={() => setActiveTab("new")}
                   className="min-h-11 px-4 py-2 rounded-full btn-primary text-xs font-semibold inline-flex items-center gap-1"
                 >
-                  <span>Add a goal</span>
+                  <span>Add a tracker</span>
                 </button>
               </div>
             ) : (
@@ -243,6 +273,13 @@ const AddAddiction: React.FC = () => {
                         )}
                         <button
                           type="button"
+                          onClick={() => navigate(`/tracker/${encodeURIComponent(String(tracker.id))}`)}
+                          className="text-[#78564F] dark:text-[#D47A55] font-semibold hover:underline"
+                        >
+                          Details →
+                        </button>
+                        <button
+                          type="button"
                           onClick={() => navigate("/notes")}
                           className="text-[#78564F] dark:text-[#D47A55] font-semibold hover:underline"
                         >
@@ -264,12 +301,8 @@ const AddAddiction: React.FC = () => {
             className="bg-white dark:bg-[#24201D] rounded-2xl border border-[#D2C3BE] dark:border-[#39302B] p-5 sm:p-6 shadow-[0_1px_3px_rgba(38,24,16,0.04)] space-y-4"
           >
             <div className="space-y-1 pb-3 border-b border-[#D2C3BE]/60 dark:border-[#39302B]">
-              <h2 className="font-serif text-lg font-medium text-[#261810] dark:text-[#F4EFEA]">
-                Add a new tracker
-              </h2>
-              <p className="text-xs text-[#78564F] dark:text-[#A99A8F]">
-                Name what you want to track each day.
-              </p>
+              <h2 className="font-serif text-lg font-medium text-[#261810] dark:text-[#F4EFEA]">Add a new tracker</h2>
+              <p className="text-xs text-[#78564F] dark:text-[#A99A8F]">Choose how you want to record each day.</p>
             </div>
 
             {formError && (
@@ -287,14 +320,39 @@ const AddAddiction: React.FC = () => {
                 type="text"
                 value={goalTitle}
                 onChange={(e) => setGoalTitle(e.target.value)}
-                placeholder="e.g. Sobriety, Sesh, Evening walk..."
+                placeholder="e.g. Cigarettes, Reading, Evening walk"
                 className="w-full min-h-11 px-3.5 py-2 text-xs rounded-xl bg-[#FBF2E7] dark:bg-[#1E1B18] text-[#261810] dark:text-[#F4EFEA] border border-[#D2C3BE]/60 dark:border-[#39302B] focus:outline-none focus:border-[#78564F] dark:focus:border-[#D47A55]"
               />
             </div>
 
             <div className="space-y-1">
+              <label htmlFor="tracker-category" className="block text-xs font-semibold text-[#78564F] dark:text-[#D0C4BA]">Category</label>
+              <select id="tracker-category" value={category} onChange={(event) => setCategory(event.target.value as TrackerCategory)} className="w-full min-h-11 px-3.5 py-2 text-sm rounded-xl bg-[#FBF2E7] dark:bg-[#1E1B18] border border-[#D2C3BE]/60 dark:border-[#39302B]">
+                {["Substance Sobriety", "Digital & Behavioral", "Emotional & Mental", "Physical Health", "Personal Goal"].map((option) => <option key={option}>{option}</option>)}
+              </select>
+            </div>
+
+            <fieldset className="space-y-2">
+              <legend className="block text-xs font-semibold text-[#78564F] dark:text-[#D0C4BA]">How will you track it?</legend>
+              <div className="grid grid-cols-2 gap-2">
+                {([
+                  ["abstinence", "Abstinence", "Confirm clean days or record a lapse."],
+                  ["frequency", "Frequency", "Record a daily quantity, including zero."],
+                  ["daily_habit", "Daily habit", "Mark completed days and planned rest."],
+                  ["boundary", "Boundary", "Keep a time based limit or record a breach."],
+                ] as [TrackingModality, string, string][]).map(([value, label, help]) => <button key={value} type="button" aria-pressed={modality === value} onClick={() => setModality(value)} className={`min-h-16 p-3 rounded-xl text-left border ${modality === value ? "border-[#D47A55] bg-[#FDD0C6]/50 dark:bg-[#70493B]/50" : "border-[#D2C3BE] dark:border-[#39302B]"}`}><span className="block text-sm font-semibold">{label}</span><span className="block mt-0.5 text-xs text-[#78564F] dark:text-[#A99A8F]">{help}</span></button>)}
+              </div>
+            </fieldset>
+
+            {modality === "frequency" && <fieldset className="space-y-3"><legend className="block text-xs font-semibold text-[#78564F] dark:text-[#D0C4BA]">Frequency target</legend><div className="flex flex-wrap gap-2"><button type="button" aria-pressed={frequencyRule === "zero"} onClick={() => setFrequencyRule("zero")} className={`min-h-11 px-3 rounded-full border text-xs ${frequencyRule === "zero" ? "bg-[#FDD0C6] border-[#D47A55]" : "border-[#D2C3BE] dark:border-[#39302B]"}`}>Track zero days</button><button type="button" aria-pressed={frequencyRule === "at_most"} onClick={() => setFrequencyRule("at_most")} className={`min-h-11 px-3 rounded-full border text-xs ${frequencyRule === "at_most" ? "bg-[#FDD0C6] border-[#D47A55]" : "border-[#D2C3BE] dark:border-[#39302B]"}`}>Set a maximum</button></div>{frequencyRule === "at_most" && <div className="grid grid-cols-2 gap-3"><label className="text-xs font-semibold text-[#78564F] dark:text-[#D0C4BA]">Maximum per day<input aria-label="Maximum quantity per day" type="number" min="0" step="any" value={limit} onChange={(event) => setLimit(event.target.value)} className="mt-1 w-full min-h-11 px-3 rounded-xl tracker-field" /></label><label className="text-xs font-semibold text-[#78564F] dark:text-[#D0C4BA]">Unit<input aria-label="Frequency unit" type="text" value={frequencyUnit} onChange={(event) => setFrequencyUnit(event.target.value)} placeholder="cigarettes, drinks, minutes" className="mt-1 w-full min-h-11 px-3 rounded-xl tracker-field" /></label></div>}</fieldset>}
+
+            {modality === "daily_habit" && <fieldset className="space-y-3"><legend className="block text-xs font-semibold text-[#78564F] dark:text-[#D0C4BA]">Habit target</legend><label className="flex min-h-11 items-center gap-2 text-sm"><input type="checkbox" checked={useMinimum} onChange={(event) => setUseMinimum(event.target.checked)} />Set a minimum quantity</label>{useMinimum && <div className="grid grid-cols-2 gap-3"><label className="text-xs font-semibold text-[#78564F] dark:text-[#D0C4BA]">Minimum per day<input aria-label="Minimum quantity per day" type="number" min="0.01" step="any" value={minimum} onChange={(event) => setMinimum(event.target.value)} className="mt-1 w-full min-h-11 px-3 rounded-xl tracker-field" /></label><label className="text-xs font-semibold text-[#78564F] dark:text-[#D0C4BA]">Unit<input aria-label="Habit unit" type="text" value={habitUnit} onChange={(event) => setHabitUnit(event.target.value)} placeholder="pages, minutes, glasses" className="mt-1 w-full min-h-11 px-3 rounded-xl tracker-field" /></label></div>}</fieldset>}
+
+            {modality === "boundary" && <div><label htmlFor="boundary-cutoff" className="block text-xs font-semibold text-[#78564F] dark:text-[#D0C4BA]">Daily cutoff</label><input id="boundary-cutoff" type="time" value={cutoff} onChange={(event) => setCutoff(event.target.value)} className="mt-1 w-full min-h-11 px-3 rounded-xl tracker-field" /><p className="mt-1 text-xs text-[#78564F] dark:text-[#A99A8F]">Entries at or before this time count as adherence.</p></div>}
+
+            <div className="space-y-1">
               <label htmlFor="start-date-input" className="block text-xs font-semibold text-[#78564F] dark:text-[#D0C4BA]">
-                Start date
+                Start date (optional)
               </label>
               <input
                 id="start-date-input"
@@ -305,11 +363,13 @@ const AddAddiction: React.FC = () => {
               />
             </div>
 
+            <div className="space-y-1"><label htmlFor="tracker-rationale" className="block text-xs font-semibold text-[#78564F] dark:text-[#D0C4BA]">Personal rationale (optional)</label><textarea id="tracker-rationale" rows={3} value={rationale} onChange={(event) => setRationale(event.target.value)} placeholder="Why does this matter to you?" className="w-full p-3 rounded-xl tracker-field resize-y" /></div>
+
             <button
               type="submit"
               className="w-full min-h-11 py-2.5 px-4 rounded-full btn-primary text-xs font-semibold"
             >
-              <span>Add a goal</span>
+              <span>Create tracker</span>
             </button>
           </form>
         )}

@@ -1,4 +1,4 @@
-import type { CanonicalTrackerRecord } from "./tracker";
+import type { CanonicalTrackerRecord, TrackerTarget } from "./tracker";
 
 export type Modality =
   | "abstinence"
@@ -35,6 +35,7 @@ export interface GoalConfig {
   curfewTime?: string;
   startDate?: string;
   rationale?: string;
+  target?: TrackerTarget;
 }
 
 export type CheckInsMap = Record<string, boolean>;
@@ -54,6 +55,7 @@ export interface NoteEntry {
   isGeneral: boolean;
   date: string;
   text: string;
+  trackerId?: string;
 }
 
 export type ThemeMode = "light" | "dark";
@@ -95,7 +97,10 @@ export interface BackupPayload {
 export interface RecoveryContextType {
   canonicalTrackers: CanonicalTrackerRecord[];
   setTrackerDayRecord: (trackerId: string, dateStr: string, record: import("./tracker").DayRecord | null) => void;
+  logTrackerDayStatus: (trackerId: string, dateStr: string, status: import("./tracker").DayRecordStatus, value?: number) => void;
   saveTrackerGeneralNote: (trackerId: string, note: string) => void;
+  saveTrackerDayNote: (trackerId: string, dateStr: string, note: string) => void;
+  deleteTrackerDayNote: (trackerId: string, dateStr: string) => void;
   migrationError?: string | null;
   trackers: TrackerRecord[];
   addictions: string[];

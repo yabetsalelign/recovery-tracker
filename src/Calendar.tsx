@@ -14,15 +14,15 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Layout from "./components/Layout";
 import { useTheme } from "./context/ThemeContext";
 import { useRecovery } from "./context/RecoveryContext";
+import { evaluateDayRecord } from "./utils/unifiedCalculations";
 
 const Calendar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { discreetMode } = useTheme();
   const {
-    trackers,
-    addictions,
-    toggleCheckIn,
+    canonicalTrackers,
+    emotionalWeather,
     saveNote,
     getNote,
     selectedDate: contextSelectedDate,
@@ -44,9 +44,6 @@ const Calendar: React.FC = () => {
   }, [selectedDateStr]);
 
   const [selectedDayNote, setSelectedDayNote] = useState<string>("");
-  const [selectedNoteHabit, setSelectedNoteHabit] = useState<string>(() => {
-    return addictions.length > 0 ? addictions[0] : "General";
-  });
   const [isEditingNote, setIsEditingNote] = useState<boolean>(false);
 
   useEffect(() => {
@@ -56,10 +53,10 @@ const Calendar: React.FC = () => {
   }, [selectedDateStr, setContextSelectedDate]);
 
   useEffect(() => {
-    const existing = getNote(selectedNoteHabit, selectedDateStr);
+    const existing = getNote("General", selectedDateStr);
     setSelectedDayNote(existing);
     setIsEditingNote(false);
-  }, [selectedDateStr, selectedNoteHabit, getNote]);
+  }, [selectedDateStr, getNote]);
 
   const daysThisMonth = eachDayOfInterval({
     start: startOfMonth(currentMonth),
@@ -71,7 +68,7 @@ const Calendar: React.FC = () => {
   const leadingBlanks = Array.from({ length: (startDayIndex + 6) % 7 });
 
   const handleSaveNote = () => {
-    saveNote(selectedNoteHabit, selectedDateStr, selectedDayNote);
+    saveNote("General", selectedDateStr, selectedDayNote);
     setIsEditingNote(false);
   };
 
@@ -94,15 +91,20 @@ const Calendar: React.FC = () => {
     }, 0);
   };
 
-  const getDayStatus = (dateStr: string): "complete" | "partial" | "rest" => {
-    if (!trackers.length) return "rest";
-    const total = trackers.length;
-    const completed = trackers.filter((t) => t.checkIns?.[dateStr]).length;
-    const hasNote = trackers.some((t) => t.notes?.[dateStr]?.trim()) || Boolean(getNote("General", dateStr));
-
-    if (completed === total && total > 0) return "complete";
-    if (completed > 0 || hasNote) return "partial";
-    return "rest";
+  const eligibleTrackers = canonicalTrackers.filter((tracker) => !tracker.isArchived && tracker.startDate <= selectedDateStr);
+  const getDaySummary = (dateStr: string) => {
+    const eligible = canonicalTrackers.filter((tracker) => !tracker.isArchived && tracker.startDate <= dateStr);
+    const evaluations = eligible.map((tracker) => ({ tracker, evaluation: evaluateDayRecord(tracker, dateStr) }));
+    return {
+      evaluations,
+      successes: evaluations.filter(({ evaluation }) => evaluation.isSuccess).length,
+      planned: evaluations.filter(({ evaluation }) => evaluation.isPlannedSkip).length,
+      lapses: evaluations.filter(({ evaluation }) => evaluation.isLapseOrBreach).length,
+      noteOnly: evaluations.filter(({ tracker, evaluation }) => !evaluation.isLogged && Boolean(tracker.records[dateStr]?.note)).length,
+      unlogged: evaluations.filter(({ tracker, evaluation }) => !evaluation.isLogged && !tracker.records[dateStr]?.note).length,
+      journal: Boolean(getNote("General", dateStr).trim()),
+      mood: Boolean(emotionalWeather[dateStr]?.checkedIn),
+    };
   };
 
   const getDisplayName = (name: string): string => {
@@ -121,8 +123,7 @@ const Calendar: React.FC = () => {
     ? format(selectedDateObj, "EEEE, MMMM d, yyyy")
     : selectedDateStr;
 
-  const totalCompletedForSelectedDay = trackers.filter((t) => t.checkIns?.[selectedDateStr]).length;
-  const isSelectedDayComplete = totalCompletedForSelectedDay === trackers.length && trackers.length > 0;
+  const selectedSummary = getDaySummary(selectedDateStr);
 
   return (
     <Layout title="Calendar">
@@ -189,18 +190,29 @@ const Calendar: React.FC = () => {
                 const dateStr = format(dateObj, "yyyy-MM-dd");
                 const isSelected = selectedDateStr === dateStr;
                 const isToday = isSameDay(dateObj, new Date());
-                const status = getDayStatus(dateStr);
-
-                let dotColor = "bg-transparent";
-                if (status === "complete") dotColor = "bg-[#78564F] dark:bg-[#8EAA92]";
-                else if (status === "partial") dotColor = "bg-[#D47A55]";
+                const summary = getDaySummary(dateStr);
+                const dayLabels = [
+                  summary.successes > 0 && "successful",
+                  summary.planned > 0 && "planned rest",
+                  summary.lapses > 0 && "lapse or breach",
+                  summary.noteOnly > 0 && "tracker note",
+                  summary.journal && "journal reflection",
+                  summary.mood && "mood check-in",
+                  summary.unlogged > 0 && "unlogged",
+                ].filter(Boolean);
+                const dots = [
+                  ...(summary.successes ? ["bg-[#46644B] dark:bg-[#8EAA92]"] : []),
+                  ...(summary.planned ? ["border border-dashed border-[#78564F]"] : []),
+                  ...(summary.lapses ? ["bg-[#D47A55]"] : []),
+                  ...(summary.noteOnly || summary.journal || summary.mood ? ["bg-[#FDD0C6]"] : []),
+                ];
 
                 return (
                   <button
                     key={dateStr}
                     id={`calendar-day-${dateStr}`}
                     type="button"
-                    aria-label={format(dateObj, "EEEE, MMMM d, yyyy")}
+                    aria-label={`${format(dateObj, "EEEE, MMMM d, yyyy")}: ${dayLabels.length ? dayLabels.join(", ") : "no tracker activity"}`}
                     aria-pressed={isSelected}
                     aria-current={isToday ? "date" : undefined}
                     onClick={() => setSelectedDateStr(dateStr)}
@@ -212,26 +224,18 @@ const Calendar: React.FC = () => {
                     } ${isToday && !isSelected ? "border-2 border-[#FDD0C6] dark:border-[#D47A55]/70" : ""}`}
                   >
                     <span className="text-xs">{format(dateObj, "d")}</span>
-                    <span
-                      className={`w-1.5 h-1.5 rounded-full mt-0.5 ${
-                        isSelected ? "bg-[#261810] dark:bg-[#1A1614]" : dotColor
-                      }`}
-                    />
+                    <span className="flex h-2 gap-0.5 mt-0.5" aria-hidden="true">{dots.slice(0, 4).map((color, index) => <i key={index} className={`w-1.5 h-1.5 rounded-full ${color}`} />)}</span>
                   </button>
                 );
               })}
             </div>
 
             {/* Subtle Legend */}
-            <div className="flex items-center justify-center gap-4 pt-3 border-t border-[#D2C3BE]/60 dark:border-[#39302B] text-xs text-[#78564F] dark:text-[#A99A8F]">
-              <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-[#78564F] dark:bg-[#8EAA92]" />
-                <span>All checked</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-[#D47A55]" />
-                <span>Partial / note</span>
-              </div>
+            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 pt-3 border-t border-[#D2C3BE]/60 dark:border-[#39302B] text-xs text-[#78564F] dark:text-[#A99A8F]">
+              <span className="inline-flex items-center gap-1.5"><i className="w-2 h-2 rounded-full bg-[#46644B] dark:bg-[#8EAA92]" />Success</span>
+              <span className="inline-flex items-center gap-1.5"><i className="w-2 h-2 rounded-full border border-dashed border-[#78564F]" />Planned rest</span>
+              <span className="inline-flex items-center gap-1.5"><i className="w-2 h-2 rounded-full bg-[#D47A55]" />Lapse / breach</span>
+              <span className="inline-flex items-center gap-1.5"><i className="w-2 h-2 rounded-full bg-[#FDD0C6]" />Tracker note</span>
             </div>
           </section>
 
@@ -243,12 +247,9 @@ const Calendar: React.FC = () => {
                   <time dateTime={selectedDateStr}>{selectedDayFormatted}</time>
                 </h2>
                 <p className="text-xs text-[#78564F] dark:text-[#A99A8F] mt-0.5">
-                  {trackers.length === 0
-                    ? "No trackers"
-                    : isSelectedDayComplete
-                    ? "All trackers checked"
-                    : `${totalCompletedForSelectedDay} of ${trackers.length} checked`}
+                  {eligibleTrackers.length === 0 ? "No trackers active yet" : `${selectedSummary.successes} successful · ${selectedSummary.planned} planned rest · ${selectedSummary.lapses} lapses or breaches · ${selectedSummary.unlogged} unlogged`}
                 </p>
+                {emotionalWeather[selectedDateStr]?.checkedIn && <p className="text-xs text-[#78564F] dark:text-[#A99A8F] mt-1">Mood check-in: {emotionalWeather[selectedDateStr].mood}</p>}
               </div>
 
               <button
@@ -265,42 +266,28 @@ const Calendar: React.FC = () => {
               <h3 className="text-xs font-semibold text-[#78564F] dark:text-[#D0C4BA]">
                 Trackers
               </h3>
-              {trackers.length === 0 ? (
+              {eligibleTrackers.length === 0 ? (
                 <p className="text-xs text-[#78564F] dark:text-[#A99A8F]">
                   No active trackers.
                 </p>
               ) : (
                 <div className="space-y-2">
-                  {trackers.map((tracker) => {
-                    const habitName = tracker.name;
-                    const isChecked = Boolean(tracker.checkIns?.[selectedDateStr]);
+                  {selectedSummary.evaluations.map(({ tracker, evaluation }) => {
+                    const record = tracker.records[selectedDateStr];
+                    const status = evaluation.isPlannedSkip ? "Planned rest" : evaluation.isLapseOrBreach ? (tracker.modality === "boundary" ? "Breach" : "Lapse") : evaluation.isSuccess ? "Successful" : record?.note ? "Note only" : "Unlogged";
                     return (
                       <div
-                        key={tracker.id || habitName}
+                        key={tracker.id}
                         className="flex items-center justify-between py-2 px-3.5 rounded-xl bg-[#FBF2E7] dark:bg-[#1E1B18] border border-[#D2C3BE]/40 dark:border-[#39302B]/60"
                       >
-                        <span className="text-xs font-medium text-[#261810] dark:text-[#F4EFEA]">
-                          {getDisplayName(habitName)}
-                        </span>
+                        <div className="min-w-0"><span className="text-xs font-medium text-[#261810] dark:text-[#F4EFEA]">{getDisplayName(tracker.name)} · {status}</span>{(record?.value !== undefined || record?.timestamp) && <p className="text-xs text-[#78564F] dark:text-[#A99A8F]">{record?.value !== undefined ? record.value : record?.timestamp}</p>}{record?.note && <p className="text-xs text-[#78564F] dark:text-[#A99A8F] truncate">{record.note}</p>}</div>
                         <button
                           type="button"
-                          aria-label={
-                            isChecked
-                              ? `Uncheck ${getDisplayName(habitName)} for ${selectedDateStr}`
-                              : `Check ${getDisplayName(habitName)} for ${selectedDateStr}`
-                          }
-                          aria-pressed={isChecked}
-                          onClick={() => toggleCheckIn(habitName, selectedDateStr)}
-                          className={`min-h-11 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-colors ${
-                            isChecked
-                              ? "btn-primary-soft text-xs"
-                              : "btn-primary text-xs"
-                          }`}
+                          aria-label={`Open ${getDisplayName(tracker.name)} on ${selectedDateStr}`}
+                          onClick={() => navigate(`/tracker/${encodeURIComponent(tracker.id)}?date=${selectedDateStr}`)}
+                          className="min-h-11 px-3 py-1 rounded-full btn-secondary text-xs font-semibold"
                         >
-                          <span className="material-symbols-outlined text-[18px]">
-                            {isChecked ? "check" : "radio_button_unchecked"}
-                          </span>
-                          <span>{isChecked ? "Checked" : "Check in"}</span>
+                          Open day
                         </button>
                       </div>
                     );

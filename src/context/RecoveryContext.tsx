@@ -25,7 +25,6 @@ import type {
   DayRecord,
   TrackerCategory,
   TrackingModality,
-  TrackerTarget,
 } from "../types/tracker";
 import {
   calculateConsecutiveStreak,
@@ -47,10 +46,14 @@ import {
   applySaveNote,
   applyDeleteNote,
   applyTrackerDayRecord,
+  applyTrackerDayStatus,
   applyTrackerGeneralNote,
+  applyTrackerDayNote,
+  applyDeleteTrackerDayNote,
 } from "../utils/canonicalStore";
 import { inferLegacyModality, resolveBackupPayload } from "../utils/unifiedMigration";
-import { createDeterministicTrackerId } from "../utils/unifiedCalculations";
+import { validateDayRecordStatus, isFiniteNonNegativeNumber } from "../utils/unifiedCalculations";
+import { createCanonicalTracker } from "../utils/trackerCreation";
 
 export const RecoveryContext = createContext<RecoveryContextType | null>(null);
 
@@ -228,8 +231,24 @@ export const RecoveryProvider: React.FC<{ children: ReactNode }> = ({ children }
     setCanonicalTrackers((prev) => applyTrackerDayRecord(prev, trackerId, dateStr, record));
   }, []);
 
+  const logTrackerDayStatus = useCallback((trackerId: string, dateStr: string, status: DayRecord["status"], value?: number) => {
+    if (!status) return;
+    const tracker = canonicalTrackers.find((item) => item.id === trackerId);
+    if (!tracker || !validateDayRecordStatus(tracker.modality, status)) return;
+    if (tracker.modality === "frequency" && !isFiniteNonNegativeNumber(value ?? 0)) return;
+    setCanonicalTrackers((prev) => applyTrackerDayStatus(prev, trackerId, dateStr, status, value));
+  }, [canonicalTrackers]);
+
   const saveTrackerGeneralNote = useCallback((trackerId: string, note: string) => {
     setCanonicalTrackers((prev) => applyTrackerGeneralNote(prev, trackerId, note));
+  }, []);
+
+  const saveTrackerDayNote = useCallback((trackerId: string, dateStr: string, note: string) => {
+    setCanonicalTrackers((prev) => applyTrackerDayNote(prev, trackerId, dateStr, note));
+  }, []);
+
+  const deleteTrackerDayNote = useCallback((trackerId: string, dateStr: string) => {
+    setCanonicalTrackers((prev) => applyDeleteTrackerDayNote(prev, trackerId, dateStr));
   }, []);
 
   const completeDailyCheckin = useCallback(
@@ -257,59 +276,28 @@ export const RecoveryProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   const addGoal = useCallback((goalConfig: GoalConfig): ActionResult => {
     const title = (goalConfig?.title || goalConfig?.name || "").trim();
-    if (!title) return { success: false, error: "Goal title cannot be empty" };
-
-    if (title.toLowerCase() === "general") {
-      return { success: false, error: "'General' is reserved for journal reflections" };
-    }
-
-    let isDuplicate = false;
-    setCanonicalTrackers((prev) => {
-      if (prev.some((t) => t.name.toLowerCase() === title.toLowerCase())) {
-        isDuplicate = true;
-        return prev;
-      }
-
-      const lower = title.toLowerCase();
-      let modality: TrackingModality = "abstinence";
-      let target: TrackerTarget = { rule: "zero" };
-
-      if (["sesh", "weed", "porn"].includes(lower)) {
-        modality = "frequency";
-        target = { rule: "zero" };
-      } else {
-        const inferred = inferLegacyModality({ ...goalConfig, name: title });
-        modality = inferred.modality;
-        target = inferred.target;
-      }
-
-      const startDate = goalConfig.startDate || format(new Date(), "yyyy-MM-dd");
-      const category = (goalConfig.category || "Personal Goal") as TrackerCategory;
-      const id = createDeterministicTrackerId(title, category, startDate);
-
-      const records: Record<string, DayRecord> = {};
-      if (goalConfig.rationale?.trim()) {
-        records[startDate] = { note: goalConfig.rationale.trim() };
-      }
-
-      const newTracker: CanonicalTrackerRecord = {
-        id,
-        name: title,
-        category,
-        modality,
-        target,
-        startDate,
-        records,
-      };
-
-      return [...prev, newTracker];
-    });
-
-    if (isDuplicate) {
-      return { success: false, error: `A goal named "${title}" already exists.` };
-    }
-    return { success: true };
-  }, []);
+    const requestedModality = goalConfig.modality;
+    const supportedModalities: TrackingModality[] = ["abstinence", "frequency", "daily_habit", "boundary"];
+    const explicitModality = requestedModality && supportedModalities.includes(requestedModality as TrackingModality)
+      ? requestedModality as TrackingModality
+      : undefined;
+    const inferred = explicitModality ? undefined : inferLegacyModality({ ...goalConfig, name: title });
+    const modality = explicitModality || inferred!.modality;
+    const target = goalConfig.target || inferred?.target || (modality === "abstinence" || modality === "frequency"
+      ? { rule: "zero" as const }
+      : modality === "daily_habit" ? { rule: "at_least" as const, minimum: 1 } : { rule: "before_time" as const, cutoff: "22:00" });
+    const created = createCanonicalTracker({
+      name: title,
+      category: (goalConfig.category || "Personal Goal") as TrackerCategory,
+      modality,
+      target,
+      startDate: goalConfig.startDate,
+      rationale: goalConfig.rationale,
+    }, canonicalTrackers);
+    if (!created.success || !created.data) return { success: false, error: created.error };
+    setCanonicalTrackers((prev) => [...prev, created.data!]);
+    return { success: true, data: created.data };
+  }, [canonicalTrackers]);
 
   const updateGoal = useCallback((oldName: string, newConfig: Partial<GoalConfig>): ActionResult => {
     const trimmedNew = (newConfig?.name || newConfig?.title || oldName).trim();
@@ -438,11 +426,12 @@ export const RecoveryProvider: React.FC<{ children: ReactNode }> = ({ children }
       Object.entries(t.records || {}).forEach(([date, rec]) => {
         if (rec.note && rec.note.trim()) {
           entries.push({
-            id: `${t.name}-${date}`,
+            id: `tracker-${t.id}-${date}`,
             habit: t.name,
             isGeneral: false,
             date,
             text: rec.note.trim(),
+            trackerId: t.id,
           });
         }
       });
@@ -534,17 +523,22 @@ export const RecoveryProvider: React.FC<{ children: ReactNode }> = ({ children }
           return { success: false, error: errMsg || "Failed to validate backup payload." };
         }
 
-        // Atomically update canonical store
+        // Persist and verify before changing in-memory state. Roll back the
+        // canonical key if verification fails so a failed restore is non-destructive.
+        const previousCanonical = localStorage.getItem(CANONICAL_STORAGE_KEY);
+        const persistence = persistCanonicalEnvelope(localStorage, resolved.trackers);
+        if (!persistence.success) {
+          if (previousCanonical === null) localStorage.removeItem(CANONICAL_STORAGE_KEY);
+          else localStorage.setItem(CANONICAL_STORAGE_KEY, previousCanonical);
+          return { success: false, error: persistence.error || "Unable to persist restored backup." };
+        }
         setCanonicalTrackers(resolved.trackers);
-        persistCanonicalEnvelope(localStorage, resolved.trackers);
 
-        if (resolved.transferredJournalNotes && Object.keys(resolved.transferredJournalNotes).length > 0) {
-          setGeneralNotes((prev) => ({ ...resolved.transferredJournalNotes, ...prev }));
-        }
-
-        if (parsed.generalNotes && typeof parsed.generalNotes === "object") {
-          setGeneralNotes((prev) => ({ ...prev, ...parsed.generalNotes }));
-        }
+        const importedGeneralNotes = {
+          ...(resolved.transferredJournalNotes || {}),
+          ...(parsed.generalNotes && typeof parsed.generalNotes === "object" ? parsed.generalNotes : {}),
+        } as GeneralNotesMap;
+        setGeneralNotes(importedGeneralNotes);
 
         if (parsed.emotionalWeather && typeof parsed.emotionalWeather === "object") {
           setEmotionalWeather(parsed.emotionalWeather);
@@ -606,7 +600,10 @@ export const RecoveryProvider: React.FC<{ children: ReactNode }> = ({ children }
       value={{
         canonicalTrackers,
         setTrackerDayRecord,
+        logTrackerDayStatus,
         saveTrackerGeneralNote,
+        saveTrackerDayNote,
+        deleteTrackerDayNote,
         migrationError,
         trackers,
         addictions,

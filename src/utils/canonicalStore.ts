@@ -551,6 +551,24 @@ export function applyTrackerDayRecord(
   });
 }
 
+export function applyTrackerDayStatus(
+  trackers: CanonicalTrackerRecord[],
+  trackerId: string,
+  dateStr: string,
+  status: DayRecord["status"],
+  value?: number
+): CanonicalTrackerRecord[] {
+  return trackers.map((tracker) => {
+    if (tracker.id !== trackerId || !status) return tracker;
+    const previous = tracker.records[dateStr];
+    const record: DayRecord = { ...previous, status, ...(previous?.rawLegacyCheckIn !== undefined ? { rawLegacyCheckIn: previous.rawLegacyCheckIn } : {}) };
+    if (tracker.modality === "frequency") record.value = value ?? 0;
+    else delete record.value;
+    delete record.timestamp;
+    return { ...tracker, records: { ...tracker.records, [dateStr]: record } };
+  });
+}
+
 export function applyTrackerGeneralNote(
   trackers: CanonicalTrackerRecord[],
   trackerId: string,
@@ -559,4 +577,34 @@ export function applyTrackerGeneralNote(
   return trackers.map((tracker) => tracker.id === trackerId
     ? { ...tracker, generalNote: note.trim() }
     : tracker);
+}
+
+export function applyTrackerDayNote(
+  trackers: CanonicalTrackerRecord[],
+  trackerId: string,
+  dateStr: string,
+  note: string | null
+): CanonicalTrackerRecord[] {
+  return trackers.map((tracker) => {
+    if (tracker.id !== trackerId) return tracker;
+    const current = tracker.records[dateStr];
+    const records = { ...tracker.records };
+    if (note?.trim()) records[dateStr] = { ...current, note: note.trim() };
+    else if (current?.status !== undefined || current?.rawLegacyCheckIn) records[dateStr] = { ...current, note: undefined };
+    else if (current) { const preserved = { ...current }; delete preserved.note; if (Object.keys(preserved).length) records[dateStr] = preserved; else delete records[dateStr]; }
+    return { ...tracker, records };
+  });
+}
+
+export function applyDeleteTrackerDayNote(
+  trackers: CanonicalTrackerRecord[],
+  trackerId: string,
+  dateStr: string
+): CanonicalTrackerRecord[] {
+  return applyTrackerDayNote(
+    trackers,
+    trackerId,
+    dateStr,
+    null
+  );
 }

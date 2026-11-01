@@ -14,17 +14,18 @@ interface PendingSwitchState {
 const Notes: React.FC = () => {
   const { discreetMode } = useTheme();
   const {
-    trackers,
-    addictions,
+    canonicalTrackers,
     saveNote,
     deleteNote,
     getNote,
     getAllNotes,
+    saveTrackerDayNote,
+    deleteTrackerDayNote,
   } = useRecovery();
 
   const [selectedDate, setSelectedDate] = useState<string>(() => format(new Date(), "yyyy-MM-dd"));
   const [selectedGoal, setSelectedGoal] = useState<string>(() => {
-    return addictions.length > 0 ? addictions[0] : "General";
+    return canonicalTrackers.find((tracker) => !tracker.isArchived)?.id ? `tracker:${canonicalTrackers.find((tracker) => !tracker.isArchived)!.id}` : "General";
   });
 
   const [journalText, setJournalText] = useState<string>("");
@@ -37,10 +38,11 @@ const Notes: React.FC = () => {
 
   // Load existing note when date or goal changes
   useEffect(() => {
-    const existing = getNote(selectedGoal, selectedDate);
+    const selectedTracker = selectedGoal.startsWith("tracker:") ? canonicalTrackers.find((tracker) => tracker.id === selectedGoal.slice("tracker:".length)) : undefined;
+    const existing = selectedTracker?.records[selectedDate]?.note || (!selectedTracker ? getNote("General", selectedDate) : "");
     setJournalText(existing);
     setInitialText(existing);
-  }, [selectedDate, selectedGoal, getNote]);
+  }, [selectedDate, selectedGoal, getNote, canonicalTrackers]);
 
   const isDirty = journalText !== initialText;
 
@@ -81,7 +83,9 @@ const Notes: React.FC = () => {
 
   const handleSaveReflection = () => {
     setSaveStatus("saving");
-    saveNote(selectedGoal, selectedDate, journalText);
+    const selectedTracker = selectedGoal.startsWith("tracker:") ? canonicalTrackers.find((tracker) => tracker.id === selectedGoal.slice("tracker:".length)) : undefined;
+    if (selectedTracker) saveTrackerDayNote(selectedTracker.id, selectedDate, journalText);
+    else saveNote("General", selectedDate, journalText);
     setInitialText(journalText);
 
     setTimeout(() => {
@@ -98,7 +102,7 @@ const Notes: React.FC = () => {
   };
 
   const handleEntryEdit = (entry: NoteEntry) => {
-    const goal = entry.isGeneral ? "General" : entry.habit;
+    const goal = entry.trackerId ? `tracker:${entry.trackerId}` : "General";
     if (isDirty) {
       setPendingSwitch({ type: "entry", value: entry.date, goal });
       setShowDiscardModal(true);
@@ -125,7 +129,7 @@ const Notes: React.FC = () => {
       const matchesFilter =
         activeFilter === "all" ||
         (activeFilter === "General" && entry.isGeneral) ||
-        entry.habit.toLowerCase() === activeFilter.toLowerCase();
+        (activeFilter.startsWith("tracker:") && entry.trackerId === activeFilter.slice("tracker:".length));
 
       const matchesSearch =
         !searchQuery.trim() ||
@@ -174,7 +178,7 @@ const Notes: React.FC = () => {
         {[
           { value: "all", label: `All (${allEntries.length})` },
           { value: "General", label: "General" },
-          ...trackers.map((tracker) => ({ value: tracker.name, label: getDisplayName(tracker.name) })),
+          ...canonicalTrackers.filter((tracker) => !tracker.isArchived).map((tracker) => ({ value: `tracker:${tracker.id}`, label: getDisplayName(tracker.name) })),
         ].map((filter) => (
           <button
             key={filter.value}
@@ -220,7 +224,7 @@ const Notes: React.FC = () => {
                     {entry.date}
                   </span>
                   <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#FBF2E7] dark:bg-[#1E1B18] text-[#78564F] dark:text-[#D0C4BA] border border-[#D2C3BE]/50 dark:border-[#39302B]">
-                    {getDisplayName(entry.habit)}
+                    {entry.isGeneral ? "Journal reflection" : `Tracker · ${getDisplayName(entry.habit)}`}
                   </span>
                 </div>
                 <div className="flex items-center gap-1">
@@ -238,7 +242,7 @@ const Notes: React.FC = () => {
                   <button
                     type="button"
                     aria-label={`Delete entry from ${entry.date}`}
-                    onClick={() => deleteNote(entry.isGeneral ? "General" : entry.habit, entry.date)}
+                    onClick={() => entry.trackerId ? deleteTrackerDayNote(entry.trackerId, entry.date) : deleteNote("General", entry.date)}
                     className="min-h-11 px-2.5 text-xs text-[#BA1A1A] dark:text-[#F0A08D] hover:underline transition-colors"
                   >
                     Delete
@@ -299,13 +303,13 @@ const Notes: React.FC = () => {
                 >
                   General
                 </button>
-                {trackers.map((tracker) => (
+                {canonicalTrackers.filter((tracker) => !tracker.isArchived).map((tracker) => (
                   <button
-                    key={tracker.name}
+                    key={tracker.id}
                     type="button"
-                    onClick={() => handleGoalChange(tracker.name)}
+                    onClick={() => handleGoalChange(`tracker:${tracker.id}`)}
                     className={`min-h-11 px-3.5 py-1 rounded-full text-xs font-semibold border transition-colors ${
-                      selectedGoal.toLowerCase() === tracker.name.toLowerCase()
+                      selectedGoal === `tracker:${tracker.id}`
                         ? "filter-pill-selected"
                         : "bg-[#FBF2E7] dark:bg-[#1E1B18] text-[#78564F] dark:text-[#D0C4BA] border-[#D2C3BE]/60 dark:border-[#39302B] hover:bg-[#F6EDE2] dark:hover:bg-[#2A2522]"
                     }`}

@@ -742,7 +742,12 @@ export function resolveBackupPayload(payload: unknown): MigrationResult {
   const isV3 = p.schemaVersion === 3 || p.version === "3.0";
 
   if (isV3) {
-    if (!Array.isArray(p.trackers)) {
+    // New exports include a canonicalTrackers property alongside the legacy
+    // `trackers` projection. Older v3 archives used `trackers` as canonical.
+    const sourceTrackers = Object.prototype.hasOwnProperty.call(p, "canonicalTrackers")
+      ? p.canonicalTrackers
+      : p.trackers;
+    if (!Array.isArray(sourceTrackers)) {
       return {
         success: false,
         trackers: [],
@@ -765,7 +770,7 @@ export function resolveBackupPayload(payload: unknown): MigrationResult {
     }
 
     // Explicitly empty canonical v3 array is authoritative
-    if (p.trackers.length === 0) {
+    if (sourceTrackers.length === 0) {
       return {
         success: true,
         trackers: [],
@@ -785,8 +790,8 @@ export function resolveBackupPayload(payload: unknown): MigrationResult {
     const validTrackers: CanonicalTrackerRecord[] = [];
     const allocatedIds = new Set<string>();
 
-    for (let idx = 0; idx < p.trackers.length; idx++) {
-      const t = p.trackers[idx];
+    for (let idx = 0; idx < sourceTrackers.length; idx++) {
+      const t = sourceTrackers[idx];
       const validation = validateCanonicalTracker(t);
 
       if (!validation.valid) {
@@ -799,7 +804,7 @@ export function resolveBackupPayload(payload: unknown): MigrationResult {
             message: msg,
           })),
           summary: {
-            totalSourceTrackers: p.trackers.length,
+            totalSourceTrackers: sourceTrackers.length,
             migratedTrackers: 0,
             totalRecordsMigrated: 0,
             noteOnlyRecordsMigrated: 0,
@@ -822,7 +827,7 @@ export function resolveBackupPayload(payload: unknown): MigrationResult {
             },
           ],
           summary: {
-            totalSourceTrackers: p.trackers.length,
+            totalSourceTrackers: sourceTrackers.length,
             migratedTrackers: 0,
             totalRecordsMigrated: 0,
             noteOnlyRecordsMigrated: 0,
