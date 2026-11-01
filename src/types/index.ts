@@ -94,6 +94,8 @@ export interface BackupPayload {
 
 export interface RecoveryContextType {
   canonicalTrackers: CanonicalTrackerRecord[];
+  setTrackerDayRecord: (trackerId: string, dateStr: string, record: import("./tracker").DayRecord | null) => void;
+  saveTrackerGeneralNote: (trackerId: string, note: string) => void;
   migrationError?: string | null;
   trackers: TrackerRecord[];
   addictions: string[];

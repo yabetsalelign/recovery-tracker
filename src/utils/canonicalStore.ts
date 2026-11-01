@@ -534,3 +534,29 @@ export function applyDeleteNote(
     return { ...t, records: newRecords };
   });
 }
+
+/** Replace or deliberately remove one dated record by canonical tracker ID. */
+export function applyTrackerDayRecord(
+  trackers: CanonicalTrackerRecord[],
+  trackerId: string,
+  dateStr: string,
+  record: DayRecord | null
+): CanonicalTrackerRecord[] {
+  return trackers.map((tracker) => {
+    if (tracker.id !== trackerId) return tracker;
+    const records = { ...tracker.records };
+    if (record) records[dateStr] = record;
+    else delete records[dateStr];
+    return { ...tracker, records };
+  });
+}
+
+export function applyTrackerGeneralNote(
+  trackers: CanonicalTrackerRecord[],
+  trackerId: string,
+  note: string
+): CanonicalTrackerRecord[] {
+  return trackers.map((tracker) => tracker.id === trackerId
+    ? { ...tracker, generalNote: note.trim() }
+    : tracker);
+}

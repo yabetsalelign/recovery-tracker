@@ -17,6 +17,7 @@ const Home: React.FC = () => {
   const { discreetMode } = useTheme();
   const { name } = useUser();
   const {
+    canonicalTrackers,
     trackers,
     toggleCheckIn,
     completeDailyCheckin,
@@ -198,6 +199,7 @@ const Home: React.FC = () => {
               {trackers.map((tracker) => {
                 const habitName = tracker.name;
                 const checkIns = tracker.checkIns || {};
+                const canonicalTracker = canonicalTrackers.find((item) => item.id === String(tracker.id));
                 const isCheckedToday = Boolean(checkIns[todayStr]);
                 const streak = calculateStreak(checkIns);
                 const lower = habitName.toLowerCase();
@@ -246,6 +248,14 @@ const Home: React.FC = () => {
                         </button>
                       )}
 
+                      <button
+                        type="button"
+                        aria-label={`Open ${getDisplayName(habitName)} tracker`}
+                        onClick={() => canonicalTracker && navigate(`/tracker/${encodeURIComponent(canonicalTracker.id)}`)}
+                        className="min-h-11 px-3.5 py-1.5 rounded-full btn-secondary text-xs font-semibold"
+                      >
+                        Details
+                      </button>
                       <button
                         type="button"
                         aria-label={

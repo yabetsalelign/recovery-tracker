@@ -17,6 +17,7 @@ import SeshPage from "./SeshPage";
 import WeedPage from "./WeedPage";
 import PornPage from "./pornPage";
 import Settings from "./Settings";
+import TrackerPage from "./pages/TrackerPage";
 
 const App: React.FC = () => {
   return (
@@ -27,6 +28,7 @@ const App: React.FC = () => {
             <ThemeModal />
             <Routes>
               <Route path="/porn" element={<PornPage />} />
+              <Route path="/tracker/:id" element={<TrackerPage />} />
               <Route path="/weed" element={<WeedPage />} />
               <Route path="/" element={<Welcome />} />
               <Route path="/home" element={<Home />} />

@@ -968,4 +968,5 @@ export function validateMigrationIntegrity(
     idSet.add(t.id);
   }
 
-  return { valid: errors.length === 0, er
+  return { valid: errors.length === 0, errors };
+}

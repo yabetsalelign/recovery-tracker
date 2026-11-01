@@ -26,6 +26,14 @@ export function isValidDateFormat(dateStr: string): boolean {
   );
 }
 
+/** Resolve a canonical route ID without relying on a display name. */
+export function resolveTrackerById(
+  trackers: CanonicalTrackerRecord[],
+  id: string
+): CanonicalTrackerRecord | undefined {
+  return trackers.find((tracker) => tracker.id === id);
+}
+
 /**
  * Validates a 24-hour time string in HH:mm format (00:00 to 23:59).
  */

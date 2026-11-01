@@ -46,6 +46,8 @@ import {
   applySpecializedCount,
   applySaveNote,
   applyDeleteNote,
+  applyTrackerDayRecord,
+  applyTrackerGeneralNote,
 } from "../utils/canonicalStore";
 import { inferLegacyModality, resolveBackupPayload } from "../utils/unifiedMigration";
 import { createDeterministicTrackerId } from "../utils/unifiedCalculations";
@@ -220,6 +222,14 @@ export const RecoveryProvider: React.FC<{ children: ReactNode }> = ({ children }
   const setCheckIn = useCallback((habitName: string, dateStr: string, isChecked: boolean) => {
     if (!habitName || !dateStr) return;
     setCanonicalTrackers((prev) => applySetCheckIn(prev, habitName, dateStr, isChecked));
+  }, []);
+
+  const setTrackerDayRecord = useCallback((trackerId: string, dateStr: string, record: DayRecord | null) => {
+    setCanonicalTrackers((prev) => applyTrackerDayRecord(prev, trackerId, dateStr, record));
+  }, []);
+
+  const saveTrackerGeneralNote = useCallback((trackerId: string, note: string) => {
+    setCanonicalTrackers((prev) => applyTrackerGeneralNote(prev, trackerId, note));
   }, []);
 
   const completeDailyCheckin = useCallback(
@@ -595,6 +605,8 @@ export const RecoveryProvider: React.FC<{ children: ReactNode }> = ({ children }
     <RecoveryContext.Provider
       value={{
         canonicalTrackers,
+        setTrackerDayRecord,
+        saveTrackerGeneralNote,
         migrationError,
         trackers,
         addictions,
