@@ -1,164 +1,146 @@
 # Recovery Tracker
 
-A private, local-first web app for tracking daily habits, logging journal entries, and visualizing streak progress over time. All data is stored in your browser — nothing is sent to a server.
-
----
+Recovery Tracker is a private, local-first app for recording recovery goals, daily check-ins, reflections, and progress. Its editorial interface supports warm paper light mode and a warm espresso night mode, with layouts designed for desktop and mobile screens.
 
 ## Features
 
-| Feature | Details |
+- **Recovery goals:** Create, edit, and manage personal goals and commitments.
+- **Daily check-ins:** Record goal check-ins and an optional emotional-weather check-in.
+- **Calendar:** Review activity by date, navigate between months, and add or review daily reflections.
+- **Private journal:** Write, search, filter, edit, and revisit reflections stored on the device.
+- **Progress and milestones:** Review a 21-day activity timeline, tracking summaries, goal rhythms, and milestones.
+- **Specialized trackers:** Optional Sesh, Weed, and Porn trackers, plus a day counter.
+- **Light and dark themes:** Choose Warm Paper or Charcoal Night in Settings. Explicit choices persist; first-time users follow their system color preference.
+- **Reading and privacy preferences:** Adjust reading scale, transitions, and discreet tracker display.
+- **Data portability:** Export a JSON archive, restore a validated archive, or download check-in data as CSV.
+- **Responsive interface:** Primary navigation and key screens adapt across phone, tablet, and desktop widths.
+- **Android packaging:** Capacitor configuration and an Android project are included.
+
+## Technology
+
+| Area | Technologies |
 |---|---|
-| **Daily check-ins** | Mark each tracked habit as checked in for any day from the calendar view |
-| **Per-day journaling** | Write journal notes for each habit on any date, with a collapsible timeline view |
-| **Progress charts** | Bar chart (daily check-in rate) and pie chart (monthly success %) per habit |
-| **Streak tracking** | Consecutive-day streaks with milestone messages at 7 and 30 days |
-| **Multiple habits** | Add and remove any number of named habits; built-in detail pages for "sesh", "weed", and "porn" |
-| **Theme switching** | Light / dark mode, persisted across sessions |
-| **CSV export** | Download all check-in records as a CSV file from the Progress page |
-| **Mobile-ready** | Capacitor configuration included for Android packaging (`android/` directory) |
+| UI | React 18, TypeScript, React Router |
+| Build | Vite 6 |
+| Styling | Tailwind CSS 3 and shared CSS design tokens |
+| Typography | Newsreader for editorial headings; Nunito Sans for interface and body text |
+| Charts and animation | Chart.js, react-chartjs-2, Framer Motion |
+| Date handling | date-fns |
+| Mobile | Capacitor 7 for Android |
 
----
+The theme palette is defined with CSS custom properties in `src/index.css`. The night palette uses warm brown-black backgrounds, antique-cream typography, and muted terracotta and amber accents. The saved theme preference is read during page initialization to reduce flashes of the wrong theme.
 
-## Technology Stack
+## Requirements
 
-| Layer | Choice |
-|---|---|
-| UI framework | React 18 |
-| Build tool | Vite 6 |
-| Styling | Tailwind CSS 3 (Warm Editorial: Ivory `#F7F4EE`, Sage `#46644B`, Terracotta `#B16F4C`) |
-| Typography | Google Fonts: Newsreader (editorial serif), Plus Jakarta Sans, Inter |
-| Icons | Google Material Symbols Outlined |
-| Date utilities | date-fns 3 |
-| Routing | React Router 6 |
-| Mobile | Capacitor (app ID `com.jabez.trackify`) |
-| Deployment | Vercel (SPA rewrite rules included via `vercel.json`) |
+- Node.js 22.6 or later and npm 9 or later for the complete test suite. The tests use Node's `--experimental-strip-types` option.
+- For Android builds: Android Studio/SDK and a compatible JDK. The Android Gradle build has been verified with JDK 21.
 
----
-
-## Prerequisites
-
-- **Node.js** ≥ 18
-- **npm** ≥ 9
-
----
-
-## Installation
+## Getting started
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/yabetsalelign/recovery-tracker.git
 cd recovery-tracker
 npm install
+npm run dev
 ```
 
----
+Vite prints the local development URL after startup.
 
-## Available Scripts
+## Commands
 
 ```bash
-npm run dev         # Start Vite dev server at http://localhost:5173
-npm run build       # Production build → dist/
-npm run preview     # Preview the production build locally
-npm run typecheck   # Typecheck TypeScript source files
-npm test            # Run workflow regression test suite
+npm run dev         # Start the Vite development server
+npm run typecheck   # Run the TypeScript compiler without emitting files
+npm test            # Run workflow and regression tests
+npm run build       # Create the production web bundle in dist/
+npm run preview     # Preview the production bundle locally
 ```
 
----
+## Data, privacy, and backups
 
-## Data Storage — Privacy Details
+Recovery records and preferences are stored in the browser's `localStorage` on the device. The app does not use a recovery-record backend or cloud synchronization. This means records are not automatically shared across devices, and clearing browser storage can remove them. Export a backup from **Settings → Local Storage & Privacy** before changing devices or clearing site data.
 
-> **All data lives in your browser's `localStorage`. Nothing is transmitted to any server.**
+The app loads font and icon assets from Google Fonts, which requires a network connection for those external assets. This does not send journal entries or recovery records to Google Fonts.
 
-| Topic | Details |
-|---|---|
-| **Storage mechanism** | Browser `localStorage` on the device running the app |
-| **Encryption** | None — stored as plaintext JSON |
-| **Cross-device sync** | Not supported |
-| **Backups** | Not provided — clearing browser storage will erase all records |
-| **Export** | CSV download on the Progress page (habit name, date, checked-in status) |
-| **Deletion** | DevTools → Application → Local Storage, or the per-habit Delete button in Calendar view |
+Use Settings to:
 
-### localStorage keys written by the app
+- Export a JSON archive containing recovery data and app preferences.
+- Import a previously exported archive; the app validates the archive before restoring it.
+- Download check-in data as CSV.
+- Clear local records when desired.
 
-| Key | Content |
-|---|---|
-| `userName` | Display name entered on the Welcome screen |
-| `theme` | `"light"` or `"dark"` |
-| `addictions` | JSON array of tracked habit names |
-| `trackers` | JSON array with `name`, `checkIns`, and `notes` per habit |
-| `selectedDate` | Last-selected calendar date |
-| `seshData` | Daily usage counts for the "sesh" habit |
-| `weedData` | Daily usage counts for the "weed" habit |
-| `pornData` | Daily usage counts and notes for the "porn" habit |
+Keep downloaded backups somewhere private: exported files may contain sensitive personal information.
 
----
+## Android
 
-## Deployment
-
-### Vercel (web)
-
-The repo includes `vercel.json` with an SPA rewrite rule so React Router links work correctly after a page refresh.
-
-1. Push the repository to GitHub.
-2. Import the project in [Vercel](https://vercel.com).
-3. Set the framework preset to **Vite** (or leave it on auto-detect).
-4. Deploy — no environment variables are required.
-
-### Android (Capacitor)
+Build the web bundle and sync it to the Capacitor Android project:
 
 ```bash
-npm run build          # Build the web bundle first
-npx cap sync android   # Sync assets into the android/ directory
-# Open android/ in Android Studio to run or build an APK
+npm run build
+npx cap sync android
 ```
 
-The Capacitor app ID is `com.jabez.trackify` and the app name is `trackify`.
+Then open `android/` in Android Studio to run or package the app. On Windows, a debug APK can be built from PowerShell with:
 
----
-
-## Repository Structure
-
+```powershell
+Push-Location android
+try {
+    .\gradlew.bat --no-daemon assembleDebug
+}
+finally {
+    Pop-Location
+}
 ```
+
+The debug APK is written to `android/app/build/outputs/apk/debug/app-debug.apk`. The Capacitor app ID is `com.jabez.trackify`.
+
+## Routes
+
+| Route | Screen |
+|---|---|
+| `/` | Welcome and onboarding |
+| `/home` | Recovery dashboard and daily check-in |
+| `/calendar` | Monthly calendar and selected-day details |
+| `/day` | Selected-day check-ins |
+| `/notes` | Journal |
+| `/progress` | Progress timeline and goal summaries |
+| `/streaks` | Milestones |
+| `/add-addiction` | Goal management |
+| `/counter` | Day counter and milestones |
+| `/sesh`, `/weed`, `/porn` | Specialized trackers |
+| `/settings` | Theme, reading, privacy, and data management |
+
+## Project layout
+
+```text
 recovery-tracker/
-├── android/              # Capacitor Android project
-├── public/
-│   ├── app-icon.png      # Web app icon (512x512)
-│   ├── favicon.png       # Web favicon (64x64)
-│   ├── sunrise.jpg       # Background image used by Layout
-│   └── sunrise.jpg.avif
-├── scripts/
-│   └── generate_icons.py # Android & web launcher icon generation script
+├── android/                 # Capacitor Android project
+├── public/                  # App icons and static assets
 ├── src/
-│   ├── components/       # Layout.tsx, ThemeModal.tsx
-│   ├── context/          # ThemeContext.tsx, UserContext.tsx, RecoveryContext.tsx
-│   ├── types/            # TypeScript type definitions
-│   ├── utils/            # Recovery calculations and helpers
-│   ├── App.tsx           # Router and context providers
-│   ├── Welcome.tsx       # Name entry / onboarding
-│   ├── Home.tsx          # Dashboard / navigation hub
-│   ├── Calendar.tsx      # Monthly calendar with check-in indicators
-│   ├── Day.tsx           # Per-day check-in view
-│   ├── Notes.tsx         # Journal notes per habit
-│   ├── Progress.tsx      # Charts and CSV export
-│   ├── Streaks.tsx       # Streak display
-│   ├── AddAddiction.tsx  # Add a new habit
-│   ├── SeshPage.tsx      # Daily count calendar for "sesh"
-│   ├── WeedPage.tsx      # Daily count calendar for "weed"
-│   └── pornPage.tsx      # Daily count calendar + notes for "porn"
+│   ├── components/          # Shared layout and theme UI
+│   ├── context/             # User, recovery-data, and theme state
+│   ├── types/               # Shared TypeScript types
+│   ├── utils/               # Theme, navigation, and recovery helpers
+│   ├── App.tsx              # Providers and route definitions
+│   ├── Home.tsx              # Dashboard
+│   ├── Calendar.tsx          # Calendar and daily records
+│   ├── Notes.tsx             # Journal
+│   ├── Progress.tsx          # Progress views
+│   └── Settings.tsx          # Preferences, backups, and privacy
 ├── tests/
-│   └── verify-workflows.test.js # Core recovery & calculation test suite
+│   └── verify-workflows.test.js
 ├── capacitor.config.json
-├── vercel.json
-├── vite.config.js
 ├── tailwind.config.js
 ├── tsconfig.json
 └── package.json
 ```
 
----
+## Deployment
 
-## Known Limitations
+The project builds as a static Vite application. `npm run build` creates `dist/`; configure the hosting provider to serve that directory and rewrite application routes to `index.html` for client-side routing. A `vercel.json` SPA rewrite is included.
 
-- No authentication — anyone with device access can view all data.
-- No cloud backup — browser storage can be cleared accidentally.
-- Habit detail pages (Sesh, Weed, Porn) are fixed; other habits only use the shared Calendar / Day check-in flow.
-- Streak counting depends on the user having logged data for each day; unlogged days (even if clean) are not counted as successes.
+## Limitations
+
+- There is no account system or automatic cross-device synchronization.
+- Browser storage is not encrypted by the app; device and browser access controls remain important.
+- Specialized tracker screens are provided for Sesh, Weed, and Porn. Other goals use the shared goal, calendar, and progress flows.
