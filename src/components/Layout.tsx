@@ -51,10 +51,10 @@ const Layout: React.FC<LayoutProps> = ({
                     type="button"
                     aria-current={isActive ? "page" : undefined}
                     onClick={() => navigate(item.path)}
-                    className={`min-h-11 px-3.5 rounded-xl text-xs font-semibold transition-colors ${
+                    className={`min-h-11 px-4 rounded-full text-xs font-semibold transition-colors ${
                       isActive
                         ? "nav-active"
-                        : "text-[#5E4D45] dark:text-[#D0C4BA] hover:bg-[#FBF2E7] dark:hover:bg-[#2A2522]"
+                        : "text-[#78564F] dark:text-[#D0C4BA] hover:bg-[#FBF2E7] dark:hover:bg-[#24201D] hover:text-[#261810] dark:hover:text-[#F4EFEA]"
                     }`}
                   >
                     {item.label}

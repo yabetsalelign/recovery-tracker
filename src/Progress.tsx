@@ -73,13 +73,13 @@ const Progress: React.FC = () => {
           <h1 className="font-serif text-3xl sm:text-4xl font-medium tracking-tight text-[#261810] dark:text-[#F4EFEA]">
             Progress
           </h1>
-          <p className="text-xs text-[#6B5B54] dark:text-[#A99A8F]">
+          <p className="text-xs text-[#78564F] dark:text-[#A99A8F]">
             A quiet view of your consistency over time.
           </p>
         </header>
 
         {/* Time Horizon Selector */}
-        <div role="group" aria-label="Select time horizon" className="p-1 rounded-xl bg-[#FBF2E7] dark:bg-[#1E1B18] flex items-center gap-1">
+        <div role="group" aria-label="Select time horizon" className="p-1 rounded-full bg-[#FBF2E7] dark:bg-[#1E1B18] border border-[#D2C3BE]/50 dark:border-[#39302B] flex items-center gap-1">
           {[
             { id: "7", label: "7 days" },
             { id: "30", label: "30 days" },
@@ -91,10 +91,10 @@ const Progress: React.FC = () => {
               type="button"
               aria-pressed={timeHorizon === tab.id}
               onClick={() => setTimeHorizon(tab.id)}
-              className={`min-h-11 flex-1 py-1.5 px-2 rounded-lg text-xs font-semibold transition-colors ${
+              className={`min-h-11 flex-1 py-1.5 px-3 rounded-full text-xs font-semibold transition-all ${
                 timeHorizon === tab.id
-                  ? "bg-white dark:bg-[#2A2522] text-[#261810] dark:text-[#F4EFEA] shadow-xs"
-                  : "text-[#6B5B54] dark:text-[#A99A8F] hover:text-[#261810]"
+                  ? "bg-[#FDD0C6] text-[#261810] dark:text-[#1A1614] font-bold shadow-xs"
+                  : "text-[#78564F] dark:text-[#A99A8F] hover:text-[#261810] dark:hover:text-[#F4EFEA]"
               }`}
             >
               {tab.label}
@@ -104,29 +104,29 @@ const Progress: React.FC = () => {
 
         {/* Summary Metric Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div className="bg-white dark:bg-[#2A2522] rounded-2xl p-5 border border-[#D2C3BE] dark:border-[#39302B] space-y-1">
-            <span className="text-xs font-semibold text-[#6B5B54] dark:text-[#A99A8F]">
+          <div className="bg-white dark:bg-[#24201D] rounded-2xl p-5 sm:p-6 border border-[#D2C3BE] dark:border-[#39302B] shadow-[0_1px_3px_rgba(38,24,16,0.04)] space-y-1">
+            <span className="text-xs font-semibold text-[#78564F] dark:text-[#A99A8F]">
               Days with entries
             </span>
             <div className="flex items-baseline gap-1.5">
               <span className="font-serif text-3xl sm:text-4xl font-medium text-[#261810] dark:text-[#F4EFEA]">
                 {presenceDays}
               </span>
-              <span className="text-xs text-[#6B5B54] dark:text-[#A99A8F]">
+              <span className="text-xs text-[#78564F] dark:text-[#A99A8F]">
                 of {horizonNum} days
               </span>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-[#2A2522] rounded-2xl p-5 border border-[#D2C3BE] dark:border-[#39302B] space-y-1">
-            <span className="text-xs font-semibold text-[#6B5B54] dark:text-[#A99A8F]">
+          <div className="bg-white dark:bg-[#24201D] rounded-2xl p-5 sm:p-6 border border-[#D2C3BE] dark:border-[#39302B] shadow-[0_1px_3px_rgba(38,24,16,0.04)] space-y-1">
+            <span className="text-xs font-semibold text-[#78564F] dark:text-[#A99A8F]">
               Longest streak
             </span>
             <div className="flex items-baseline gap-1.5">
               <span className="font-serif text-3xl sm:text-4xl font-medium text-[#261810] dark:text-[#F4EFEA]">
                 {longestStreak}
               </span>
-              <span className="text-xs text-[#6B5B54] dark:text-[#A99A8F]">
+              <span className="text-xs text-[#78564F] dark:text-[#A99A8F]">
                 {longestStreak === 1 ? "day" : "consecutive days"}
               </span>
             </div>
@@ -134,19 +134,19 @@ const Progress: React.FC = () => {
         </div>
 
         {/* 21-Day Timeline Chart */}
-        <section aria-labelledby="timeline-heading" className="bg-white dark:bg-[#2A2522] rounded-2xl border border-[#D2C3BE] dark:border-[#39302B] p-5 space-y-4">
+        <section aria-labelledby="timeline-heading" className="bg-white dark:bg-[#24201D] rounded-2xl border border-[#D2C3BE] dark:border-[#39302B] p-5 sm:p-6 shadow-[0_1px_3px_rgba(38,24,16,0.04)] space-y-4">
           <div className="flex items-center justify-between">
             <h2 id="timeline-heading" className="font-serif text-lg font-medium text-[#261810] dark:text-[#F4EFEA]">
               Last 21 days
             </h2>
-            <span className="text-xs text-[#6B5B54] dark:text-[#A99A8F]">
+            <span className="text-xs text-[#78564F] dark:text-[#A99A8F]">
               Current streak: {activeStreakMax} {activeStreakMax === 1 ? "day" : "days"}
             </span>
           </div>
 
           <div className="pt-2">
             {!hasTimelineActivity && (
-              <p className="mb-3 rounded-xl bg-[#FBF2E7] dark:bg-[#1E1B18] px-3.5 py-2.5 text-xs text-[#6B5B54] dark:text-[#A99A8F]">
+              <p className="mb-3 rounded-xl bg-[#FBF2E7] dark:bg-[#1E1B18] px-3.5 py-2.5 text-xs text-[#78564F] dark:text-[#A99A8F]">
                 Your recent rhythm will take shape as you record check-ins or reflections.
               </p>
             )}
@@ -161,10 +161,10 @@ const Progress: React.FC = () => {
               {timelineData.map(({ day, date, checksCount, hasNote, complete }, index) => {
                 const barHeight = complete ? "95%" : checksCount > 0 || hasNote ? "60%" : "15%";
                 const barColor = complete
-                  ? "bg-[#46644B] dark:bg-[#8EAA92]"
+                  ? "bg-[#78564F] dark:bg-[#8EAA92]"
                   : checksCount > 0 || hasNote
                   ? "bg-[#D47A55]"
-                  : "bg-[#D2C3BE]/40 dark:bg-[#39302B]";
+                  : "bg-[#F6EDE2] dark:bg-[#2A2522]";
                 const showDate = index === 0 || index === 20 || (index + 1) % 5 === 0;
 
                 return (
@@ -174,7 +174,7 @@ const Progress: React.FC = () => {
                       style={{ height: barHeight }}
                       aria-hidden="true"
                     />
-                    <span className="h-3 text-[10px] font-mono leading-3 text-[#6B5B54] dark:text-[#A99A8F]">
+                    <span className="h-3 text-[10px] font-mono leading-3 text-[#78564F] dark:text-[#A99A8F]">
                       {showDate ? format(day, "d") : ""}
                     </span>
                   </div>
@@ -184,9 +184,9 @@ const Progress: React.FC = () => {
           </div>
 
           {/* Legend */}
-          <div className="flex items-center justify-center gap-4 pt-3 border-t border-[#D2C3BE]/50 dark:border-[#39302B] text-xs text-[#6B5B54] dark:text-[#A99A8F]">
+          <div className="flex items-center justify-center gap-4 pt-3 border-t border-[#D2C3BE]/60 dark:border-[#39302B] text-xs text-[#78564F] dark:text-[#A99A8F]">
             <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-[#46644B] dark:bg-[#8EAA92]" />
+              <span className="w-2 h-2 rounded-full bg-[#78564F] dark:bg-[#8EAA92]" />
               <span>All checked</span>
             </div>
             <div className="flex items-center gap-1.5">
@@ -200,8 +200,8 @@ const Progress: React.FC = () => {
           </div>
 
           {/* Details */}
-          <details className="border-t border-[#D2C3BE]/50 dark:border-[#39302B] pt-2">
-            <summary className="min-h-11 cursor-pointer text-xs font-semibold text-[#3D2C24] dark:text-[#D47A55] flex items-center">
+          <details className="border-t border-[#D2C3BE]/60 dark:border-[#39302B] pt-2">
+            <summary className="min-h-11 cursor-pointer text-xs font-semibold text-[#78564F] dark:text-[#D47A55] flex items-center hover:text-[#261810] dark:hover:text-[#F4EFEA] transition-colors">
               View daily details
             </summary>
             <ul className="grid gap-1 sm:grid-cols-2 pt-2">
@@ -214,9 +214,9 @@ const Progress: React.FC = () => {
                 return (
                   <li
                     key={date}
-                    className="rounded-xl bg-[#FBF2E7] dark:bg-[#1E1B18] px-3 py-2 text-xs text-[#5E4D45] dark:text-[#D0C4BA]"
+                    className="rounded-xl bg-[#FBF2E7] dark:bg-[#1E1B18] px-3.5 py-2 text-xs text-[#78564F] dark:text-[#D0C4BA] border border-[#D2C3BE]/40 dark:border-[#39302B]/60"
                   >
-                    <time dateTime={date} className="font-semibold">{format(day, "EEE, MMM d")}</time>
+                    <time dateTime={date} className="font-semibold text-[#261810] dark:text-[#F4EFEA]">{format(day, "EEE, MMM d")}</time>
                     <span>: {status}</span>
                     {hasNote && <span>, note recorded</span>}
                   </li>
@@ -231,12 +231,12 @@ const Progress: React.FC = () => {
           <button
             type="button"
             onClick={() => navigate("/streaks")}
-            className="p-4 bg-white dark:bg-[#2A2522] rounded-2xl border border-[#D2C3BE] dark:border-[#39302B] text-left hover:border-[#3D2C24]/30 transition-colors"
+            className="p-5 bg-white dark:bg-[#24201D] rounded-2xl border border-[#D2C3BE] dark:border-[#39302B] shadow-[0_1px_3px_rgba(38,24,16,0.04)] text-left hover:border-[#78564F]/50 transition-colors"
           >
             <span className="font-semibold text-xs text-[#261810] dark:text-[#F4EFEA] block">
               Milestones →
             </span>
-            <span className="text-xs text-[#6B5B54] dark:text-[#A99A8F]">
+            <span className="text-xs text-[#78564F] dark:text-[#A99A8F]">
               View habit milestone goals
             </span>
           </button>
@@ -244,12 +244,12 @@ const Progress: React.FC = () => {
           <button
             type="button"
             onClick={() => navigate("/counter")}
-            className="p-4 bg-white dark:bg-[#2A2522] rounded-2xl border border-[#D2C3BE] dark:border-[#39302B] text-left hover:border-[#3D2C24]/30 transition-colors"
+            className="p-5 bg-white dark:bg-[#24201D] rounded-2xl border border-[#D2C3BE] dark:border-[#39302B] shadow-[0_1px_3px_rgba(38,24,16,0.04)] text-left hover:border-[#78564F]/50 transition-colors"
           >
             <span className="font-semibold text-xs text-[#261810] dark:text-[#F4EFEA] block">
               Day counter →
             </span>
-            <span className="text-xs text-[#6B5B54] dark:text-[#A99A8F]">
+            <span className="text-xs text-[#78564F] dark:text-[#A99A8F]">
               Continuous sobriety timer
             </span>
           </button>

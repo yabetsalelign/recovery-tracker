@@ -51,7 +51,7 @@ const Welcome: React.FC = () => {
               <button
                 type="submit"
                 disabled={!name.trim()}
-                className="w-full min-h-11 py-2.5 rounded-xl bg-[#3D2C24] dark:bg-[#D47A55] text-white dark:text-[#211710] text-xs font-semibold disabled:opacity-50 transition-opacity"
+                className="w-full min-h-11 py-2.5 rounded-xl btn-primary text-xs font-semibold disabled:opacity-50 transition-all"
               >
                 Get started
               </button>
@@ -72,7 +72,7 @@ const Welcome: React.FC = () => {
               <button
                 type="button"
                 onClick={handleProceed}
-                className="w-full min-h-11 py-2.5 rounded-xl bg-[#3D2C24] dark:bg-[#D47A55] text-white dark:text-[#211710] text-xs font-semibold transition-opacity hover:opacity-90"
+                className="w-full min-h-11 py-2.5 rounded-xl btn-primary text-xs font-semibold transition-all"
               >
                 Go to Home
               </button>

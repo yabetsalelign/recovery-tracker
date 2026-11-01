@@ -123,34 +123,34 @@ const AddAddiction: React.FC = () => {
             <h1 className="font-serif text-3xl sm:text-4xl font-medium tracking-tight text-[#261810] dark:text-[#F4EFEA]">
               Trackers
             </h1>
-            <p className="text-xs text-[#6B5B54] dark:text-[#A99A8F] mt-0.5">
+            <p className="text-xs text-[#78564F] dark:text-[#A99A8F] mt-0.5">
               Manage what you are tracking and add new commitments.
             </p>
           </div>
           <button
             type="button"
             onClick={() => navigate("/home")}
-            className="min-h-11 px-3 rounded-xl border border-[#D2C3BE] dark:border-[#39302B] bg-white dark:bg-[#2A2522] text-xs font-semibold text-[#261810] dark:text-[#F4EFEA] hover:bg-[#FBF2E7] dark:hover:bg-[#1E1B18] transition-colors"
+            className="min-h-11 px-3.5 rounded-full border border-[#D2C3BE] dark:border-[#39302B] bg-white dark:bg-[#24201D] text-xs font-semibold text-[#261810] dark:text-[#F4EFEA] hover:bg-[#FBF2E7] dark:hover:bg-[#1E1B18] transition-colors shadow-xs"
           >
             ← Home
           </button>
         </header>
 
         {/* View Tabs */}
-        <div role="tablist" aria-label="Goal views" className="p-1 rounded-xl bg-[#FBF2E7] dark:bg-[#1E1B18] flex items-center gap-1">
+        <div role="tablist" aria-label="Goal views" className="p-1 rounded-full bg-[#FBF2E7] dark:bg-[#1E1B18] border border-[#D2C3BE]/50 dark:border-[#39302B] flex items-center gap-1">
           <button
             type="button"
             role="tab"
             aria-selected={activeTab === "active"}
             onClick={() => setActiveTab("active")}
-            className={`min-h-11 flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors ${
+            className={`min-h-11 flex-1 py-1.5 px-3 rounded-full text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
               activeTab === "active"
-                ? "bg-white dark:bg-[#2A2522] text-[#261810] dark:text-[#F4EFEA] shadow-xs"
-                : "text-[#6B5B54] dark:text-[#A99A8F] hover:text-[#261810]"
+                ? "bg-[#FDD0C6] text-[#261810] dark:text-[#1A1614] font-bold shadow-xs"
+                : "text-[#78564F] dark:text-[#A99A8F] hover:text-[#261810] dark:hover:text-[#F4EFEA]"
             }`}
           >
             <span>Manage goals</span>
-            <span className="text-xs opacity-70">({trackers.length})</span>
+            <span className="text-xs opacity-75">({trackers.length})</span>
           </button>
           <button
             type="button"
@@ -160,10 +160,10 @@ const AddAddiction: React.FC = () => {
               setFormError("");
               setActiveTab("new");
             }}
-            className={`min-h-11 flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors ${
+            className={`min-h-11 flex-1 py-1.5 px-3 rounded-full text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
               activeTab === "new"
-                ? "bg-white dark:bg-[#2A2522] text-[#261810] dark:text-[#F4EFEA] shadow-xs"
-                : "text-[#6B5B54] dark:text-[#A99A8F] hover:text-[#261810]"
+                ? "bg-[#FDD0C6] text-[#261810] dark:text-[#1A1614] font-bold shadow-xs"
+                : "text-[#78564F] dark:text-[#A99A8F] hover:text-[#261810] dark:hover:text-[#F4EFEA]"
             }`}
           >
             <span>Add a goal</span>
@@ -174,14 +174,14 @@ const AddAddiction: React.FC = () => {
         {activeTab === "active" && (
           <div className="space-y-3">
             {trackers.length === 0 ? (
-              <div className="bg-white dark:bg-[#2A2522] rounded-2xl p-6 text-center border border-[#D2C3BE] dark:border-[#39302B] space-y-3">
-                <p className="text-xs text-[#6B5B54] dark:text-[#A99A8F]">
+              <div className="bg-white dark:bg-[#24201D] rounded-2xl p-6 text-center border border-[#D2C3BE] dark:border-[#39302B] shadow-[0_1px_3px_rgba(38,24,16,0.04)] space-y-3">
+                <p className="text-xs text-[#78564F] dark:text-[#A99A8F]">
                   No trackers yet. Add your first goal to get started.
                 </p>
                 <button
                   type="button"
                   onClick={() => setActiveTab("new")}
-                  className="min-h-11 px-4 py-2 rounded-xl btn-primary text-xs font-semibold inline-flex items-center gap-1"
+                  className="min-h-11 px-4 py-2 rounded-full btn-primary text-xs font-semibold inline-flex items-center gap-1"
                 >
                   <span>Add a goal</span>
                 </button>
@@ -196,10 +196,10 @@ const AddAddiction: React.FC = () => {
                 return (
                   <article
                     key={tracker.id || habitName}
-                    className="bg-white dark:bg-[#2A2522] rounded-2xl border border-[#D2C3BE] dark:border-[#39302B] p-4 sm:p-5 space-y-3"
+                    className="bg-white dark:bg-[#24201D] rounded-2xl border border-[#D2C3BE] dark:border-[#39302B] p-4 sm:p-5 shadow-[0_1px_3px_rgba(38,24,16,0.04)] space-y-3"
                   >
                     <div className="flex items-start justify-between gap-3">
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-3.5">
                         <div className="icon-badge">
                           <span className="material-symbols-outlined text-[20px]">
                             {getHabitIcon(habitName)}
@@ -209,7 +209,7 @@ const AddAddiction: React.FC = () => {
                           <h2 className="font-semibold text-sm text-[#261810] dark:text-[#F4EFEA]">
                             {getDisplayName(habitName)}
                           </h2>
-                          <p className="text-xs text-[#6B5B54] dark:text-[#A99A8F]">
+                          <p className="text-xs text-[#78564F] dark:text-[#A99A8F]">
                             {isSpecialized ? "Daily count tracking" : "Daily check-in"} · {streak} {streak === 1 ? "day streak" : "days streak"}
                           </p>
                         </div>
@@ -220,7 +220,7 @@ const AddAddiction: React.FC = () => {
                           type="button"
                           aria-label={`Edit ${getDisplayName(habitName)}`}
                           onClick={() => openEditModal(tracker)}
-                          className="min-h-11 px-2.5 rounded-lg text-xs font-semibold text-[#5E4D45] dark:text-[#D0C4BA] hover:bg-[#FBF2E7] dark:hover:bg-[#1E1B18] transition-colors"
+                          className="min-h-11 px-3 rounded-full text-xs font-semibold text-[#78564F] dark:text-[#D47A55] hover:text-[#261810] dark:hover:text-[#F4EFEA] hover:bg-[#FBF2E7] dark:hover:bg-[#1E1B18] transition-colors"
                         >
                           Edit
                         </button>
@@ -228,23 +228,23 @@ const AddAddiction: React.FC = () => {
                           type="button"
                           aria-label={`Delete ${getDisplayName(habitName)}`}
                           onClick={() => setDeleteConfirmGoal(habitName)}
-                          className="min-h-11 px-2.5 rounded-lg text-xs font-semibold text-[#BA1A1A] dark:text-[#F0A08D] hover:bg-[#FDECEB] dark:hover:bg-[#4A2B25] transition-colors"
+                          className="min-h-11 px-3 rounded-full text-xs font-semibold text-[#BA1A1A] dark:text-[#F0A08D] hover:bg-[#FDECEB] dark:hover:bg-[#4A2B25] transition-colors"
                         >
                           Delete
                         </button>
                       </div>
                     </div>
 
-                    <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-[#D2C3BE]/50 dark:border-[#39302B] text-xs">
-                      <span className="text-[#6B5B54] dark:text-[#A99A8F]">
+                    <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-[#D2C3BE]/60 dark:border-[#39302B] text-xs">
+                      <span className="text-[#78564F] dark:text-[#A99A8F]">
                         Started {tracker.startDate || "recently"}
                       </span>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-3">
                         {isSpecialized && (
                           <button
                             type="button"
                             onClick={() => navigate(`/${lower}`)}
-                            className="text-[#3D2C24] dark:text-[#D47A55] font-semibold hover:underline"
+                            className="text-[#78564F] dark:text-[#D47A55] font-semibold hover:underline"
                           >
                             Open tracker →
                           </button>
@@ -252,7 +252,7 @@ const AddAddiction: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => navigate("/notes")}
-                          className="text-[#3D2C24] dark:text-[#D47A55] font-semibold hover:underline"
+                          className="text-[#78564F] dark:text-[#D47A55] font-semibold hover:underline"
                         >
                           Write reflection →
                         </button>
@@ -269,13 +269,13 @@ const AddAddiction: React.FC = () => {
         {activeTab === "new" && (
           <form
             onSubmit={handleSaveGoal}
-            className="bg-white dark:bg-[#2A2522] rounded-2xl border border-[#D2C3BE] dark:border-[#39302B] p-5 sm:p-6 space-y-4"
+            className="bg-white dark:bg-[#24201D] rounded-2xl border border-[#D2C3BE] dark:border-[#39302B] p-5 sm:p-6 shadow-[0_1px_3px_rgba(38,24,16,0.04)] space-y-4"
           >
-            <div className="space-y-1 pb-3 border-b border-[#D2C3BE]/50 dark:border-[#39302B]">
+            <div className="space-y-1 pb-3 border-b border-[#D2C3BE]/60 dark:border-[#39302B]">
               <h2 className="font-serif text-lg font-medium text-[#261810] dark:text-[#F4EFEA]">
                 Add a new tracker
               </h2>
-              <p className="text-xs text-[#6B5B54] dark:text-[#A99A8F]">
+              <p className="text-xs text-[#78564F] dark:text-[#A99A8F]">
                 Name what you want to track each day.
               </p>
             </div>
@@ -287,7 +287,7 @@ const AddAddiction: React.FC = () => {
             )}
 
             <div className="space-y-1">
-              <label htmlFor="goal-name-input" className="block text-xs font-semibold text-[#5E4D45] dark:text-[#D0C4BA]">
+              <label htmlFor="goal-name-input" className="block text-xs font-semibold text-[#78564F] dark:text-[#D0C4BA]">
                 Tracker name
               </label>
               <input
@@ -296,12 +296,12 @@ const AddAddiction: React.FC = () => {
                 value={goalTitle}
                 onChange={(e) => setGoalTitle(e.target.value)}
                 placeholder="e.g. Sobriety, Sesh, Evening walk..."
-                className="w-full min-h-11 px-3.5 py-2 text-xs rounded-xl bg-[#FBF2E7] dark:bg-[#1E1B18] text-[#261810] dark:text-[#F4EFEA] border border-[#D2C3BE]/50 dark:border-[#39302B] focus:outline-none focus:border-[#3D2C24] dark:focus:border-[#D47A55]"
+                className="w-full min-h-11 px-3.5 py-2 text-xs rounded-xl bg-[#FBF2E7] dark:bg-[#1E1B18] text-[#261810] dark:text-[#F4EFEA] border border-[#D2C3BE]/60 dark:border-[#39302B] focus:outline-none focus:border-[#78564F] dark:focus:border-[#D47A55]"
               />
             </div>
 
             <div className="space-y-1">
-              <label htmlFor="start-date-input" className="block text-xs font-semibold text-[#5E4D45] dark:text-[#D0C4BA]">
+              <label htmlFor="start-date-input" className="block text-xs font-semibold text-[#78564F] dark:text-[#D0C4BA]">
                 Start date
               </label>
               <input
@@ -309,13 +309,13 @@ const AddAddiction: React.FC = () => {
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="w-full min-h-11 px-3.5 py-2 text-xs rounded-xl bg-[#FBF2E7] dark:bg-[#1E1B18] text-[#261810] dark:text-[#F4EFEA] border border-[#D2C3BE]/50 dark:border-[#39302B] focus:outline-none"
+                className="w-full min-h-11 px-3.5 py-2 text-xs rounded-xl bg-[#FBF2E7] dark:bg-[#1E1B18] text-[#261810] dark:text-[#F4EFEA] border border-[#D2C3BE]/60 dark:border-[#39302B] focus:outline-none"
               />
             </div>
 
             <button
               type="submit"
-              className="w-full min-h-11 py-2.5 px-4 rounded-xl btn-primary text-xs font-semibold"
+              className="w-full min-h-11 py-2.5 px-4 rounded-full btn-primary text-xs font-semibold"
             >
               <span>Add a goal</span>
             </button>
@@ -328,7 +328,7 @@ const AddAddiction: React.FC = () => {
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
           <form
             onSubmit={handleSaveEdit}
-            className="w-full max-w-xs bg-white dark:bg-[#2A2522] rounded-2xl p-5 border border-[#D2C3BE] dark:border-[#39302B] shadow-xl space-y-4"
+            className="w-full max-w-xs bg-white dark:bg-[#24201D] rounded-2xl p-6 border border-[#D2C3BE] dark:border-[#39302B] shadow-xl space-y-4"
           >
             <div className="flex items-center justify-between">
               <h3 className="font-serif text-lg font-medium text-[#261810] dark:text-[#F4EFEA]">
@@ -337,7 +337,7 @@ const AddAddiction: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setEditingTracker(null)}
-                className="min-h-11 min-w-11 flex items-center justify-center text-[#6B5B54] dark:text-[#A99A8F]"
+                className="min-h-11 min-w-11 flex items-center justify-center text-[#78564F] dark:text-[#A99A8F] hover:text-[#261810]"
                 aria-label="Close"
               >
                 <span className="material-symbols-outlined text-[18px]">close</span>
@@ -349,7 +349,7 @@ const AddAddiction: React.FC = () => {
             )}
 
             <div className="space-y-1">
-              <label htmlFor="edit-name-input" className="block text-xs font-semibold text-[#5E4D45] dark:text-[#D0C4BA]">
+              <label htmlFor="edit-name-input" className="block text-xs font-semibold text-[#78564F] dark:text-[#D0C4BA]">
                 Name
               </label>
               <input
@@ -357,21 +357,21 @@ const AddAddiction: React.FC = () => {
                 type="text"
                 value={editName}
                 onChange={(e) => setEditName(e.target.value)}
-                className="w-full min-h-11 px-3 py-2 text-xs rounded-xl bg-[#FBF2E7] dark:bg-[#1E1B18] text-[#261810] dark:text-[#F4EFEA] border border-[#D2C3BE] dark:border-[#39302B] focus:outline-none"
+                className="w-full min-h-11 px-3.5 py-2 text-xs rounded-xl bg-[#FBF2E7] dark:bg-[#1E1B18] text-[#261810] dark:text-[#F4EFEA] border border-[#D2C3BE] dark:border-[#39302B] focus:outline-none"
               />
             </div>
 
             <div className="flex gap-2">
               <button
                 type="submit"
-                className="min-h-11 flex-1 py-2 px-3 rounded-xl btn-primary text-xs font-semibold"
+                className="min-h-11 flex-1 py-2 px-3 rounded-full btn-primary text-xs font-semibold"
               >
                 Save
               </button>
               <button
                 type="button"
                 onClick={() => setEditingTracker(null)}
-                className="min-h-11 py-2 px-3 rounded-xl border border-[#D2C3BE] dark:border-[#39302B] text-xs font-semibold text-[#5E4D45] dark:text-[#D0C4BA]"
+                className="min-h-11 py-2 px-3 rounded-full border border-[#D2C3BE] dark:border-[#39302B] text-xs font-semibold text-[#78564F] dark:text-[#D0C4BA] hover:bg-[#FBF2E7] dark:hover:bg-[#1E1B18] transition-colors"
               >
                 Cancel
               </button>
@@ -383,25 +383,25 @@ const AddAddiction: React.FC = () => {
       {/* Delete Confirmation Modal */}
       {deleteConfirmGoal && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="w-full max-w-xs bg-white dark:bg-[#2A2522] rounded-2xl p-5 border border-[#D2C3BE] dark:border-[#39302B] shadow-xl space-y-3">
+          <div className="w-full max-w-xs bg-white dark:bg-[#24201D] rounded-2xl p-6 border border-[#D2C3BE] dark:border-[#39302B] shadow-xl space-y-3">
             <h3 className="font-serif text-lg font-medium text-[#261810] dark:text-[#F4EFEA]">
               Delete tracker?
             </h3>
-            <p className="text-xs text-[#6B5B54] dark:text-[#A99A8F]">
+            <p className="text-xs text-[#78564F] dark:text-[#A99A8F]">
               Are you sure you want to delete “{getDisplayName(deleteConfirmGoal)}”? Past entries and notes will remain in your journal.
             </p>
             <div className="flex gap-2 pt-1">
               <button
                 type="button"
                 onClick={() => handleDeleteGoal(deleteConfirmGoal)}
-                className="min-h-11 flex-1 py-2 rounded-xl bg-[#BA1A1A] text-white text-xs font-semibold"
+                className="min-h-11 flex-1 py-2 rounded-full bg-[#BA1A1A] text-white text-xs font-semibold hover:bg-[#9E1414] transition-colors"
               >
                 Delete
               </button>
               <button
                 type="button"
                 onClick={() => setDeleteConfirmGoal(null)}
-                className="min-h-11 py-2 px-3 rounded-xl border border-[#D2C3BE] dark:border-[#39302B] text-xs font-semibold text-[#5E4D45] dark:text-[#D0C4BA]"
+                className="min-h-11 py-2 px-4 rounded-full border border-[#D2C3BE] dark:border-[#39302B] text-xs font-semibold text-[#78564F] dark:text-[#D0C4BA] hover:bg-[#FBF2E7] dark:hover:bg-[#1E1B18] transition-colors"
               >
                 Cancel
               </button>

@@ -62,14 +62,14 @@ const SeshPage: React.FC = () => {
           <button
             type="button"
             onClick={() => navigate("/progress")}
-            className="min-h-11 px-3 rounded-xl border border-[#D2C3BE] dark:border-[#39302B] bg-white dark:bg-[#2A2522] text-xs font-semibold text-[#261810] dark:text-[#F4EFEA] hover:bg-[#FBF2E7] dark:hover:bg-[#1E1B18] transition-colors"
+            className="min-h-11 px-3.5 rounded-full btn-secondary text-xs font-semibold"
           >
             ← Progress
           </button>
         </header>
 
         {/* Zero-day streak card */}
-        <div className="p-5 rounded-2xl bg-white dark:bg-[#2A2522] border border-[#D2C3BE] dark:border-[#39302B] flex items-center justify-between">
+        <div className="p-5 vesper-card flex items-center justify-between">
           <div>
             <span className="text-xs font-semibold text-[#6B5B54] dark:text-[#A99A8F] block">
               Consecutive zero-count days
@@ -78,13 +78,13 @@ const SeshPage: React.FC = () => {
               {streak} {streak === 1 ? "day" : "days"}
             </span>
           </div>
-          <span className="text-xs font-medium px-3 py-1 rounded-full bg-[#FBF2E7] dark:bg-[#1E1B18] text-[#5E4D45] dark:text-[#D0C4BA]">
+          <span className="text-xs font-medium px-3 py-1 rounded-full bg-[#F6EDE2] dark:bg-[#1E1B18] text-[#5E4D45] dark:text-[#D0C4BA] border border-[#D2C3BE]/50 dark:border-[#39302B]">
             {streak > 0 ? "Active streak" : "Start today"}
           </span>
         </div>
 
         {/* Calendar Card */}
-        <div className="bg-white dark:bg-[#2A2522] rounded-2xl border border-[#D2C3BE] dark:border-[#39302B] p-5 space-y-3">
+        <div className="vesper-card p-5 space-y-3">
           <div className="flex items-center justify-between pb-2 border-b border-[#D2C3BE]/50 dark:border-[#39302B]">
             <h2 className="font-serif text-lg font-medium text-[#261810] dark:text-[#F4EFEA]">
               {format(currentMonth, "MMMM yyyy")}
@@ -173,7 +173,7 @@ const SeshPage: React.FC = () => {
             role="dialog"
             aria-modal="true"
             aria-labelledby="sesh-modal-title"
-            className="w-full max-w-xs bg-white dark:bg-[#2A2522] rounded-2xl p-5 border border-[#D2C3BE] dark:border-[#39302B] shadow-xl space-y-4"
+            className="w-full max-w-xs vesper-card p-5 shadow-xl space-y-4"
           >
             <div className="flex items-center justify-between">
               <h3 id="sesh-modal-title" className="font-serif text-lg font-medium text-[#261810] dark:text-[#F4EFEA]">
@@ -202,7 +202,7 @@ const SeshPage: React.FC = () => {
                     prev ? { ...prev, count: Math.max(0, prev.count - 1) } : null
                   )
                 }
-                className="min-h-11 min-w-11 rounded-xl bg-[#FBF2E7] dark:bg-[#1E1B18] border border-[#D2C3BE] dark:border-[#39302B] text-base font-semibold flex items-center justify-center"
+                className="min-h-11 min-w-11 rounded-xl bg-[#F6EDE2] dark:bg-[#1E1B18] border border-[#D2C3BE] dark:border-[#39302B] text-base font-semibold flex items-center justify-center text-[#261810] dark:text-[#F4EFEA]"
               >
                 -
               </button>
@@ -217,7 +217,7 @@ const SeshPage: React.FC = () => {
                     prev ? { ...prev, count: prev.count + 1 } : null
                   )
                 }
-                className="min-h-11 min-w-11 rounded-xl bg-[#FBF2E7] dark:bg-[#1E1B18] border border-[#D2C3BE] dark:border-[#39302B] text-base font-semibold flex items-center justify-center"
+                className="min-h-11 min-w-11 rounded-xl bg-[#F6EDE2] dark:bg-[#1E1B18] border border-[#D2C3BE] dark:border-[#39302B] text-base font-semibold flex items-center justify-center text-[#261810] dark:text-[#F4EFEA]"
               >
                 +
               </button>
@@ -227,14 +227,14 @@ const SeshPage: React.FC = () => {
               <button
                 type="button"
                 onClick={handleSaveCount}
-                className="min-h-11 flex-1 py-2 px-3 rounded-xl bg-[#3D2C24] dark:bg-[#D47A55] text-white dark:text-[#211710] text-xs font-semibold"
+                className="min-h-11 flex-1 py-2 px-3 rounded-full btn-primary text-xs font-semibold"
               >
                 Save
               </button>
               <button
                 type="button"
                 onClick={() => setActiveDateModal(null)}
-                className="min-h-11 py-2 px-4 rounded-xl border border-[#D2C3BE] dark:border-[#39302B] text-xs font-semibold text-[#5E4D45] dark:text-[#D0C4BA]"
+                className="min-h-11 py-2 px-4 rounded-full btn-secondary text-xs font-semibold"
               >
                 Cancel
               </button>

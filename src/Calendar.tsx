@@ -141,7 +141,7 @@ const Calendar: React.FC = () => {
                 setCurrentMonth(today);
                 setSelectedDateStr(format(today, "yyyy-MM-dd"));
               }}
-              className="min-h-11 px-3 rounded-xl border border-[#D2C3BE] dark:border-[#39302B] bg-white dark:bg-[#2A2522] text-xs font-semibold text-[#261810] dark:text-[#F4EFEA] hover:bg-[#FBF2E7] dark:hover:bg-[#1E1B18] transition-colors"
+              className="min-h-11 px-3.5 rounded-full border border-[#D2C3BE] dark:border-[#39302B] bg-white dark:bg-[#24201D] text-xs font-semibold text-[#261810] dark:text-[#F4EFEA] hover:bg-[#FBF2E7] dark:hover:bg-[#1E1B18] transition-colors shadow-xs"
             >
               Today
             </button>
@@ -149,7 +149,7 @@ const Calendar: React.FC = () => {
               type="button"
               aria-label="Previous Month"
               onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-              className="min-h-11 min-w-11 rounded-xl border border-[#D2C3BE] dark:border-[#39302B] bg-white dark:bg-[#2A2522] text-[#261810] dark:text-[#F4EFEA] flex items-center justify-center hover:bg-[#FBF2E7] dark:hover:bg-[#1E1B18] transition-colors"
+              className="min-h-11 min-w-11 rounded-full border border-[#D2C3BE] dark:border-[#39302B] bg-white dark:bg-[#24201D] text-[#261810] dark:text-[#F4EFEA] flex items-center justify-center hover:bg-[#FBF2E7] dark:hover:bg-[#1E1B18] transition-colors shadow-xs"
             >
               <span className="material-symbols-outlined text-[18px]">chevron_left</span>
             </button>
@@ -157,7 +157,7 @@ const Calendar: React.FC = () => {
               type="button"
               aria-label="Next Month"
               onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-              className="min-h-11 min-w-11 rounded-xl border border-[#D2C3BE] dark:border-[#39302B] bg-white dark:bg-[#2A2522] text-[#261810] dark:text-[#F4EFEA] flex items-center justify-center hover:bg-[#FBF2E7] dark:hover:bg-[#1E1B18] transition-colors"
+              className="min-h-11 min-w-11 rounded-full border border-[#D2C3BE] dark:border-[#39302B] bg-white dark:bg-[#24201D] text-[#261810] dark:text-[#F4EFEA] flex items-center justify-center hover:bg-[#FBF2E7] dark:hover:bg-[#1E1B18] transition-colors shadow-xs"
             >
               <span className="material-symbols-outlined text-[18px]">chevron_right</span>
             </button>
@@ -166,13 +166,13 @@ const Calendar: React.FC = () => {
 
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(300px,0.9fr)] lg:items-start">
           {/* Calendar Grid */}
-          <section className="bg-white dark:bg-[#2A2522] rounded-2xl border border-[#D2C3BE] dark:border-[#39302B] p-4 sm:p-5 space-y-3">
+          <section className="bg-white dark:bg-[#24201D] rounded-2xl border border-[#D2C3BE] dark:border-[#39302B] p-4 sm:p-5 shadow-[0_1px_3px_rgba(38,24,16,0.04)] space-y-3">
             {/* Weekday headers */}
             <div className="grid grid-cols-7 text-center">
               {["M", "T", "W", "T", "F", "S", "S"].map((day, i) => (
                 <span
                   key={i}
-                  className="text-xs font-semibold text-[#6B5B54] dark:text-[#A99A8F] py-1"
+                  className="text-xs font-semibold text-[#78564F] dark:text-[#A99A8F] py-1"
                 >
                   {day}
                 </span>
@@ -192,7 +192,7 @@ const Calendar: React.FC = () => {
                 const status = getDayStatus(dateStr);
 
                 let dotColor = "bg-transparent";
-                if (status === "complete") dotColor = "bg-[#46644B] dark:bg-[#8EAA92]";
+                if (status === "complete") dotColor = "bg-[#78564F] dark:bg-[#8EAA92]";
                 else if (status === "partial") dotColor = "bg-[#D47A55]";
 
                 return (
@@ -205,16 +205,16 @@ const Calendar: React.FC = () => {
                     aria-current={isToday ? "date" : undefined}
                     onClick={() => setSelectedDateStr(dateStr)}
                     onKeyDown={(event) => handleCalendarKeyDown(event, dateObj)}
-                    className={`h-11 rounded-xl flex flex-col items-center justify-center transition-colors relative ${
+                    className={`h-11 rounded-xl flex flex-col items-center justify-center transition-all relative ${
                       isSelected
-                        ? "btn-primary font-semibold"
+                        ? "btn-primary font-bold shadow-xs"
                         : "hover:bg-[#FBF2E7] dark:hover:bg-[#1E1B18] text-[#261810] dark:text-[#F4EFEA]"
-                    } ${isToday && !isSelected ? "border border-[#B06060]/30 dark:border-[#C47A6A]/40" : ""}`}
+                    } ${isToday && !isSelected ? "border-2 border-[#FDD0C6] dark:border-[#D47A55]/70" : ""}`}
                   >
                     <span className="text-xs">{format(dateObj, "d")}</span>
                     <span
                       className={`w-1.5 h-1.5 rounded-full mt-0.5 ${
-                        isSelected ? "bg-white dark:bg-[#211710]" : dotColor
+                        isSelected ? "bg-[#261810] dark:bg-[#1A1614]" : dotColor
                       }`}
                     />
                   </button>
@@ -223,9 +223,9 @@ const Calendar: React.FC = () => {
             </div>
 
             {/* Subtle Legend */}
-            <div className="flex items-center justify-center gap-4 pt-3 border-t border-[#D2C3BE]/50 dark:border-[#39302B] text-xs text-[#6B5B54] dark:text-[#A99A8F]">
+            <div className="flex items-center justify-center gap-4 pt-3 border-t border-[#D2C3BE]/60 dark:border-[#39302B] text-xs text-[#78564F] dark:text-[#A99A8F]">
               <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-[#46644B] dark:bg-[#8EAA92]" />
+                <span className="w-2 h-2 rounded-full bg-[#78564F] dark:bg-[#8EAA92]" />
                 <span>All checked</span>
               </div>
               <div className="flex items-center gap-1.5">
@@ -236,13 +236,13 @@ const Calendar: React.FC = () => {
           </section>
 
           {/* Selected Day Details */}
-          <section className="bg-white dark:bg-[#2A2522] rounded-2xl border border-[#D2C3BE] dark:border-[#39302B] p-5 space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-[#D2C3BE]/50 dark:border-[#39302B]">
+          <section className="bg-white dark:bg-[#24201D] rounded-2xl border border-[#D2C3BE] dark:border-[#39302B] p-5 sm:p-6 shadow-[0_1px_3px_rgba(38,24,16,0.04)] space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-[#D2C3BE]/60 dark:border-[#39302B]">
               <div>
                 <h2 className="font-serif text-lg font-medium text-[#261810] dark:text-[#F4EFEA]">
                   <time dateTime={selectedDateStr}>{selectedDayFormatted}</time>
                 </h2>
-                <p className="text-xs text-[#6B5B54] dark:text-[#A99A8F] mt-0.5">
+                <p className="text-xs text-[#78564F] dark:text-[#A99A8F] mt-0.5">
                   {trackers.length === 0
                     ? "No trackers"
                     : isSelectedDayComplete
@@ -254,7 +254,7 @@ const Calendar: React.FC = () => {
               <button
                 type="button"
                 onClick={() => navigate(`/day?date=${selectedDateStr}`)}
-                className="min-h-11 px-3 rounded-xl border border-[#D2C3BE] dark:border-[#39302B] text-xs font-semibold text-[#5E4D45] dark:text-[#D0C4BA] hover:bg-[#FBF2E7] dark:hover:bg-[#1E1B18] transition-colors"
+                className="min-h-11 px-3.5 rounded-full border border-[#D2C3BE] dark:border-[#39302B] text-xs font-semibold text-[#78564F] dark:text-[#D0C4BA] hover:bg-[#FBF2E7] dark:hover:bg-[#1E1B18] transition-colors"
               >
                 Day view
               </button>
@@ -262,22 +262,22 @@ const Calendar: React.FC = () => {
 
             {/* Trackers list for selected day */}
             <div className="space-y-2">
-              <h3 className="text-xs font-semibold text-[#5E4D45] dark:text-[#D0C4BA]">
+              <h3 className="text-xs font-semibold text-[#78564F] dark:text-[#D0C4BA]">
                 Trackers
               </h3>
               {trackers.length === 0 ? (
-                <p className="text-xs text-[#6B5B54] dark:text-[#A99A8F]">
+                <p className="text-xs text-[#78564F] dark:text-[#A99A8F]">
                   No active trackers.
                 </p>
               ) : (
-                <div className="space-y-1.5">
+                <div className="space-y-2">
                   {trackers.map((tracker) => {
                     const habitName = tracker.name;
                     const isChecked = Boolean(tracker.checkIns?.[selectedDateStr]);
                     return (
                       <div
                         key={tracker.id || habitName}
-                        className="flex items-center justify-between py-1.5 px-3 rounded-xl bg-[#FBF2E7] dark:bg-[#1E1B18]"
+                        className="flex items-center justify-between py-2 px-3.5 rounded-xl bg-[#FBF2E7] dark:bg-[#1E1B18] border border-[#D2C3BE]/40 dark:border-[#39302B]/60"
                       >
                         <span className="text-xs font-medium text-[#261810] dark:text-[#F4EFEA]">
                           {getDisplayName(habitName)}
@@ -291,10 +291,10 @@ const Calendar: React.FC = () => {
                           }
                           aria-pressed={isChecked}
                           onClick={() => toggleCheckIn(habitName, selectedDateStr)}
-                          className={`min-h-11 px-2.5 rounded-lg text-xs font-semibold flex items-center gap-1 transition-colors ${
+                          className={`min-h-11 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-colors ${
                             isChecked
-                              ? "text-[#46644B] dark:text-[#8EAA92]"
-                              : "text-[#6B5B54] dark:text-[#A99A8F] hover:text-[#261810]"
+                              ? "btn-primary-soft text-xs"
+                              : "btn-primary text-xs"
                           }`}
                         >
                           <span className="material-symbols-outlined text-[16px]">
@@ -310,16 +310,16 @@ const Calendar: React.FC = () => {
             </div>
 
             {/* Note for selected day */}
-            <div className="pt-2 border-t border-[#D2C3BE]/50 dark:border-[#39302B] space-y-2">
+            <div className="pt-2 border-t border-[#D2C3BE]/60 dark:border-[#39302B] space-y-2">
               <div className="flex items-center justify-between">
-                <h3 className="text-xs font-semibold text-[#5E4D45] dark:text-[#D0C4BA]">
+                <h3 className="text-xs font-semibold text-[#78564F] dark:text-[#D0C4BA]">
                   Reflection
                 </h3>
                 {!isEditingNote && selectedDayNote && (
                   <button
                     type="button"
                     onClick={() => setIsEditingNote(true)}
-                    className="text-xs font-semibold text-[#3D2C24] dark:text-[#D47A55] hover:underline"
+                    className="text-xs font-semibold text-[#78564F] dark:text-[#D47A55] hover:underline"
                   >
                     Edit
                   </button>
@@ -327,40 +327,40 @@ const Calendar: React.FC = () => {
               </div>
 
               {isEditingNote ? (
-                <div className="space-y-2">
+                <div className="space-y-2.5">
                   <textarea
                     rows={4}
                     value={selectedDayNote}
                     onChange={(e) => setSelectedDayNote(e.target.value)}
                     placeholder="Write a reflection for this day..."
-                    className="w-full p-3 rounded-xl bg-[#FBF2E7] dark:bg-[#1E1B18] text-xs text-[#261810] dark:text-[#F4EFEA] border border-[#D2C3BE] dark:border-[#39302B] focus:outline-none resize-none"
+                    className="w-full p-3.5 rounded-xl bg-[#FBF2E7] dark:bg-[#1E1B18] text-xs font-serif text-[#261810] dark:text-[#F4EFEA] border border-[#D2C3BE] dark:border-[#39302B] focus:outline-none focus:border-[#78564F] dark:focus:border-[#D47A55] resize-none"
                   />
                   <div className="flex gap-2">
                     <button
                       type="button"
                       onClick={handleSaveNote}
-                      className="min-h-11 px-3 py-1.5 rounded-xl btn-primary text-xs font-semibold"
+                      className="min-h-11 px-4 py-1.5 rounded-full btn-primary text-xs font-semibold"
                     >
                       Save note
                     </button>
                     <button
                       type="button"
                       onClick={() => setIsEditingNote(false)}
-                      className="min-h-11 px-3 py-1.5 rounded-xl border border-[#D2C3BE] dark:border-[#39302B] text-xs font-semibold text-[#5E4D45] dark:text-[#D0C4BA]"
+                      className="min-h-11 px-4 py-1.5 rounded-full border border-[#D2C3BE] dark:border-[#39302B] text-xs font-semibold text-[#78564F] dark:text-[#D0C4BA] hover:bg-[#FBF2E7] dark:hover:bg-[#1E1B18] transition-colors"
                     >
                       Cancel
                     </button>
                   </div>
                 </div>
               ) : selectedDayNote ? (
-                <p className="font-serif italic text-sm text-[#261810] dark:text-[#F4EFEA] leading-relaxed whitespace-pre-wrap bg-[#FBF2E7] dark:bg-[#1E1B18] p-3 rounded-xl">
+                <p className="font-serif italic text-sm text-[#261810] dark:text-[#F4EFEA] leading-relaxed whitespace-pre-wrap bg-[#FBF2E7] dark:bg-[#1E1B18] p-3.5 rounded-xl border border-[#D2C3BE]/50 dark:border-[#39302B]">
                   “{selectedDayNote}”
                 </p>
               ) : (
                 <button
                   type="button"
                   onClick={() => setIsEditingNote(true)}
-                  className="min-h-11 w-full py-2 px-3 rounded-xl border border-dashed border-[#D2C3BE] dark:border-[#39302B] text-xs font-semibold text-[#6B5B54] dark:text-[#A99A8F] hover:border-[#3D2C24] transition-colors text-center"
+                  className="min-h-11 w-full py-2 px-3 rounded-xl border border-dashed border-[#D2C3BE] dark:border-[#39302B] text-xs font-semibold text-[#78564F] dark:text-[#A99A8F] hover:border-[#78564F] transition-colors text-center"
                 >
                   + Add a reflection for this day
                 </button>

@@ -155,7 +155,7 @@ const Notes: React.FC = () => {
     <div className="space-y-3">
       <div className="relative w-full">
         <span
-          className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#6B5B54] dark:text-[#A99A8F] text-[18px]"
+          className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#78564F] dark:text-[#A99A8F] text-[18px]"
           aria-hidden="true"
         >
           search
@@ -166,7 +166,7 @@ const Notes: React.FC = () => {
           onChange={(e) => setSearchQuery(e.target.value)}
           aria-label="Search journal entries"
           placeholder="Search entries..."
-          className="w-full min-h-11 rounded-xl bg-white dark:bg-[#2A2522] border border-[#D2C3BE] dark:border-[#39302B] pl-9 pr-3 py-2 text-xs text-[#261810] dark:text-[#F4EFEA] placeholder:text-[#6B5B54]/70 focus:outline-none focus:border-[#3D2C24] dark:focus:border-[#D47A55]"
+          className="w-full min-h-11 rounded-xl bg-[#FBF2E7] dark:bg-[#1E1B18] border border-[#D2C3BE] dark:border-[#39302B] pl-9 pr-3 py-2 text-xs text-[#261810] dark:text-[#F4EFEA] placeholder:text-[#78564F]/60 dark:placeholder:text-[#A99A8F]/60 focus:outline-none focus:border-[#78564F] dark:focus:border-[#D47A55]"
         />
       </div>
 
@@ -181,10 +181,10 @@ const Notes: React.FC = () => {
             type="button"
             aria-pressed={activeFilter.toLowerCase() === filter.value.toLowerCase()}
             onClick={() => setActiveFilter(filter.value)}
-            className={`min-h-11 shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
+            className={`min-h-11 shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
               activeFilter.toLowerCase() === filter.value.toLowerCase()
                 ? "filter-pill-selected"
-                : "bg-white dark:bg-[#2A2522] text-[#5E4D45] dark:text-[#D0C4BA] border-[#D2C3BE] dark:border-[#39302B]"
+                : "bg-white dark:bg-[#24201D] text-[#78564F] dark:text-[#D0C4BA] border-[#D2C3BE] dark:border-[#39302B] hover:bg-[#FBF2E7] dark:hover:bg-[#1E1B18]"
             }`}
           >
             {filter.label}
@@ -197,14 +197,14 @@ const Notes: React.FC = () => {
           <h2 id={headingId} className="font-serif text-lg font-medium text-[#261810] dark:text-[#F4EFEA]">
             Previous entries
           </h2>
-          <span className="text-xs text-[#6B5B54] dark:text-[#A99A8F]">
+          <span className="text-xs text-[#78564F] dark:text-[#A99A8F]">
             {filteredEntries.length} {filteredEntries.length === 1 ? "entry" : "entries"}
           </span>
         </div>
 
         {filteredEntries.length === 0 ? (
-          <div className="bg-white dark:bg-[#2A2522] rounded-2xl p-5 text-center border border-[#D2C3BE] dark:border-[#39302B]">
-            <p className="text-xs text-[#6B5B54] dark:text-[#A99A8F]">
+          <div className="bg-white dark:bg-[#24201D] rounded-2xl p-5 text-center border border-[#D2C3BE] dark:border-[#39302B] shadow-[0_1px_3px_rgba(38,24,16,0.04)]">
+            <p className="text-xs text-[#78564F] dark:text-[#A99A8F]">
               {allEntries.length === 0 ? "No entries yet." : "No entries match your search."}
             </p>
           </div>
@@ -212,14 +212,14 @@ const Notes: React.FC = () => {
           filteredEntries.map((entry) => (
             <article
               key={entry.id}
-              className="bg-white dark:bg-[#2A2522] rounded-2xl border border-[#D2C3BE] dark:border-[#39302B] p-4 space-y-2 hover:border-[#3D2C24]/30 transition-colors"
+              className="bg-white dark:bg-[#24201D] rounded-2xl border border-[#D2C3BE] dark:border-[#39302B] p-4 sm:p-5 space-y-2.5 hover:border-[#78564F]/40 transition-colors shadow-[0_1px_3px_rgba(38,24,16,0.03)]"
             >
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-semibold text-[#261810] dark:text-[#F4EFEA]">
                     {entry.date}
                   </span>
-                  <span className="text-xs px-2 py-0.5 rounded-md bg-[#FBF2E7] dark:bg-[#1E1B18] text-[#5E4D45] dark:text-[#D0C4BA]">
+                  <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#FBF2E7] dark:bg-[#1E1B18] text-[#78564F] dark:text-[#D0C4BA] border border-[#D2C3BE]/50 dark:border-[#39302B]">
                     {getDisplayName(entry.habit)}
                   </span>
                 </div>
@@ -231,7 +231,7 @@ const Notes: React.FC = () => {
                       handleEntryEdit(entry);
                       window.scrollTo({ top: 0, behavior: "smooth" });
                     }}
-                    className="min-h-11 px-2.5 text-xs font-semibold text-[#3D2C24] dark:text-[#D47A55] hover:underline"
+                    className="min-h-11 px-2.5 text-xs font-semibold text-[#78564F] dark:text-[#D47A55] hover:text-[#261810] dark:hover:text-[#F4EFEA] hover:underline transition-colors"
                   >
                     Edit
                   </button>
@@ -239,14 +239,14 @@ const Notes: React.FC = () => {
                     type="button"
                     aria-label={`Delete entry from ${entry.date}`}
                     onClick={() => deleteNote(entry.isGeneral ? "General" : entry.habit, entry.date)}
-                    className="min-h-11 px-2.5 text-xs text-[#BA1A1A] dark:text-[#F0A08D] hover:underline"
+                    className="min-h-11 px-2.5 text-xs text-[#BA1A1A] dark:text-[#F0A08D] hover:underline transition-colors"
                   >
                     Delete
                   </button>
                 </div>
               </div>
 
-              <p className="font-serif text-sm text-[#261810] dark:text-[#F4EFEA] leading-relaxed whitespace-pre-wrap line-clamp-4">
+              <p className="font-serif text-sm sm:text-base text-[#261810] dark:text-[#F4EFEA] leading-relaxed whitespace-pre-wrap line-clamp-4">
                 {entry.text}
               </p>
             </article>
@@ -263,8 +263,8 @@ const Notes: React.FC = () => {
           <h1 className="font-serif text-3xl sm:text-4xl font-medium tracking-tight text-[#261810] dark:text-[#F4EFEA]">
             Journal
           </h1>
-          <p className="text-xs text-[#6B5B54] dark:text-[#A99A8F]">
-            Write your thoughts, reflections, and notes.
+          <p className="text-xs text-[#78564F] dark:text-[#A99A8F]">
+            A quiet space to write your thoughts, reflections, and notes.
           </p>
         </header>
 
@@ -272,9 +272,9 @@ const Notes: React.FC = () => {
           {/* Main Writing Area */}
           <section className="journal-canvas p-5 sm:p-6 space-y-4">
             {/* Date & Category */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#D2C3BE]/50 dark:border-[#39302B]">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#D2C3BE]/60 dark:border-[#39302B]">
               <div className="flex items-center gap-2">
-                <label htmlFor="journal-date" className="text-xs font-semibold text-[#5E4D45] dark:text-[#D0C4BA]">
+                <label htmlFor="journal-date" className="text-xs font-semibold text-[#78564F] dark:text-[#D0C4BA]">
                   Date
                 </label>
                 <input
@@ -282,7 +282,7 @@ const Notes: React.FC = () => {
                   type="date"
                   value={selectedDate}
                   onChange={(e) => handleDateChange(e.target.value)}
-                  className="min-h-11 rounded-xl border border-[#D2C3BE] dark:border-[#39302B] bg-[#FBF2E7] dark:bg-[#1E1B18] px-2.5 py-1 text-xs font-semibold text-[#261810] dark:text-[#F4EFEA] focus:outline-none"
+                  className="min-h-11 rounded-xl border border-[#D2C3BE] dark:border-[#39302B] bg-[#FBF2E7] dark:bg-[#1E1B18] px-3 py-1 text-xs font-semibold text-[#261810] dark:text-[#F4EFEA] focus:outline-none focus:border-[#78564F] dark:focus:border-[#D47A55]"
                 />
               </div>
 
@@ -291,10 +291,10 @@ const Notes: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => handleGoalChange("General")}
-                  className={`min-h-11 px-3 py-1 rounded-full text-xs font-semibold border transition-colors ${
+                  className={`min-h-11 px-3.5 py-1 rounded-full text-xs font-semibold border transition-colors ${
                     selectedGoal === "General"
                       ? "filter-pill-selected"
-                      : "bg-[#FBF2E7] dark:bg-[#1E1B18] text-[#5E4D45] dark:text-[#D0C4BA] border-[#D2C3BE]/50 dark:border-[#39302B]"
+                      : "bg-[#FBF2E7] dark:bg-[#1E1B18] text-[#78564F] dark:text-[#D0C4BA] border-[#D2C3BE]/60 dark:border-[#39302B] hover:bg-[#F6EDE2] dark:hover:bg-[#2A2522]"
                   }`}
                 >
                   General
@@ -304,10 +304,10 @@ const Notes: React.FC = () => {
                     key={tracker.name}
                     type="button"
                     onClick={() => handleGoalChange(tracker.name)}
-                    className={`min-h-11 px-3 py-1 rounded-full text-xs font-semibold border transition-colors ${
+                    className={`min-h-11 px-3.5 py-1 rounded-full text-xs font-semibold border transition-colors ${
                       selectedGoal.toLowerCase() === tracker.name.toLowerCase()
                         ? "filter-pill-selected"
-                        : "bg-[#FBF2E7] dark:bg-[#1E1B18] text-[#5E4D45] dark:text-[#D0C4BA] border-[#D2C3BE]/50 dark:border-[#39302B]"
+                        : "bg-[#FBF2E7] dark:bg-[#1E1B18] text-[#78564F] dark:text-[#D0C4BA] border-[#D2C3BE]/60 dark:border-[#39302B] hover:bg-[#F6EDE2] dark:hover:bg-[#2A2522]"
                     }`}
                   >
                     {getDisplayName(tracker.name)}
@@ -324,18 +324,18 @@ const Notes: React.FC = () => {
                 value={journalText}
                 onChange={(e) => setJournalText(e.target.value)}
                 placeholder="What is on your mind today? Write freely..."
-                className="journal-textarea w-full bg-transparent text-[#261810] dark:text-[#F4EFEA] font-serif text-lg leading-relaxed placeholder:text-[#6B5B54]/60 placeholder:font-sans placeholder:text-sm focus:outline-none resize-y"
+                className="journal-textarea w-full bg-transparent text-[#261810] dark:text-[#F4EFEA] font-serif text-lg leading-relaxed placeholder:text-[#78564F]/50 dark:placeholder:text-[#A99A8F]/50 placeholder:font-sans placeholder:text-sm focus:outline-none resize-y"
               />
             </div>
 
             {/* Controls & Feedback */}
-            <div className="pt-3 flex flex-wrap items-center justify-between gap-3 border-t border-[#D2C3BE]/50 dark:border-[#39302B]">
-              <div className="flex items-center gap-2 text-xs text-[#6B5B54] dark:text-[#A99A8F]">
+            <div className="pt-3 flex flex-wrap items-center justify-between gap-3 border-t border-[#D2C3BE]/60 dark:border-[#39302B]">
+              <div className="flex items-center gap-2 text-xs text-[#78564F] dark:text-[#A99A8F]">
                 <span>{wordCount} {wordCount === 1 ? "word" : "words"}</span>
                 {isDirty && (
                   <>
                     <span>•</span>
-                    <span className="text-[#8A552D] dark:text-[#D5A16D] font-medium">Unsaved edits</span>
+                    <span className="text-[#D47A55] font-semibold">Unsaved edits</span>
                   </>
                 )}
               </div>
@@ -345,7 +345,7 @@ const Notes: React.FC = () => {
                   type="button"
                   disabled={!isDirty}
                   onClick={handleDiscardClick}
-                  className="min-h-11 px-3 rounded-xl text-xs font-semibold text-[#6B5B54] dark:text-[#A99A8F] hover:text-[#261810] dark:hover:text-[#F4EFEA] disabled:opacity-40 transition-colors"
+                  className="min-h-11 px-3.5 rounded-full text-xs font-semibold text-[#78564F] dark:text-[#A99A8F] hover:text-[#261810] dark:hover:text-[#F4EFEA] disabled:opacity-40 transition-colors"
                 >
                   Discard
                 </button>
@@ -353,7 +353,7 @@ const Notes: React.FC = () => {
                   type="button"
                   disabled={!isDirty || saveStatus === "saving"}
                   onClick={handleSaveReflection}
-                  className="min-h-11 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl btn-primary text-xs font-semibold disabled:opacity-50"
+                  className="min-h-11 inline-flex items-center gap-2 px-5 py-2.5 rounded-full btn-primary text-xs font-semibold disabled:opacity-50"
                 >
                   <span className="material-symbols-outlined text-[16px]">
                     {saveStatus === "saved" ? "done" : "check"}
@@ -368,17 +368,17 @@ const Notes: React.FC = () => {
 
           {/* Desktop Sidebar: Previous Entries */}
           <aside className="hidden lg:block lg:sticky lg:top-24">
-            <div className="bg-[#FBF2E7] dark:bg-[#1E1B18] rounded-2xl border border-[#D2C3BE] dark:border-[#39302B] p-4">
+            <div className="bg-[#FBF2E7] dark:bg-[#1E1B18] rounded-2xl border border-[#D2C3BE] dark:border-[#39302B] p-4 shadow-[0_1px_3px_rgba(38,24,16,0.03)]">
               {renderArchive("desktop-entries-heading")}
             </div>
           </aside>
         </div>
 
         {/* Mobile: Collapsible Previous Entries */}
-        <details className="lg:hidden rounded-2xl border border-[#D2C3BE] dark:border-[#39302B] bg-[#FBF2E7] dark:bg-[#1E1B18] p-4">
+        <details className="lg:hidden rounded-2xl border border-[#D2C3BE] dark:border-[#39302B] bg-[#FBF2E7] dark:bg-[#1E1B18] p-4 shadow-[0_1px_3px_rgba(38,24,16,0.03)]">
           <summary className="min-h-11 cursor-pointer flex items-center justify-between gap-3 font-serif text-lg font-medium text-[#261810] dark:text-[#F4EFEA]">
             <span>Previous entries</span>
-            <span className="text-xs font-sans text-[#6B5B54] dark:text-[#A99A8F]">
+            <span className="text-xs font-sans text-[#78564F] dark:text-[#A99A8F]">
               {allEntries.length} saved
             </span>
           </summary>
@@ -391,18 +391,18 @@ const Notes: React.FC = () => {
       {/* Discard Confirmation Modal */}
       {showDiscardModal && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="w-full max-w-xs bg-white dark:bg-[#2A2522] rounded-2xl p-5 border border-[#D2C3BE] dark:border-[#39302B] shadow-xl space-y-3">
+          <div className="w-full max-w-xs bg-white dark:bg-[#24201D] rounded-2xl p-6 border border-[#D2C3BE] dark:border-[#39302B] shadow-xl space-y-3">
             <h3 className="font-serif text-lg font-medium text-[#261810] dark:text-[#F4EFEA]">
               Discard edits?
             </h3>
-            <p className="text-xs text-[#6B5B54] dark:text-[#A99A8F]">
+            <p className="text-xs text-[#78564F] dark:text-[#A99A8F]">
               You have unsaved changes. Leaving now will discard them.
             </p>
             <div className="flex gap-2 pt-1">
               <button
                 type="button"
                 onClick={confirmDiscard}
-                className="min-h-11 flex-1 py-2 rounded-xl bg-[#BA1A1A] text-white text-xs font-semibold"
+                className="min-h-11 flex-1 py-2 rounded-full bg-[#BA1A1A] text-white text-xs font-semibold hover:bg-[#9E1414] transition-colors"
               >
                 Discard
               </button>
@@ -412,7 +412,7 @@ const Notes: React.FC = () => {
                   setShowDiscardModal(false);
                   setPendingSwitch(null);
                 }}
-                className="min-h-11 py-2 px-3 rounded-xl border border-[#D2C3BE] dark:border-[#39302B] text-xs font-semibold text-[#5E4D45] dark:text-[#D0C4BA]"
+                className="min-h-11 py-2 px-4 rounded-full border border-[#D2C3BE] dark:border-[#39302B] text-xs font-semibold text-[#78564F] dark:text-[#D0C4BA] hover:bg-[#FBF2E7] dark:hover:bg-[#1E1B18] transition-colors"
               >
                 Keep editing
               </button>

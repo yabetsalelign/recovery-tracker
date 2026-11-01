@@ -126,7 +126,7 @@ const Settings: React.FC = () => {
         </header>
 
         {/* Profile */}
-        <section aria-labelledby="profile-heading" className="bg-white dark:bg-[#2A2522] rounded-2xl p-5 border border-[#D2C3BE] dark:border-[#39302B] space-y-3">
+        <section aria-labelledby="profile-heading" className="bg-white dark:bg-[#24201D] rounded-2xl p-5 sm:p-6 border border-[#D2C3BE] dark:border-[#39302B] shadow-[0_1px_3px_rgba(38,24,16,0.04)] space-y-3">
           <h2 id="profile-heading" className="font-serif text-lg font-medium text-[#261810] dark:text-[#F4EFEA]">
             Profile
           </h2>
@@ -137,12 +137,12 @@ const Settings: React.FC = () => {
               onChange={(e) => setName(e.target.value)}
               aria-label="Display name"
               placeholder="Your name or initials"
-              className="min-h-11 flex-1 px-3.5 py-2 text-xs rounded-xl border border-[#D2C3BE]/60 dark:border-[#39302B] bg-[#FBF2E7] dark:bg-[#1E1B18] text-[#261810] dark:text-[#F4EFEA] focus:outline-none focus:border-[#3D2C24] dark:focus:border-[#D47A55]"
+              className="min-h-11 flex-1 px-3.5 py-2 text-xs rounded-xl border border-[#D2C3BE]/60 dark:border-[#39302B] bg-[#FBF2E7] dark:bg-[#1E1B18] text-[#261810] dark:text-[#F4EFEA] focus:outline-none focus:border-[#78564F] dark:focus:border-[#D47A55]"
             />
             <button
               type="button"
               onClick={() => showNotification("Name saved")}
-              className="min-h-11 px-4 rounded-xl btn-primary text-xs font-semibold"
+              className="min-h-11 px-5 rounded-full btn-primary text-xs font-semibold"
             >
               Save
             </button>
@@ -150,16 +150,16 @@ const Settings: React.FC = () => {
         </section>
 
         {/* Appearance */}
-        <section aria-labelledby="appearance-heading" className="bg-white dark:bg-[#2A2522] rounded-2xl p-5 border border-[#D2C3BE] dark:border-[#39302B] space-y-4">
+        <section aria-labelledby="appearance-heading" className="bg-white dark:bg-[#24201D] rounded-2xl p-5 sm:p-6 border border-[#D2C3BE] dark:border-[#39302B] shadow-[0_1px_3px_rgba(38,24,16,0.04)] space-y-4">
           <h2 id="appearance-heading" className="font-serif text-lg font-medium text-[#261810] dark:text-[#F4EFEA]">
             Appearance
           </h2>
 
           <div className="space-y-1.5">
-            <span className="text-xs font-semibold text-[#5E4D45] dark:text-[#D0C4BA] block">
+            <span className="text-xs font-semibold text-[#78564F] dark:text-[#D0C4BA] block">
               Theme
             </span>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-2.5">
               <button
                 type="button"
                 aria-pressed={theme === "light"}
@@ -167,14 +167,14 @@ const Settings: React.FC = () => {
                   toggleTheme("light");
                   showNotification("Warm Paper theme active");
                 }}
-                className={`min-h-11 p-3 rounded-xl border text-left transition-colors ${
+                className={`min-h-11 p-3.5 rounded-xl border text-left transition-all ${
                   theme === "light"
-                    ? "border-[#3D2C24] bg-[#FBF2E7]"
-                    : "border-[#D2C3BE]/50 dark:border-[#39302B] bg-white dark:bg-[#1E1B18]"
+                    ? "border-2 border-[#3D2C24] bg-[#FBF2E7] shadow-xs"
+                    : "border border-[#D2C3BE]/60 dark:border-[#39302B] bg-white dark:bg-[#1E1B18]"
                 }`}
               >
                 <span className="font-semibold text-xs text-[#261810] block">Warm Paper</span>
-                <span className="text-[11px] text-[#6B5B54]">Light ivory & cream</span>
+                <span className="text-[11px] text-[#78564F]">Light ivory & cream</span>
               </button>
 
               <button
@@ -184,10 +184,10 @@ const Settings: React.FC = () => {
                   toggleTheme("dark");
                   showNotification("Charcoal Night theme active");
                 }}
-                className={`min-h-11 p-3 rounded-xl border text-left transition-colors ${
+                className={`min-h-11 p-3.5 rounded-xl border text-left transition-all ${
                   theme === "dark"
-                    ? "border-[#D47A55] bg-[#1E1B18]"
-                    : "border-[#D2C3BE]/50 dark:border-[#39302B] bg-white dark:bg-[#1E1B18]"
+                    ? "border-2 border-[#D47A55] bg-[#1E1B18] shadow-xs"
+                    : "border border-[#D2C3BE]/60 dark:border-[#39302B] bg-white dark:bg-[#1E1B18]"
                 }`}
               >
                 <span className="font-semibold text-xs text-[#F4EFEA] block">Charcoal Night</span>
@@ -196,24 +196,24 @@ const Settings: React.FC = () => {
             </div>
           </div>
 
-          <div className="pt-2 border-t border-[#D2C3BE]/40 dark:border-[#39302B] flex items-center justify-between">
+          <div className="pt-2 border-t border-[#D2C3BE]/50 dark:border-[#39302B] flex items-center justify-between">
             <div>
               <span className="font-semibold text-xs text-[#261810] dark:text-[#F4EFEA] block">
                 Reading size
               </span>
-              <span className="text-xs text-[#6B5B54] dark:text-[#A99A8F]">
+              <span className="text-xs text-[#78564F] dark:text-[#A99A8F]">
                 Standard or comfortable typography
               </span>
             </div>
-            <div className="flex bg-[#FBF2E7] dark:bg-[#1E1B18] p-1 rounded-xl gap-1">
+            <div className="flex bg-[#FBF2E7] dark:bg-[#1E1B18] p-1 rounded-full gap-1 border border-[#D2C3BE]/40 dark:border-[#39302B]">
               <button
                 type="button"
                 onClick={() => setFontScale("standard")}
                 aria-pressed={fontScale === "standard"}
-                className={`min-h-11 px-3 rounded-lg text-xs font-semibold transition-colors ${
+                className={`min-h-11 px-3.5 rounded-full text-xs font-semibold transition-all ${
                   fontScale === "standard"
-                    ? "bg-white dark:bg-[#2A2522] text-[#261810] dark:text-[#F4EFEA] shadow-xs"
-                    : "text-[#6B5B54] dark:text-[#A99A8F]"
+                    ? "bg-[#FDD0C6] text-[#261810] dark:text-[#1A1614] font-bold shadow-xs"
+                    : "text-[#78564F] dark:text-[#A99A8F]"
                 }`}
               >
                 Standard
@@ -222,10 +222,10 @@ const Settings: React.FC = () => {
                 type="button"
                 onClick={() => setFontScale("comfort")}
                 aria-pressed={fontScale === "comfort"}
-                className={`min-h-11 px-3 rounded-lg text-xs font-semibold transition-colors ${
+                className={`min-h-11 px-3.5 rounded-full text-xs font-semibold transition-all ${
                   fontScale === "comfort"
-                    ? "bg-white dark:bg-[#2A2522] text-[#261810] dark:text-[#F4EFEA] shadow-xs"
-                    : "text-[#6B5B54] dark:text-[#A99A8F]"
+                    ? "bg-[#FDD0C6] text-[#261810] dark:text-[#1A1614] font-bold shadow-xs"
+                    : "text-[#78564F] dark:text-[#A99A8F]"
                 }`}
               >
                 Comfort
@@ -233,12 +233,12 @@ const Settings: React.FC = () => {
             </div>
           </div>
 
-          <div className="pt-2 border-t border-[#D2C3BE]/40 dark:border-[#39302B] flex items-center justify-between">
+          <div className="pt-2 border-t border-[#D2C3BE]/50 dark:border-[#39302B] flex items-center justify-between">
             <div>
               <span className="font-semibold text-xs text-[#261810] dark:text-[#F4EFEA] block">
                 Reduced motion
               </span>
-              <span className="text-xs text-[#6B5B54] dark:text-[#A99A8F]">
+              <span className="text-xs text-[#78564F] dark:text-[#A99A8F]">
                 Minimize UI movement
               </span>
             </div>
@@ -248,11 +248,11 @@ const Settings: React.FC = () => {
               aria-checked={gentleTransitions}
               onClick={() => setGentleTransitions(!gentleTransitions)}
               className={`min-h-11 w-11 h-6 rounded-full p-0.5 flex items-center transition-colors ${
-                gentleTransitions ? "bg-[#B06060] dark:bg-[#C47A6A]" : "bg-[#D2C3BE] dark:bg-[#39302B]"
+                gentleTransitions ? "bg-[#FDD0C6] dark:bg-[#D47A55]" : "bg-[#D2C3BE] dark:bg-[#39302B]"
               }`}
             >
               <div
-                className={`w-5 h-5 rounded-full bg-white shadow-xs transform transition-transform ${
+                className={`w-5 h-5 rounded-full bg-white dark:bg-[#261810] shadow-xs transform transition-transform ${
                   gentleTransitions ? "translate-x-5" : "translate-x-0"
                 }`}
               />
@@ -261,7 +261,7 @@ const Settings: React.FC = () => {
         </section>
 
         {/* Privacy */}
-        <section aria-labelledby="privacy-heading" className="bg-white dark:bg-[#2A2522] rounded-2xl p-5 border border-[#D2C3BE] dark:border-[#39302B] space-y-3">
+        <section aria-labelledby="privacy-heading" className="bg-white dark:bg-[#24201D] rounded-2xl p-5 sm:p-6 border border-[#D2C3BE] dark:border-[#39302B] shadow-[0_1px_3px_rgba(38,24,16,0.04)] space-y-3">
           <h2 id="privacy-heading" className="font-serif text-lg font-medium text-[#261810] dark:text-[#F4EFEA]">
             Privacy
           </h2>
@@ -271,7 +271,7 @@ const Settings: React.FC = () => {
               <span className="font-semibold text-xs text-[#261810] dark:text-[#F4EFEA] block">
                 Discreet mode
               </span>
-              <span className="text-xs text-[#6B5B54] dark:text-[#A99A8F]">
+              <span className="text-xs text-[#78564F] dark:text-[#A99A8F]">
                 Obscure sensitive habit names when in public
               </span>
             </div>
@@ -281,11 +281,11 @@ const Settings: React.FC = () => {
               aria-checked={discreetMode}
               onClick={() => setDiscreetMode(!discreetMode)}
               className={`min-h-11 min-w-11 w-11 h-6 rounded-full p-0.5 flex items-center transition-colors ${
-                discreetMode ? "bg-[#B06060] dark:bg-[#C47A6A]" : "bg-[#D2C3BE] dark:bg-[#39302B]"
+                discreetMode ? "bg-[#FDD0C6] dark:bg-[#D47A55]" : "bg-[#D2C3BE] dark:bg-[#39302B]"
               }`}
             >
               <div
-                className={`w-5 h-5 rounded-full bg-white shadow-xs transform transition-transform ${
+                className={`w-5 h-5 rounded-full bg-white dark:bg-[#261810] shadow-xs transform transition-transform ${
                   discreetMode ? "translate-x-5" : "translate-x-0"
                 }`}
               />
@@ -294,26 +294,26 @@ const Settings: React.FC = () => {
         </section>
 
         {/* Data & Backup */}
-        <section aria-labelledby="data-heading" className="bg-white dark:bg-[#2A2522] rounded-2xl p-5 border border-[#D2C3BE] dark:border-[#39302B] space-y-3">
+        <section aria-labelledby="data-heading" className="bg-white dark:bg-[#24201D] rounded-2xl p-5 sm:p-6 border border-[#D2C3BE] dark:border-[#39302B] shadow-[0_1px_3px_rgba(38,24,16,0.04)] space-y-3">
           <div className="space-y-0.5">
             <h2 id="data-heading" className="font-serif text-lg font-medium text-[#261810] dark:text-[#F4EFEA]">
               Data & Backups
             </h2>
-            <p className="text-xs text-[#6B5B54] dark:text-[#A99A8F]">
+            <p className="text-xs text-[#78564F] dark:text-[#A99A8F]">
               Your records stay on this device. Export copies for safekeeping.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
             <button
               type="button"
               onClick={handleExportJSON}
-              className="min-h-11 p-3 rounded-xl border border-[#D2C3BE] dark:border-[#39302B] bg-[#FBF2E7] dark:bg-[#1E1B18] text-left hover:border-[#3D2C24] transition-colors"
+              className="min-h-11 p-3.5 rounded-xl border border-[#D2C3BE] dark:border-[#39302B] bg-[#FBF2E7] dark:bg-[#1E1B18] text-left hover:border-[#78564F] transition-colors shadow-xs"
             >
               <span className="font-semibold text-xs text-[#261810] dark:text-[#F4EFEA] block">
                 Export backup (JSON)
               </span>
-              <span className="text-[11px] text-[#6B5B54] dark:text-[#A99A8F]">
+              <span className="text-[11px] text-[#78564F] dark:text-[#A99A8F]">
                 Full journal & tracker data
               </span>
             </button>
@@ -321,19 +321,19 @@ const Settings: React.FC = () => {
             <button
               type="button"
               onClick={handleExportCSV}
-              className="min-h-11 p-3 rounded-xl border border-[#D2C3BE] dark:border-[#39302B] bg-[#FBF2E7] dark:bg-[#1E1B18] text-left hover:border-[#3D2C24] transition-colors"
+              className="min-h-11 p-3.5 rounded-xl border border-[#D2C3BE] dark:border-[#39302B] bg-[#FBF2E7] dark:bg-[#1E1B18] text-left hover:border-[#78564F] transition-colors shadow-xs"
             >
               <span className="font-semibold text-xs text-[#261810] dark:text-[#F4EFEA] block">
                 Export spreadsheet (CSV)
               </span>
-              <span className="text-[11px] text-[#6B5B54] dark:text-[#A99A8F]">
+              <span className="text-[11px] text-[#78564F] dark:text-[#A99A8F]">
                 Tabular check-in records
               </span>
             </button>
           </div>
 
-          <div className="pt-2 border-t border-[#D2C3BE]/40 dark:border-[#39302B] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
-            <label className="min-h-11 inline-flex items-center justify-center px-4 py-2 rounded-xl border border-[#D2C3BE] dark:border-[#39302B] bg-[#FBF2E7] dark:bg-[#1E1B18] text-xs font-semibold text-[#261810] dark:text-[#F4EFEA] cursor-pointer hover:border-[#3D2C24]">
+          <div className="pt-2 border-t border-[#D2C3BE]/50 dark:border-[#39302B] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
+            <label className="min-h-11 inline-flex items-center justify-center px-4 py-2 rounded-full border border-[#D2C3BE] dark:border-[#39302B] bg-[#FBF2E7] dark:bg-[#1E1B18] text-xs font-semibold text-[#261810] dark:text-[#F4EFEA] cursor-pointer hover:border-[#78564F] transition-colors">
               <span>Restore from backup</span>
               <input accept=".json" className="hidden" onChange={handleImportFile} type="file" />
             </label>
@@ -341,7 +341,7 @@ const Settings: React.FC = () => {
             <button
               type="button"
               onClick={() => setShowWipeModal(true)}
-              className="min-h-11 px-4 py-2 rounded-xl text-xs font-semibold text-[#BA1A1A] dark:text-[#F0A08D] hover:bg-[#FDECEB] dark:hover:bg-[#4A2B25] transition-colors"
+              className="min-h-11 px-4 py-2 rounded-full text-xs font-semibold text-[#BA1A1A] dark:text-[#F0A08D] hover:bg-[#FDECEB] dark:hover:bg-[#4A2B25] transition-colors"
             >
               Reset all data
             </button>
@@ -349,20 +349,20 @@ const Settings: React.FC = () => {
         </section>
 
         {/* Grounding & Support */}
-        <section aria-labelledby="grounding-heading" className="bg-white dark:bg-[#2A2522] rounded-2xl p-5 border border-[#D2C3BE] dark:border-[#39302B] space-y-3">
+        <section aria-labelledby="grounding-heading" className="bg-white dark:bg-[#24201D] rounded-2xl p-5 sm:p-6 border border-[#D2C3BE] dark:border-[#39302B] shadow-[0_1px_3px_rgba(38,24,16,0.04)] space-y-3">
           <h2 id="grounding-heading" className="font-serif text-lg font-medium text-[#261810] dark:text-[#F4EFEA]">
             Grounding & Support
           </h2>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-2.5">
             <button
               type="button"
               onClick={() => setShowBreathingModal(true)}
-              className="min-h-11 p-3 rounded-xl border border-[#D2C3BE] dark:border-[#39302B] bg-[#FBF2E7] dark:bg-[#1E1B18] text-left hover:border-[#3D2C24] transition-colors"
+              className="min-h-11 p-3.5 rounded-xl border border-[#D2C3BE] dark:border-[#39302B] bg-[#FBF2E7] dark:bg-[#1E1B18] text-left hover:border-[#78564F] transition-colors shadow-xs"
             >
               <span className="font-semibold text-xs text-[#261810] dark:text-[#F4EFEA] block">
                 Box breathing
               </span>
-              <span className="text-[11px] text-[#6B5B54] dark:text-[#A99A8F]">
+              <span className="text-[11px] text-[#78564F] dark:text-[#A99A8F]">
                 Quick calming exercise
               </span>
             </button>
@@ -370,12 +370,12 @@ const Settings: React.FC = () => {
             <button
               type="button"
               onClick={() => setShowSupportModal(true)}
-              className="min-h-11 p-3 rounded-xl border border-[#D2C3BE] dark:border-[#39302B] bg-[#FBF2E7] dark:bg-[#1E1B18] text-left hover:border-[#3D2C24] transition-colors"
+              className="min-h-11 p-3.5 rounded-xl border border-[#D2C3BE] dark:border-[#39302B] bg-[#FBF2E7] dark:bg-[#1E1B18] text-left hover:border-[#78564F] transition-colors shadow-xs"
             >
               <span className="font-semibold text-xs text-[#261810] dark:text-[#F4EFEA] block">
                 Support resources
               </span>
-              <span className="text-[11px] text-[#6B5B54] dark:text-[#A99A8F]">
+              <span className="text-[11px] text-[#78564F] dark:text-[#A99A8F]">
                 Helplines & emergency aids
               </span>
             </button>
@@ -388,7 +388,7 @@ const Settings: React.FC = () => {
         <div
           role="status"
           aria-live="polite"
-          className="fixed bottom-20 md:bottom-8 left-1/2 -translate-x-1/2 z-50 bg-[#261810] dark:bg-[#F4EFEA] text-white dark:text-[#211710] px-4 py-2 rounded-xl text-xs font-semibold shadow-lg"
+          className="fixed bottom-20 md:bottom-8 left-1/2 -translate-x-1/2 z-50 bg-[#261810] dark:bg-[#F4EFEA] text-white dark:text-[#211710] px-4 py-2 rounded-full text-xs font-semibold shadow-lg"
         >
           {toast.message}
         </div>
@@ -397,25 +397,25 @@ const Settings: React.FC = () => {
       {/* Reset Confirmation Modal */}
       {showWipeModal && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="w-full max-w-xs bg-white dark:bg-[#2A2522] rounded-2xl p-5 border border-[#D2C3BE] dark:border-[#39302B] shadow-xl space-y-3">
+          <div className="w-full max-w-xs bg-white dark:bg-[#24201D] rounded-2xl p-6 border border-[#D2C3BE] dark:border-[#39302B] shadow-xl space-y-3">
             <h3 className="font-serif text-lg font-medium text-[#261810] dark:text-[#F4EFEA]">
               Reset all records?
             </h3>
-            <p className="text-xs text-[#6B5B54] dark:text-[#A99A8F]">
+            <p className="text-xs text-[#78564F] dark:text-[#A99A8F]">
               This will permanently delete all journal entries and check-ins from this device.
             </p>
             <div className="flex gap-2 pt-1">
               <button
                 type="button"
                 onClick={confirmResetData}
-                className="min-h-11 flex-1 py-2 rounded-xl bg-[#BA1A1A] text-white text-xs font-semibold"
+                className="min-h-11 flex-1 py-2 rounded-full bg-[#BA1A1A] text-white text-xs font-semibold hover:bg-[#9E1414] transition-colors"
               >
                 Reset everything
               </button>
               <button
                 type="button"
                 onClick={() => setShowWipeModal(false)}
-                className="min-h-11 py-2 px-3 rounded-xl border border-[#D2C3BE] dark:border-[#39302B] text-xs font-semibold text-[#5E4D45] dark:text-[#D0C4BA]"
+                className="min-h-11 py-2 px-4 rounded-full border border-[#D2C3BE] dark:border-[#39302B] text-xs font-semibold text-[#78564F] dark:text-[#D0C4BA] hover:bg-[#FBF2E7] dark:hover:bg-[#1E1B18] transition-colors"
               >
                 Cancel
               </button>
@@ -427,7 +427,7 @@ const Settings: React.FC = () => {
       {/* Box Breathing Modal */}
       {showBreathingModal && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="w-full max-w-xs bg-white dark:bg-[#2A2522] rounded-2xl p-6 border border-[#D2C3BE] dark:border-[#39302B] shadow-xl text-center space-y-5">
+          <div className="w-full max-w-xs bg-white dark:bg-[#24201D] rounded-2xl p-6 border border-[#D2C3BE] dark:border-[#39302B] shadow-xl text-center space-y-5">
             <div className="flex items-center justify-between">
               <h3 className="font-serif text-lg font-medium text-[#261810] dark:text-[#F4EFEA]">
                 Box breathing
@@ -435,7 +435,7 @@ const Settings: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setShowBreathingModal(false)}
-                className="min-h-11 min-w-11 flex items-center justify-center text-[#6B5B54] dark:text-[#A99A8F]"
+                className="min-h-11 min-w-11 flex items-center justify-center text-[#78564F] dark:text-[#A99A8F]"
                 aria-label="Close"
               >
                 <span className="material-symbols-outlined text-[18px]">close</span>
@@ -445,7 +445,7 @@ const Settings: React.FC = () => {
             <div className="py-6 flex flex-col items-center justify-center">
               <div
                 style={{ transform: `scale(${breathScale})`, transition: "transform 3.5s ease-in-out" }}
-                className="w-24 h-24 rounded-full bg-[#FBF2E7] dark:bg-[#1E1B18] border-2 border-[#3D2C24] dark:border-[#D47A55] flex items-center justify-center"
+                className="w-24 h-24 rounded-full bg-[#FBF2E7] dark:bg-[#1E1B18] border-2 border-[#D47A55] dark:border-[#D47A55] flex items-center justify-center shadow-xs"
               >
                 <span className="font-serif text-base font-medium text-[#261810] dark:text-[#F4EFEA]">
                   {breathPhase}
@@ -453,14 +453,14 @@ const Settings: React.FC = () => {
               </div>
             </div>
 
-            <p className="text-xs text-[#6B5B54] dark:text-[#A99A8F]">
+            <p className="text-xs text-[#78564F] dark:text-[#A99A8F]">
               Follow the rhythm to steady your breathing.
             </p>
 
             <button
               type="button"
               onClick={() => setShowBreathingModal(false)}
-              className="min-h-11 w-full py-2 rounded-xl btn-primary text-xs font-semibold"
+              className="min-h-11 w-full py-2.5 rounded-full btn-primary text-xs font-semibold"
             >
               Done
             </button>
@@ -471,7 +471,7 @@ const Settings: React.FC = () => {
       {/* Support Resources Modal */}
       {showSupportModal && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="w-full max-w-sm bg-white dark:bg-[#2A2522] rounded-2xl p-5 border border-[#D2C3BE] dark:border-[#39302B] shadow-xl space-y-4">
+          <div className="w-full max-w-sm bg-white dark:bg-[#24201D] rounded-2xl p-6 border border-[#D2C3BE] dark:border-[#39302B] shadow-xl space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="font-serif text-lg font-medium text-[#261810] dark:text-[#F4EFEA]">
                 Support resources
@@ -479,7 +479,7 @@ const Settings: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setShowSupportModal(false)}
-                className="min-h-11 min-w-11 flex items-center justify-center text-[#6B5B54] dark:text-[#A99A8F]"
+                className="min-h-11 min-w-11 flex items-center justify-center text-[#78564F] dark:text-[#A99A8F]"
                 aria-label="Close"
               >
                 <span className="material-symbols-outlined text-[18px]">close</span>
@@ -487,30 +487,30 @@ const Settings: React.FC = () => {
             </div>
 
             <div className="space-y-2 text-xs">
-              <div className="p-3 rounded-xl bg-[#FBF2E7] dark:bg-[#1E1B18] space-y-0.5">
+              <div className="p-3.5 rounded-xl bg-[#FBF2E7] dark:bg-[#1E1B18] border border-[#D2C3BE]/40 dark:border-[#39302B] space-y-0.5">
                 <span className="font-semibold text-[#261810] dark:text-[#F4EFEA] block">
                   SAMHSA National Helpline
                 </span>
-                <p className="text-[#6B5B54] dark:text-[#A99A8F]">1-800-662-4357 · 24/7 free and confidential</p>
+                <p className="text-[#78564F] dark:text-[#A99A8F]">1-800-662-4357 · 24/7 free and confidential</p>
               </div>
-              <div className="p-3 rounded-xl bg-[#FBF2E7] dark:bg-[#1E1B18] space-y-0.5">
+              <div className="p-3.5 rounded-xl bg-[#FBF2E7] dark:bg-[#1E1B18] border border-[#D2C3BE]/40 dark:border-[#39302B] space-y-0.5">
                 <span className="font-semibold text-[#261810] dark:text-[#F4EFEA] block">
                   Crisis Text Line
                 </span>
-                <p className="text-[#6B5B54] dark:text-[#A99A8F]">Text HOME to 741741 · 24/7 crisis support</p>
+                <p className="text-[#78564F] dark:text-[#A99A8F]">Text HOME to 741741 · 24/7 crisis support</p>
               </div>
-              <div className="p-3 rounded-xl bg-[#FBF2E7] dark:bg-[#1E1B18] space-y-0.5">
+              <div className="p-3.5 rounded-xl bg-[#FBF2E7] dark:bg-[#1E1B18] border border-[#D2C3BE]/40 dark:border-[#39302B] space-y-0.5">
                 <span className="font-semibold text-[#261810] dark:text-[#F4EFEA] block">
                   988 Suicide & Crisis Lifeline
                 </span>
-                <p className="text-[#6B5B54] dark:text-[#A99A8F]">Call or text 988 · 24/7 immediate help</p>
+                <p className="text-[#78564F] dark:text-[#A99A8F]">Call or text 988 · 24/7 immediate help</p>
               </div>
             </div>
 
             <button
               type="button"
               onClick={() => setShowSupportModal(false)}
-              className="min-h-11 w-full py-2 rounded-xl btn-primary text-xs font-semibold"
+              className="min-h-11 w-full py-2.5 rounded-full btn-primary text-xs font-semibold"
             >
               Close
             </button>

@@ -44,21 +44,21 @@ const Streaks: React.FC = () => {
           <button
             type="button"
             onClick={() => navigate("/progress")}
-            className="min-h-11 px-3 rounded-xl border border-[#D2C3BE] dark:border-[#39302B] bg-white dark:bg-[#2A2522] text-xs font-semibold text-[#261810] dark:text-[#F4EFEA] hover:bg-[#FBF2E7] dark:hover:bg-[#1E1B18] transition-colors"
+            className="min-h-11 px-3.5 rounded-full btn-secondary text-xs font-semibold"
           >
             ← Progress
           </button>
         </header>
 
         {trackers.length === 0 ? (
-          <div className="bg-white dark:bg-[#2A2522] rounded-2xl p-6 text-center border border-[#D2C3BE] dark:border-[#39302B] space-y-3">
+          <div className="vesper-card p-6 text-center space-y-3">
             <p className="text-xs text-[#6B5B54] dark:text-[#A99A8F]">
               No active trackers. Add a tracker to start recording milestones.
             </p>
             <button
               type="button"
               onClick={() => navigate("/add-addiction")}
-              className="min-h-11 px-4 py-2 btn-primary rounded-xl text-xs font-semibold"
+              className="min-h-11 px-5 py-2 btn-primary rounded-full text-xs font-semibold"
             >
               Add a tracker
             </button>
@@ -74,7 +74,7 @@ const Streaks: React.FC = () => {
               return (
                 <div
                   key={tracker.id || habitName}
-                  className="p-5 bg-white dark:bg-[#2A2522] border border-[#D2C3BE] dark:border-[#39302B] rounded-2xl space-y-3"
+                  className="p-5 vesper-card space-y-3"
                 >
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
@@ -103,9 +103,9 @@ const Streaks: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="w-full bg-[#FBF2E7] dark:bg-[#1E1B18] h-1.5 rounded-full overflow-hidden">
+                  <div className="w-full bg-[#F6EDE2] dark:bg-[#1E1B18] h-2 rounded-full overflow-hidden">
                     <div
-                      className="bg-[#B06060] dark:bg-[#C47A6A] h-full rounded-full transition-all"
+                      className="bg-[#D47A55] h-full rounded-full transition-all"
                       style={{ width: `${progressPct}%` }}
                     />
                   </div>

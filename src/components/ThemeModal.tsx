@@ -58,12 +58,12 @@ const ThemeModal: React.FC = () => {
             onClick={() => handleThemeSelect("light")}
             className={`min-h-11 p-3 rounded-xl border text-left transition-colors ${
               theme === "light"
-                ? "border-[#3D2C24] bg-[#FBF2E7]"
-                : "border-[#D2C3BE]/60 bg-white"
+                ? "border-[#D47A55] bg-[#FDD0C6]/25 dark:bg-[#3D2C24] ring-1 ring-[#D47A55]"
+                : "border-[#D2C3BE]/60 dark:border-[#39302B] bg-white dark:bg-[#1E1B18]"
             }`}
           >
-            <span className="block font-semibold text-xs text-[#261810]">Warm Paper</span>
-            <span className="text-[11px] text-[#6B5B54]">Ivory & cream</span>
+            <span className="block font-semibold text-xs text-[#261810] dark:text-[#F4EFEA]">Warm Paper</span>
+            <span className="text-[11px] text-[#6B5B54] dark:text-[#A99A8F]">Ivory & cream</span>
           </button>
 
           <button
@@ -72,12 +72,12 @@ const ThemeModal: React.FC = () => {
             onClick={() => handleThemeSelect("dark")}
             className={`min-h-11 p-3 rounded-xl border text-left transition-colors ${
               theme === "dark"
-                ? "border-[#D47A55] bg-[#1E1B18]"
-                : "border-[#39302B] bg-[#1E1B18]"
+                ? "border-[#D47A55] bg-[#3D2C24] ring-1 ring-[#D47A55]"
+                : "border-[#D2C3BE]/60 dark:border-[#39302B] bg-white dark:bg-[#1E1B18]"
             }`}
           >
-            <span className="block font-semibold text-xs text-[#F4EFEA]">Charcoal Night</span>
-            <span className="text-[11px] text-[#A99A8F]">Warm dark charcoal</span>
+            <span className="block font-semibold text-xs text-[#261810] dark:text-[#F4EFEA]">Charcoal Night</span>
+            <span className="text-[11px] text-[#6B5B54] dark:text-[#A99A8F]">Warm dark charcoal</span>
           </button>
         </div>
       </div>
