@@ -55,12 +55,12 @@ npm install
 ## Available Scripts
 
 ```bash
-npm run dev       # Start Vite dev server at http://localhost:5173
-npm run build     # Production build → dist/
-npm run preview   # Preview the production build locally
+npm run dev         # Start Vite dev server at http://localhost:5173
+npm run build       # Production build → dist/
+npm run preview     # Preview the production build locally
+npm run typecheck   # Typecheck TypeScript source files
+npm test            # Run workflow regression test suite
 ```
-
-There are no lint or test scripts in `package.json` at this time.
 
 ---
 
@@ -121,26 +121,36 @@ The Capacitor app ID is `com.jabez.trackify` and the app name is `trackify`.
 recovery-tracker/
 ├── android/              # Capacitor Android project
 ├── public/
-│   └── sunrise.jpg       # Background image used by Layout
+│   ├── app-icon.png      # Web app icon (512x512)
+│   ├── favicon.png       # Web favicon (64x64)
+│   ├── sunrise.jpg       # Background image used by Layout
+│   └── sunrise.jpg.avif
+├── scripts/
+│   └── generate_icons.py # Android & web launcher icon generation script
 ├── src/
-│   ├── components/       # Layout.jsx, ThemeModal.jsx
-│   ├── context/          # ThemeContext.jsx, UserContext.jsx
-│   ├── App.jsx           # Router and context providers
-│   ├── Welcome.jsx       # Name entry / onboarding
-│   ├── Home.jsx          # Dashboard / navigation hub
-│   ├── Calendar.jsx      # Monthly calendar with check-in indicators
-│   ├── Day.jsx           # Per-day check-in view
-│   ├── Notes.jsx         # Journal notes per habit
-│   ├── Progress.jsx      # Charts and CSV export
-│   ├── Streaks.jsx       # Streak display
-│   ├── AddAddiction.jsx  # Add a new habit
-│   ├── SeshPage.jsx      # Daily count calendar for "sesh"
-│   ├── WeedPage.jsx      # Daily count calendar for "weed"
-│   └── pornPage.jsx      # Daily count calendar + notes for "porn"
+│   ├── components/       # Layout.tsx, ThemeModal.tsx
+│   ├── context/          # ThemeContext.tsx, UserContext.tsx, RecoveryContext.tsx
+│   ├── types/            # TypeScript type definitions
+│   ├── utils/            # Recovery calculations and helpers
+│   ├── App.tsx           # Router and context providers
+│   ├── Welcome.tsx       # Name entry / onboarding
+│   ├── Home.tsx          # Dashboard / navigation hub
+│   ├── Calendar.tsx      # Monthly calendar with check-in indicators
+│   ├── Day.tsx           # Per-day check-in view
+│   ├── Notes.tsx         # Journal notes per habit
+│   ├── Progress.tsx      # Charts and CSV export
+│   ├── Streaks.tsx       # Streak display
+│   ├── AddAddiction.tsx  # Add a new habit
+│   ├── SeshPage.tsx      # Daily count calendar for "sesh"
+│   ├── WeedPage.tsx      # Daily count calendar for "weed"
+│   └── pornPage.tsx      # Daily count calendar + notes for "porn"
+├── tests/
+│   └── verify-workflows.test.js # Core recovery & calculation test suite
 ├── capacitor.config.json
 ├── vercel.json
 ├── vite.config.js
 ├── tailwind.config.js
+├── tsconfig.json
 └── package.json
 ```
 
