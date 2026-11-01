@@ -1,3 +1,5 @@
+import type { CanonicalTrackerRecord } from "./tracker";
+
 export type Modality =
   | "abstinence"
   | "harm_reduction"
@@ -91,6 +93,8 @@ export interface BackupPayload {
 }
 
 export interface RecoveryContextType {
+  canonicalTrackers: CanonicalTrackerRecord[];
+  migrationError?: string | null;
   trackers: TrackerRecord[];
   addictions: string[];
   generalNotes: GeneralNotesMap;

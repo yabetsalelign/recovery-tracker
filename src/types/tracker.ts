@@ -73,6 +73,14 @@ export interface DayRecord {
   value?: number;
   timestamp?: string; // "HH:mm"
   note?: string;
+  rawLegacyCheckIn?: boolean;
+}
+
+export interface LegacyTrackerMetadata {
+  originalModality?: string;
+  originalCategory?: string;
+  isInferredModality?: boolean;
+  requiresReview?: boolean;
 }
 
 export interface CanonicalTrackerRecord {
@@ -86,6 +94,13 @@ export interface CanonicalTrackerRecord {
   generalNote?: string;
   startDate: string; // YYYY-MM-DD
   isArchived?: boolean;
+  legacyMetadata?: LegacyTrackerMetadata;
+}
+
+export interface CanonicalStorageEnvelope {
+  schemaVersion: 3;
+  trackers: CanonicalTrackerRecord[];
+  migratedAt: string;
 }
 
 export interface DayEvaluation {
