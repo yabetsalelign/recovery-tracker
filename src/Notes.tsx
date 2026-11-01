@@ -355,8 +355,8 @@ const Notes: React.FC = () => {
                   onClick={handleSaveReflection}
                   className="min-h-11 inline-flex items-center gap-2 px-5 py-2.5 rounded-full btn-primary text-xs font-semibold disabled:opacity-50"
                 >
-                  <span className="material-symbols-outlined text-[16px]">
-                    {saveStatus === "saved" ? "done" : "check"}
+                  <span className="material-symbols-outlined text-[18px]">
+                    check
                   </span>
                   <span>
                     {saveStatus === "saved" ? "Saved" : saveStatus === "saving" ? "Saving..." : "Save entry"}

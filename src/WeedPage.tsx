@@ -96,7 +96,7 @@ const WeedPage: React.FC = () => {
                 onClick={() => setCurrentMonth((prev) => subMonths(prev, 1))}
                 className="min-h-11 min-w-11 rounded-xl flex items-center justify-center border border-[#D2C3BE] dark:border-[#39302B] hover:bg-[#FBF2E7] dark:hover:bg-[#1E1B18] text-xs"
               >
-                <span className="material-symbols-outlined text-[16px]">chevron_left</span>
+                <span className="material-symbols-outlined text-[18px]">chevron_left</span>
               </button>
               <button
                 type="button"
@@ -104,7 +104,7 @@ const WeedPage: React.FC = () => {
                 onClick={() => setCurrentMonth((prev) => addMonths(prev, 1))}
                 className="min-h-11 min-w-11 rounded-xl flex items-center justify-center border border-[#D2C3BE] dark:border-[#39302B] hover:bg-[#FBF2E7] dark:hover:bg-[#1E1B18] text-xs"
               >
-                <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+                <span className="material-symbols-outlined text-[18px]">chevron_right</span>
               </button>
             </div>
           </div>

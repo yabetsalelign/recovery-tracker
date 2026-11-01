@@ -297,7 +297,7 @@ const Calendar: React.FC = () => {
                               : "btn-primary text-xs"
                           }`}
                         >
-                          <span className="material-symbols-outlined text-[16px]">
+                          <span className="material-symbols-outlined text-[18px]">
                             {isChecked ? "check" : "radio_button_unchecked"}
                           </span>
                           <span>{isChecked ? "Checked" : "Check in"}</span>

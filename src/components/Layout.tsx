@@ -33,9 +33,12 @@ const Layout: React.FC<LayoutProps> = ({
               aria-label="Recovery Tracker home"
             >
               <div className="brand-badge">
-                <span className="material-symbols-outlined text-[18px]">
-                  spa
-                </span>
+                <img
+                  src="/favicon.png"
+                  alt=""
+                  aria-hidden="true"
+                  className="w-5 h-5 rounded-full object-cover"
+                />
               </div>
               <span className="font-serif text-lg font-medium leading-none text-[#261810] dark:text-[#F4EFEA]">
                 Recovery Tracker
@@ -95,7 +98,7 @@ const Layout: React.FC<LayoutProps> = ({
                   }`}
                 >
                   <span
-                    className="material-symbols-outlined text-[20px]"
+                    className="material-symbols-outlined text-[22px]"
                     style={{ fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0" }}
                   >
                     {item.icon}

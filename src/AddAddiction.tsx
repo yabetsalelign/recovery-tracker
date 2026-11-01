@@ -4,6 +4,7 @@ import Layout from "./components/Layout";
 import { useTheme } from "./context/ThemeContext";
 import { useRecovery } from "./context/RecoveryContext";
 import type { TrackerRecord } from "./types";
+import { getHabitIcon } from "./utils/habitIcons";
 
 const AddAddiction: React.FC = () => {
   const navigate = useNavigate();
@@ -39,15 +40,6 @@ const AddAddiction: React.FC = () => {
       return name ? name.slice(0, 1).toUpperCase() + " Tracker" : "Tracker";
     }
     return name;
-  };
-
-  const getHabitIcon = (name: string): string => {
-    const lower = (name || "").toLowerCase();
-    if (lower.includes("alcohol") || lower.includes("drink") || lower.includes("sobriety")) return "water_drop";
-    if (lower.includes("sesh") || lower.includes("smoke") || lower.includes("nicotine")) return "air";
-    if (lower.includes("weed") || lower.includes("cannabis")) return "nature";
-    if (lower.includes("porn") || lower.includes("screen") || lower.includes("curfew")) return "bedtime";
-    return "spa";
   };
 
   const handleSaveGoal = (e: React.FormEvent) => {

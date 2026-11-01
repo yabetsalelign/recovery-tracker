@@ -96,7 +96,7 @@ const Counter: React.FC = () => {
                   <span className="text-xs text-[#6B5B54] dark:text-[#A99A8F] flex items-center gap-1">
                     {reached ? (
                       <>
-                        <span className="material-symbols-outlined text-[16px] text-[#46644B] dark:text-[#8EAA92]">
+                        <span className="material-symbols-outlined text-[18px] text-[#46644B] dark:text-[#8EAA92]">
                           check
                         </span>
                         <span className="font-medium text-[#46644B] dark:text-[#8EAA92]">Reached</span>

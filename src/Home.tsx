@@ -5,6 +5,7 @@ import Layout from "./components/Layout";
 import { useTheme } from "./context/ThemeContext";
 import { useUser } from "./context/UserContext";
 import { useRecovery } from "./context/RecoveryContext";
+import { getHabitIcon } from "./utils/habitIcons";
 
 interface SpecializedModalState {
   type: "sesh" | "weed" | "porn";
@@ -52,15 +53,6 @@ const Home: React.FC = () => {
 
   const allNotes = useMemo(() => getAllNotes(), [getAllNotes]);
   const latestNote = allNotes.length > 0 ? allNotes[0] : null;
-
-  const getHabitIcon = (habitName: string): string => {
-    const lower = (habitName || "").toLowerCase();
-    if (lower.includes("alcohol") || lower.includes("drink") || lower.includes("sobriety")) return "water_drop";
-    if (lower.includes("sesh") || lower.includes("smoke") || lower.includes("nicotine")) return "air";
-    if (lower.includes("weed") || lower.includes("cannabis")) return "nature";
-    if (lower.includes("porn") || lower.includes("screen") || lower.includes("curfew")) return "bedtime";
-    return "spa";
-  };
 
   const getDisplayName = (habitName: string): string => {
     if (discreetMode) {
@@ -165,7 +157,7 @@ const Home: React.FC = () => {
                 : "btn-primary"
             }`}
           >
-            <span className="material-symbols-outlined text-[16px]">
+            <span className="material-symbols-outlined text-[18px]">
               {hasCompletedTodayCheckin ? "check" : "check_circle"}
             </span>
             <span>{hasCompletedTodayCheckin ? "Update check-in" : "Save check-in"}</span>
@@ -269,7 +261,7 @@ const Home: React.FC = () => {
                             : "btn-primary"
                         }`}
                       >
-                        <span className="material-symbols-outlined text-[16px]">
+                        <span className="material-symbols-outlined text-[18px]">
                           {isCheckedToday ? "check" : "radio_button_unchecked"}
                         </span>
                         <span>{isCheckedToday ? "Checked" : "Check in"}</span>

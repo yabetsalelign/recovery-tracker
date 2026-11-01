@@ -208,22 +208,19 @@
 
 /* ─── Brand Badge (Header Logo) ─────────────────────────────────────────── */
 .brand-badge {
-  background-color: #FDD0C6;
-  color: #261810;
-  border-radius: 0.75rem;
-  width: 2.25rem;
-  height: 2.25rem;
+  background-color: transparent;
+  border-radius: 9999px;
+  width: 2rem;
+  height: 2rem;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 1px 2px rgba(38, 24, 16, 0.06);
+  overflow: hidden;
 }
 
 .dark .brand-badge {
-  background-color: #3D2C24;
-  color: #FDD0C6;
-  border: 1px solid rgba(253, 208, 198, 0.2);
+  background-color: transparent;
 }
 
 /* ─── Icon Badge (Habit List Item Badges) ────────────────────────────────── */
