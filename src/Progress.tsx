@@ -81,6 +81,18 @@ const Progress: React.FC = () => {
       end: new Date(),
     });
   }, []);
+  const timelineData = useMemo(
+    () =>
+      timelineDays.map((day) => {
+        const date = format(day, "yyyy-MM-dd");
+        const checksCount = trackers.filter((tracker) => tracker.checkIns?.[date]).length;
+        const hasNote = trackers.some((tracker) => tracker.notes?.[date]?.trim());
+        const complete = checksCount === trackers.length && trackers.length > 0;
+        return { day, date, checksCount, hasNote, complete };
+      }),
+    [timelineDays, trackers]
+  );
+  const hasTimelineActivity = timelineData.some(({ checksCount, hasNote }) => checksCount > 0 || hasNote);
 
   return (
     <Layout title="Progress">
@@ -110,8 +122,9 @@ const Progress: React.FC = () => {
             <button
               key={tab.id}
               type="button"
+              aria-pressed={timeHorizon === tab.id}
               onClick={() => setTimeHorizon(tab.id)}
-              className={`flex-1 py-1.5 px-2 text-center rounded-lg text-xs font-semibold transition-all ${
+              className={`min-h-11 flex-1 py-1.5 px-2 text-center rounded-lg text-xs font-semibold transition-all ${
                 timeHorizon === tab.id
                   ? "bg-white dark:bg-[#2C332C] text-[#46644B] dark:text-[#8EAA92] shadow-xs"
                   : "text-[#77786F] dark:text-[#A6ABA0] hover:text-[#252B25]"
@@ -188,7 +201,7 @@ const Progress: React.FC = () => {
         </div>
 
         {/* Emotional Rhythm Timeline Visualization */}
-        <div className="p-5 bg-white dark:bg-[#212521] rounded-2xl border border-[#E3DED5] dark:border-[#313831] shadow-xs space-y-4">
+        <div className="min-w-0 p-4 sm:p-5 bg-white dark:bg-[#212521] rounded-2xl border border-[#E3DED5] dark:border-[#313831] shadow-xs space-y-4">
           <div className="flex items-start justify-between">
             <div>
               <span className="text-[11px] uppercase tracking-wider text-[#77786F] dark:text-[#A6ABA0] font-semibold">
@@ -203,33 +216,37 @@ const Progress: React.FC = () => {
 
           {/* Timeline Bar Chart */}
           <div className="pt-2 pb-1">
-            <div className="flex items-end justify-between gap-1 h-24 w-full">
-              {timelineDays.map((day) => {
-                const dStr = format(day, "yyyy-MM-dd");
-                const checksCount = trackers.filter((t) => t.checkIns?.[dStr]).length;
-                const hasNote = trackers.some((t) => t.notes?.[dStr]?.trim());
-                const allComplete = checksCount === trackers.length && trackers.length > 0;
-
-                let barHeight = "15%";
-                let barColor = "bg-[#E8EBDD] dark:bg-[#313831]"; // rest
-
-                if (allComplete) {
-                  barHeight = "95%";
-                  barColor = "bg-[#46644B] dark:bg-[#8EAA92]";
-                } else if (checksCount > 0 || hasNote) {
-                  barHeight = "60%";
-                  barColor = "bg-[#B16F4C] dark:bg-[#D49877]";
-                }
+            {!hasTimelineActivity && (
+              <p className="mb-3 rounded-lg bg-[#F8F6F1] dark:bg-[#181B18] px-3 py-2 text-xs leading-relaxed text-[#77786F] dark:text-[#D0C4BA]">
+                Your recent rhythm will take shape as you record check-ins or reflections.
+              </p>
+            )}
+            <div
+              role="img"
+              aria-label="Daily check-in activity for the past 21 days. Select View daily details for exact dates and counts."
+              className={`flex w-full min-w-0 items-end justify-between gap-[2px] sm:gap-1 ${
+                hasTimelineActivity ? "h-24" : "h-14 sm:h-16"
+              }`}
+            >
+              {timelineData.map(({ day, date, checksCount, hasNote, complete }, index) => {
+                const barHeight = complete ? "95%" : checksCount > 0 || hasNote ? "60%" : "15%";
+                const barColor = complete
+                  ? "bg-[#46644B] dark:bg-[#8EAA92]"
+                  : checksCount > 0 || hasNote
+                    ? "bg-[#B16F4C] dark:bg-[#D49877]"
+                    : "bg-[#E8EBDD] dark:bg-[#313831]";
+                const showDate = index === 0 || index === 20 || (index + 1) % 5 === 0;
 
                 return (
-                  <div key={dStr} className="flex-1 flex flex-col items-center gap-1.5 h-full justify-end">
+                  <div key={date} className="flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-1">
                     <div
-                      className={`w-full rounded-t-[3px] transition-all duration-300 ${barColor}`}
+                      className={`w-full min-w-0 rounded-t-[3px] transition-all duration-300 ${barColor}`}
                       style={{ height: barHeight }}
-                      title={`${dStr}: ${checksCount}/${trackers.length} checked`}
-                    ></div>
-                    <span className="text-[9.5px] font-mono text-[#77786F] dark:text-[#A6ABA0]">
-                      {format(day, "d")}
+                      aria-hidden="true"
+                      title={`${date}: ${checksCount}/${trackers.length} goals checked${hasNote ? ", reflection recorded" : ""}`}
+                    />
+                    <span className="h-3 text-[10px] font-mono leading-3 text-[#77786F] dark:text-[#A6ABA0]">
+                      {showDate ? format(day, "d") : ""}
                     </span>
                   </div>
                 );
@@ -238,7 +255,7 @@ const Progress: React.FC = () => {
           </div>
 
           {/* Minimal Legend */}
-          <div className="flex items-center justify-between pt-2 border-t border-[#E3DED5]/70 dark:border-[#313831] text-xs">
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 pt-2 border-t border-[#E3DED5]/70 dark:border-[#313831] text-xs">
             <div className="flex items-center gap-1.5 text-[#77786F] dark:text-[#A6ABA0]">
               <span className="w-2.5 h-2.5 rounded-full bg-[#46644B] dark:bg-[#8EAA92] inline-block"></span>
               <span>All Complete</span>
@@ -252,6 +269,28 @@ const Progress: React.FC = () => {
               <span>Rest day</span>
             </div>
           </div>
+
+          <details className="border-t border-[#E3DED5]/70 dark:border-[#313831] pt-2">
+            <summary className="min-h-11 cursor-pointer text-xs font-semibold text-[#46644B] dark:text-[#D5A16D]">
+              View daily details
+            </summary>
+            <ul className="grid gap-1 sm:grid-cols-2">
+              {timelineData.map(({ day, date, checksCount, hasNote, complete }) => {
+                const status = complete
+                  ? "All goals checked"
+                  : checksCount > 0 || hasNote
+                    ? "Partial activity"
+                    : "No activity recorded";
+                return (
+                  <li key={date} className="rounded-lg bg-[#F8F6F1] dark:bg-[#181B18] px-3 py-2 text-xs text-[#5E4D45] dark:text-[#D0C4BA]">
+                    <time dateTime={date}>{format(day, "EEE, MMM d")}</time>
+                    <span>: {status}{trackers.length > 0 ? ` (${checksCount}/${trackers.length} goals)` : ""}</span>
+                    {hasNote && <span>, reflection recorded</span>}
+                  </li>
+                );
+              })}
+            </ul>
+          </details>
         </div>
 
         {/* Active Commitments Breakdown */}

@@ -79,10 +79,10 @@ const SeshPage: React.FC = () => {
             </div>
             <div>
               <span className="text-[11px] uppercase tracking-wider text-[#77786F] dark:text-[#A6ABA0] font-semibold block">
-                Zero-Sesh Streak
+                Consecutive zero-count days
               </span>
               <span className="font-serif text-2xl font-medium text-[#46644B] dark:text-[#8EAA92]">
-                {streak} {streak === 1 ? "day" : "days"} clean
+                {streak} {streak === 1 ? "day" : "days"}
               </span>
             </div>
           </div>
@@ -100,15 +100,17 @@ const SeshPage: React.FC = () => {
             <div className="flex items-center gap-1">
               <button
                 type="button"
+                aria-label="Previous month"
                 onClick={() => setCurrentMonth((prev) => subMonths(prev, 1))}
-                className="w-8 h-8 rounded-lg flex items-center justify-center border border-[#E3DED5] dark:border-[#313831] hover:bg-[#F2EFE8] text-xs"
+                className="min-h-11 min-w-11 rounded-lg flex items-center justify-center border border-[#E3DED5] dark:border-[#313831] hover:bg-[#F2EFE8] text-xs"
               >
                 <span className="material-symbols-outlined text-[16px]">chevron_left</span>
               </button>
               <button
                 type="button"
+                aria-label="Next month"
                 onClick={() => setCurrentMonth((prev) => addMonths(prev, 1))}
-                className="w-8 h-8 rounded-lg flex items-center justify-center border border-[#E3DED5] dark:border-[#313831] hover:bg-[#F2EFE8] text-xs"
+                className="min-h-11 min-w-11 rounded-lg flex items-center justify-center border border-[#E3DED5] dark:border-[#313831] hover:bg-[#F2EFE8] text-xs"
               >
                 <span className="material-symbols-outlined text-[16px]">chevron_right</span>
               </button>
@@ -137,6 +139,7 @@ const SeshPage: React.FC = () => {
                 <button
                   key={dateStr}
                   type="button"
+                  aria-label={`${format(dateObj, "EEEE, MMMM d, yyyy")}: ${isLogged ? `${count} count recorded` : "no count recorded"}`}
                   onClick={() => handleDayClick(dateStr)}
                   className={`h-11 rounded-xl flex flex-col items-center justify-center border transition-all ${
                     isZero
@@ -159,10 +162,10 @@ const SeshPage: React.FC = () => {
             <span>Click any day to log or adjust count</span>
             <div className="flex items-center gap-2">
               <span className="flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-[#46644B]"></span> 0 (Clean)
+                <span className="w-2 h-2 rounded-full bg-[#46644B]"></span> 0 (No consumption)
               </span>
               <span className="flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-[#B16F4C]"></span> &gt;0 (Used)
+                <span className="w-2 h-2 rounded-full bg-[#B16F4C]"></span> &gt;0 (Consumption recorded)
               </span>
             </div>
           </div>

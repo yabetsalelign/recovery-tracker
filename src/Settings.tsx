@@ -142,13 +142,14 @@ const Settings: React.FC = () => {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              aria-label="Display name"
               placeholder="Your name or initials"
-              className="flex-1 px-3 py-2 text-sm rounded-lg border border-[#E3DED5] dark:border-[#313831] bg-[#F7F4EE] dark:bg-[#181B18] text-[#252B25] dark:text-[#E8EBDD] focus:outline-none focus:border-[#46644B]"
+              className="min-h-11 flex-1 px-3 py-2 text-sm rounded-lg border border-[#E3DED5] dark:border-[#313831] bg-[#F7F4EE] dark:bg-[#181B18] text-[#252B25] dark:text-[#E8EBDD] focus:outline-none focus:border-[#46644B]"
             />
             <button
               type="button"
               onClick={() => showNotification("Name updated")}
-              className="px-3.5 py-2 rounded-lg bg-[#46644B] text-white text-xs font-medium hover:bg-[#38503C] transition-colors"
+              className="min-h-11 px-3.5 rounded-lg bg-[#46644B] text-white text-xs font-medium hover:bg-[#38503C] transition-colors"
             >
               Save
             </button>
@@ -167,12 +168,14 @@ const Settings: React.FC = () => {
 
           <div className="grid grid-cols-2 gap-3">
             {/* Warm Light Option */}
-            <div
+            <button
+              type="button"
+              aria-pressed={theme === "light"}
               onClick={() => {
                 toggleTheme("light");
                 showNotification("Warm Paper palette active");
               }}
-              className={`p-4 rounded-xl border-2 transition-all cursor-pointer shadow-xs ${
+              className={`w-full text-left p-4 rounded-xl border-2 transition-all shadow-xs ${
                 theme === "light"
                   ? "bg-white border-[#46644B]"
                   : "bg-white/80 dark:bg-[#212521] border-[#E3DED5] dark:border-[#313831]"
@@ -189,22 +192,24 @@ const Settings: React.FC = () => {
                 </div>
               </div>
               <p className="text-[11.5px] text-[#77786F] dark:text-[#A6ABA0] leading-snug mb-3">
-                Ivory pulp paper with calming forest sage pigment.
+                Ivory paper, blush accents, and espresso-brown type.
               </p>
               <div className="h-7 rounded-lg bg-[#F7F4EE] border border-[#E3DED5] flex items-center px-2 gap-1.5">
                 <div className="w-3 h-3 rounded-full bg-[#46644B]"></div>
                 <div className="h-1.5 w-8 rounded-full bg-[#E3DED5]"></div>
                 <div className="h-1.5 w-5 rounded-full bg-[#B16F4C] ml-auto"></div>
               </div>
-            </div>
+            </button>
 
             {/* Charcoal Night Option */}
-            <div
+            <button
+              type="button"
+              aria-pressed={theme === "dark"}
               onClick={() => {
                 toggleTheme("dark");
                 showNotification("Charcoal Night palette active");
               }}
-              className={`p-4 rounded-xl border-2 transition-all cursor-pointer shadow-xs ${
+              className={`w-full text-left p-4 rounded-xl border-2 transition-all shadow-xs ${
                 theme === "dark"
                   ? "bg-[#212521] border-[#8EAA92]"
                   : "bg-[#212521]/70 border-[#313831]"
@@ -221,14 +226,14 @@ const Settings: React.FC = () => {
                 </div>
               </div>
               <p className="text-[11.5px] text-[#A6ABA0] leading-snug mb-3">
-                Deep slate ground with warm, low-glare contrast.
+                Warm charcoal surfaces with soft cream contrast.
               </p>
               <div className="h-7 rounded-lg bg-[#181B18] border border-white/10 flex items-center px-2 gap-1.5">
                 <div className="w-3 h-3 rounded-full bg-[#8EAA92]"></div>
                 <div className="h-1.5 w-8 rounded-full bg-white/20"></div>
                 <div className="h-1.5 w-5 rounded-full bg-[#D49877] ml-auto"></div>
               </div>
-            </div>
+            </button>
           </div>
 
           {/* Reading Scale & Transitions Card */}
@@ -247,7 +252,8 @@ const Settings: React.FC = () => {
                     setFontScale("standard");
                     showNotification("Standard reading scale");
                   }}
-                  className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${
+                  aria-pressed={fontScale === "standard"}
+                  className={`min-h-11 px-3 py-1 rounded-lg text-xs font-medium transition-all ${
                     fontScale === "standard"
                       ? "bg-white dark:bg-[#2C332C] text-[#46644B] dark:text-[#8EAA92] shadow-xs font-semibold"
                       : "text-[#77786F] dark:text-[#A6ABA0]"
@@ -261,7 +267,8 @@ const Settings: React.FC = () => {
                     setFontScale("comfort");
                     showNotification("Comfort reading scale");
                   }}
-                  className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${
+                  aria-pressed={fontScale === "comfort"}
+                  className={`min-h-11 px-3 py-1 rounded-lg text-xs font-medium transition-all ${
                     fontScale === "comfort"
                       ? "bg-white dark:bg-[#2C332C] text-[#46644B] dark:text-[#8EAA92] shadow-xs font-semibold"
                       : "text-[#77786F] dark:text-[#A6ABA0]"
@@ -290,7 +297,7 @@ const Settings: React.FC = () => {
                   setGentleTransitions(next);
                   showNotification(next ? "Gentle transitions enabled" : "Standard animations active");
                 }}
-                className={`w-12 h-7 rounded-full p-0.5 flex items-center transition-colors duration-200 shrink-0 ${
+                className={`min-h-11 min-w-11 w-12 rounded-full p-0.5 flex items-center transition-colors duration-200 shrink-0 ${
                   gentleTransitions ? "bg-[#46644B]" : "bg-[#E3DED5] dark:bg-[#313831]"
                 }`}
               >
@@ -447,27 +454,29 @@ const Settings: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-2 gap-3">
-            <div
+            <button
+              type="button"
               onClick={() => setShowBreathingModal(true)}
-              className="p-4 rounded-2xl bg-white dark:bg-[#212521] border border-[#E3DED5] dark:border-[#313831] hover:bg-[#F8F6F1] dark:hover:bg-[#282D28] transition-colors cursor-pointer shadow-xs flex flex-col"
+              className="p-4 rounded-2xl bg-white dark:bg-[#212521] border border-[#E3DED5] dark:border-[#313831] hover:bg-[#F8F6F1] dark:hover:bg-[#282D28] transition-colors shadow-xs flex flex-col text-left"
             >
               <div className="w-9 h-9 rounded-xl bg-[#E8EBDD] dark:bg-[#2C332C] flex items-center justify-center text-[#46644B] dark:text-[#8EAA92] mb-2.5">
                 <span className="material-symbols-outlined text-[20px]">air</span>
               </div>
               <span className="font-semibold text-xs text-[#252B25] dark:text-[#E8EBDD] mb-0.5">Box Breathing</span>
               <span className="text-[11.5px] text-[#77786F] dark:text-[#A6ABA0]">Calm the vagus nerve</span>
-            </div>
+            </button>
 
-            <div
+            <button
+              type="button"
               onClick={() => setShowSupportModal(true)}
-              className="p-4 rounded-2xl bg-white dark:bg-[#212521] border border-[#E3DED5] dark:border-[#313831] hover:bg-[#F8F6F1] dark:hover:bg-[#282D28] transition-colors cursor-pointer shadow-xs flex flex-col"
+              className="p-4 rounded-2xl bg-white dark:bg-[#212521] border border-[#E3DED5] dark:border-[#313831] hover:bg-[#F8F6F1] dark:hover:bg-[#282D28] transition-colors shadow-xs flex flex-col text-left"
             >
               <div className="w-9 h-9 rounded-xl bg-[#F9ECE5] dark:bg-[#3A271E] flex items-center justify-center text-[#B16F4C] dark:text-[#D49877] mb-2.5">
                 <span className="material-symbols-outlined text-[20px]">call</span>
               </div>
               <span className="font-semibold text-xs text-[#252B25] dark:text-[#E8EBDD] mb-0.5">Support Lines</span>
               <span className="text-[11.5px] text-[#77786F] dark:text-[#A6ABA0]">Confidential 24/7 aids</span>
-            </div>
+            </button>
           </div>
         </section>
 

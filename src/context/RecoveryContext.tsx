@@ -13,6 +13,7 @@ import type {
   GeneralNotesMap,
   SpecializedTrackerData,
   NoteEntry,
+  EmotionalWeatherMap,
   ActionResult,
   BackupPayload,
   RecoveryContextType,
@@ -22,6 +23,7 @@ import {
   calculateLongestConsecutiveStreak,
   calculateSpecializedZeroStreak,
   escapeCsvValue,
+  buildRecoveryCsv,
 } from "../utils/recoveryCalculations";
 
 export const RecoveryContext = createContext<RecoveryContextType | null>(null);
@@ -57,6 +59,25 @@ const safeSet = <T,>(key: string, value: T): void => {
   } catch (e) {
     console.error(`Error saving localStorage key "${key}":`, e);
   }
+};
+
+const loadEmotionalWeather = (): EmotionalWeatherMap => {
+  const dates = new Set<string>();
+  for (let index = 0; index < localStorage.length; index += 1) {
+    const key = localStorage.key(index);
+    if (key?.startsWith("mood_")) dates.add(key.slice("mood_".length));
+    if (key?.startsWith("moodNote_")) dates.add(key.slice("moodNote_".length));
+    if (key?.startsWith("checkedIn_")) dates.add(key.slice("checkedIn_".length));
+  }
+  const entries: EmotionalWeatherMap = {};
+  dates.forEach((date) => {
+    entries[date] = {
+      mood: localStorage.getItem(`mood_${date}`) || "",
+      note: localStorage.getItem(`moodNote_${date}`) || "",
+      checkedIn: localStorage.getItem(`checkedIn_${date}`) === "true",
+    };
+  });
+  return entries;
 };
 
 export {
@@ -131,6 +152,13 @@ export const RecoveryProvider: React.FC<{ children: ReactNode }> = ({ children }
   const [pornData, setPornData] = useState<SpecializedTrackerData>(() =>
     safeParse<SpecializedTrackerData>(STORAGE_KEYS.PORN_DATA, {})
   );
+  const [pornNotes, setPornNotes] = useState<string>(() => {
+    const savedNotes = localStorage.getItem("pornNotes");
+    if (savedNotes !== null) return savedNotes;
+    const legacyData = safeParse<Record<string, unknown>>(STORAGE_KEYS.PORN_DATA, {});
+    return typeof legacyData.notes === "string" ? legacyData.notes : "";
+  });
+  const [emotionalWeather, setEmotionalWeather] = useState<EmotionalWeatherMap>(loadEmotionalWeather);
 
   const [selectedDate, setSelectedDate] = useState<string>(() => {
     return localStorage.getItem(STORAGE_KEYS.SELECTED_DATE) || format(new Date(), "yyyy-MM-dd");
@@ -163,6 +191,40 @@ export const RecoveryProvider: React.FC<{ children: ReactNode }> = ({ children }
   useEffect(() => {
     safeSet(STORAGE_KEYS.PORN_DATA, pornData);
   }, [pornData]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("pornNotes", pornNotes);
+    } catch (e) {
+      console.error('Error saving localStorage key "pornNotes":', e);
+    }
+  }, [pornNotes]);
+
+  useEffect(() => {
+    try {
+      Object.entries(emotionalWeather).forEach(([date, entry]) => {
+        localStorage.setItem(`mood_${date}`, entry.mood);
+        localStorage.setItem(`moodNote_${date}`, entry.note);
+        localStorage.setItem(`checkedIn_${date}`, String(entry.checkedIn));
+      });
+      const currentDates = new Set(Object.keys(emotionalWeather));
+      const staleKeys: string[] = [];
+      for (let index = 0; index < localStorage.length; index += 1) {
+        const key = localStorage.key(index);
+        const prefix = key?.startsWith("moodNote_")
+          ? "moodNote_"
+          : key?.startsWith("checkedIn_")
+          ? "checkedIn_"
+          : key?.startsWith("mood_")
+          ? "mood_"
+          : null;
+        if (key && prefix && !currentDates.has(key.slice(prefix.length))) staleKeys.push(key);
+      }
+      staleKeys.forEach((key) => localStorage.removeItem(key));
+    } catch (e) {
+      console.error("Error saving emotional weather records:", e);
+    }
+  }, [emotionalWeather]);
 
   useEffect(() => {
     try {
@@ -207,22 +269,18 @@ export const RecoveryProvider: React.FC<{ children: ReactNode }> = ({ children }
   // Complete overall today's check-in
   const completeDailyCheckin = useCallback(
     (dateStr: string, mood = "okay", note = "") => {
-      try {
-        localStorage.setItem(`mood_${dateStr}`, mood);
-        localStorage.setItem(`moodNote_${dateStr}`, note);
-        localStorage.setItem(`checkedIn_${dateStr}`, "true");
-      } catch (e) {}
-
-      // Mark all active trackers as checked in
-      setTrackers((prev) =>
-        prev.map((t) => ({
-          ...t,
-          checkIns: { ...t.checkIns, [dateStr]: true },
-        }))
-      );
+      if (!dateStr) return;
+      setEmotionalWeather((prev) => ({
+        ...prev,
+        [dateStr]: { mood, note, checkedIn: true },
+      }));
     },
     []
   );
+
+  const savePornNotes = useCallback((text: string) => {
+    setPornNotes(text);
+  }, []);
 
   // Add new recovery goal
   const addGoal = useCallback((goalConfig: GoalConfig): ActionResult => {
@@ -467,6 +525,8 @@ export const RecoveryProvider: React.FC<{ children: ReactNode }> = ({ children }
       seshData,
       weedData,
       pornData,
+      pornNotes,
+      emotionalWeather,
     };
 
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
@@ -479,43 +539,19 @@ export const RecoveryProvider: React.FC<{ children: ReactNode }> = ({ children }
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
     return true;
-  }, [trackers, generalNotes, seshData, weedData, pornData]);
+  }, [trackers, generalNotes, seshData, weedData, pornData, pornNotes, emotionalWeather]);
 
   // Export RFC 4180 compliant CSV
   const exportCSV = useCallback((): boolean => {
-    const escapeCsv = (str: unknown): string => {
-      if (str === null || str === undefined) return '""';
-      const s = String(str).replace(/"/g, '""');
-      return `"${s}"`;
-    };
-
-    const header = "Date,Habit,Status,Notes";
-    const rows: string[] = [];
-
-    // Trackers data
-    trackers.forEach((tracker) => {
-      const allDates = new Set([
-        ...Object.keys(tracker.checkIns || {}),
-        ...Object.keys(tracker.notes || {}),
-      ]);
-
-      Array.from(allDates)
-        .sort((a, b) => new Date(b).getTime() - new Date(a).getTime())
-        .forEach((d) => {
-          const isChecked = tracker.checkIns?.[d] ? "Checked" : "Unchecked";
-          const note = tracker.notes?.[d] || "";
-          rows.push([escapeCsv(d), escapeCsv(tracker.name), escapeCsv(isChecked), escapeCsv(note)].join(","));
-        });
+    const csvContent = buildRecoveryCsv({
+      trackers,
+      generalNotes,
+      emotionalWeather,
+      seshData,
+      weedData,
+      pornData,
+      pornNotes,
     });
-
-    // General notes
-    Object.entries(generalNotes || {})
-      .sort((a, b) => new Date(b[0]).getTime() - new Date(a[0]).getTime())
-      .forEach(([d, note]) => {
-        rows.push([escapeCsv(d), escapeCsv("General Reflection"), escapeCsv("N/A"), escapeCsv(note)].join(","));
-      });
-
-    const csvContent = rows.length ? `${header}\n${rows.join("\n")}` : header;
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -526,7 +562,7 @@ export const RecoveryProvider: React.FC<{ children: ReactNode }> = ({ children }
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
     return true;
-  }, [trackers, generalNotes]);
+  }, [trackers, generalNotes, emotionalWeather, seshData, weedData, pornData, pornNotes]);
 
   // Validate and import JSON backup safely without partial overwrite
   const validateAndImportJSON = useCallback(
@@ -564,12 +600,28 @@ export const RecoveryProvider: React.FC<{ children: ReactNode }> = ({ children }
         }
 
         // Validate specialized data if present
-        const specializedKeys: (keyof BackupPayload)[] = ["seshData", "weedData", "pornData", "generalNotes"];
+        const specializedKeys: (keyof BackupPayload)[] = ["seshData", "weedData", "pornData", "generalNotes", "emotionalWeather"];
         for (const k of specializedKeys) {
           const val = parsed[k];
           if (val !== undefined && (typeof val !== "object" || Array.isArray(val))) {
             return { success: false, error: `Invalid backup: '${k}' must be an object.` };
           }
+        }
+        if (parsed.emotionalWeather) {
+          for (const [date, entry] of Object.entries(parsed.emotionalWeather)) {
+            if (
+              !entry ||
+              typeof entry !== "object" ||
+              typeof entry.mood !== "string" ||
+              typeof entry.note !== "string" ||
+              typeof entry.checkedIn !== "boolean"
+            ) {
+              return { success: false, error: `Invalid backup: emotional weather for "${date}" is malformed.` };
+            }
+          }
+        }
+        if (parsed.pornNotes !== undefined && typeof parsed.pornNotes !== "string") {
+          return { success: false, error: "Invalid backup: 'pornNotes' must be a string." };
         }
 
         // All validations passed! Apply updates atomically
@@ -588,12 +640,15 @@ export const RecoveryProvider: React.FC<{ children: ReactNode }> = ({ children }
           parsed.weedData && typeof parsed.weedData === "object" ? parsed.weedData : weedData;
         const newPorn =
           parsed.pornData && typeof parsed.pornData === "object" ? parsed.pornData : pornData;
+        const newEmotionalWeather = parsed.emotionalWeather || emotionalWeather;
 
         setTrackers(newTrackers);
         setGeneralNotes(newGeneralNotes);
         setSeshData(newSesh);
         setWeedData(newWeed);
         setPornData(newPorn);
+        setEmotionalWeather(newEmotionalWeather);
+        if (parsed.pornNotes !== undefined) setPornNotes(parsed.pornNotes);
 
         if (parsed.counterStartDate && typeof parsed.counterStartDate === "string") {
           setCounterStartDate(parsed.counterStartDate);
@@ -608,7 +663,7 @@ export const RecoveryProvider: React.FC<{ children: ReactNode }> = ({ children }
         return { success: false, error: `Failed to parse JSON file: ${e.message}` };
       }
     },
-    [trackers, generalNotes, seshData, weedData, pornData]
+    [trackers, generalNotes, seshData, weedData, pornData, emotionalWeather]
   );
 
   // Reset all application data safely
@@ -621,6 +676,7 @@ export const RecoveryProvider: React.FC<{ children: ReactNode }> = ({ children }
       STORAGE_KEYS.SESH_DATA,
       STORAGE_KEYS.WEED_DATA,
       STORAGE_KEYS.PORN_DATA,
+      "pornNotes",
       STORAGE_KEYS.SELECTED_DATE,
       STORAGE_KEYS.COUNTER_START_DATE,
       "hasSesh",
@@ -646,6 +702,8 @@ export const RecoveryProvider: React.FC<{ children: ReactNode }> = ({ children }
     setSeshData({});
     setWeedData({});
     setPornData({});
+    setPornNotes("");
+    setEmotionalWeather({});
     setSelectedDate(format(new Date(), "yyyy-MM-dd"));
     setCounterStartDate(format(new Date(), "yyyy-MM-dd"));
   }, []);
@@ -659,6 +717,8 @@ export const RecoveryProvider: React.FC<{ children: ReactNode }> = ({ children }
         seshData,
         weedData,
         pornData,
+        pornNotes,
+        emotionalWeather,
         selectedDate,
         setSelectedDate,
         counterStartDate,
@@ -666,6 +726,7 @@ export const RecoveryProvider: React.FC<{ children: ReactNode }> = ({ children }
         toggleCheckIn,
         setCheckIn,
         completeDailyCheckin,
+        savePornNotes,
         addGoal,
         updateGoal,
         deleteGoal,

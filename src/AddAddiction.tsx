@@ -110,6 +110,14 @@ const AddAddiction: React.FC = () => {
       setEditError("Goal title cannot be empty.");
       return;
     }
+    if (
+      editModality === "specialized" &&
+      editingTracker.modality !== "specialized" &&
+      !["sesh", "weed", "porn"].includes(trimmed.toLowerCase())
+    ) {
+      setEditError("Specialized count tracking is only available for Sesh, Weed, and Porn goals.");
+      return;
+    }
 
     const res = updateGoal(editingTracker.name, {
       name: trimmed,
@@ -149,7 +157,7 @@ const AddAddiction: React.FC = () => {
             </button>
           </div>
           <h1 className="font-serif text-3xl font-medium tracking-tight text-[#252B25] dark:text-[#E8EBDD]">
-            Add & Manage Goals
+            Goals & Boundaries
           </h1>
           <p className="text-xs text-[#77786F] dark:text-[#A6ABA0] leading-relaxed">
             Define custom parameters for abstinence, frequency moderation, schedule curfews, or impulse delays.
@@ -161,14 +169,14 @@ const AddAddiction: React.FC = () => {
           <button
             type="button"
             onClick={() => setActiveTab("active")}
-            className={`flex-1 py-2 px-3 rounded-lg text-xs font-semibold tracking-wide flex items-center justify-center gap-1.5 transition-all ${
+            className={`min-h-11 flex-1 py-2 px-3 rounded-lg text-xs font-semibold tracking-wide flex items-center justify-center gap-1.5 transition-all ${
               activeTab === "active"
                 ? "bg-[#46644B] text-white shadow-xs"
                 : "text-[#77786F] dark:text-[#A6ABA0] hover:text-[#252B25]"
             }`}
           >
             <span className="material-symbols-outlined text-[16px]">check_circle</span>
-            <span>Active Goals ({trackers.length})</span>
+            <span>Manage goals ({trackers.length})</span>
           </button>
           <button
             type="button"
@@ -176,41 +184,31 @@ const AddAddiction: React.FC = () => {
               setFormError("");
               setActiveTab("new");
             }}
-            className={`flex-1 py-2 px-3 rounded-lg text-xs font-semibold tracking-wide flex items-center justify-center gap-1.5 transition-all ${
+            className={`min-h-11 flex-1 py-2 px-3 rounded-lg text-xs font-semibold tracking-wide flex items-center justify-center gap-1.5 transition-all ${
               activeTab === "new"
                 ? "bg-[#46644B] text-white shadow-xs"
                 : "text-[#77786F] dark:text-[#A6ABA0] hover:text-[#252B25]"
             }`}
           >
             <span className="material-symbols-outlined text-[16px]">add_circle</span>
-            <span>+ Add New Goal</span>
+            <span>Add a goal</span>
           </button>
         </div>
 
         {/* TAB 1: ACTIVE GOALS LIST */}
         {activeTab === "active" && (
           <div className="space-y-3.5">
-            <div className="flex items-center justify-between px-0.5">
+            <div className="px-0.5">
               <span className="text-xs font-semibold uppercase tracking-wider text-[#77786F] dark:text-[#A6ABA0]">
-                Current Active Plans
+                Your goals
               </span>
-              <button
-                type="button"
-                onClick={() => {
-                  setFormError("");
-                  setActiveTab("new");
-                }}
-                className="text-xs font-medium text-[#46644B] dark:text-[#8EAA92] hover:underline flex items-center gap-0.5"
-              >
-                <span className="material-symbols-outlined text-[15px]">add</span> New Target
-              </button>
             </div>
 
             {trackers.length === 0 ? (
               <div className="bg-white dark:bg-[#212521] rounded-2xl p-6 text-center border border-[#E3DED5] dark:border-[#313831] space-y-2 shadow-xs">
                 <span className="material-symbols-outlined text-[24px] text-[#46644B]">tune</span>
                 <p className="text-xs text-[#77786F] dark:text-[#A6ABA0]">
-                  No goals configured. Click "+ Add New Goal" above to create your first commitment.
+                  No goals yet. Choose “Add a goal” to create your first commitment.
                 </p>
               </div>
             ) : (
@@ -222,8 +220,8 @@ const AddAddiction: React.FC = () => {
                 const isSpecialized = lower === "sesh" || lower === "weed" || lower === "porn";
 
                 let modalityBadge = "Continuous";
-                if (tracker.modality === "frequency") modalityBadge = `Max ${tracker.limitVal || 1}/wk`;
-                else if (tracker.modality === "quantity") modalityBadge = `Max ${tracker.limitVal || 1}/day`;
+                if (tracker.modality === "frequency") modalityBadge = "Frequency cap · unavailable";
+                else if (tracker.modality === "quantity") modalityBadge = "Quantity · unavailable";
                 else if (tracker.modality === "specialized" || isSpecialized) modalityBadge = "Specialized";
 
                 const nextMilestone = streak >= 30 ? 60 : streak >= 14 ? 30 : streak >= 7 ? 14 : 7;
@@ -261,7 +259,7 @@ const AddAddiction: React.FC = () => {
                           type="button"
                           aria-label="Goal options"
                           onClick={() => setOpenMenuId(isMenuOpen ? null : habitName)}
-                          className="w-8 h-8 rounded-lg flex items-center justify-center text-[#77786F] hover:bg-[#F2EFE8] dark:hover:bg-[#2C332C]"
+                          className="min-h-11 min-w-11 rounded-lg flex items-center justify-center text-[#77786F] hover:bg-[#F2EFE8] dark:hover:bg-[#2C332C]"
                         >
                           <span className="material-symbols-outlined text-[18px]">more_vert</span>
                         </button>
@@ -271,10 +269,10 @@ const AddAddiction: React.FC = () => {
                             <button
                               type="button"
                               onClick={() => openEditModal(tracker)}
-                              className="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-[#F8F6F1] dark:hover:bg-[#2C332C] flex items-center gap-2 text-[#252B25] dark:text-[#E8EBDD]"
+                              className="min-h-11 w-full text-left px-2.5 rounded-lg hover:bg-[#F8F6F1] dark:hover:bg-[#2C332C] flex items-center gap-2 text-[#252B25] dark:text-[#E8EBDD]"
                             >
                               <span className="material-symbols-outlined text-[15px]">edit</span>
-                              <span>Edit Parameters</span>
+                              <span>Edit goal</span>
                             </button>
                             {isSpecialized && (
                               <button
@@ -283,7 +281,7 @@ const AddAddiction: React.FC = () => {
                                   setOpenMenuId(null);
                                   navigate(`/${lower}`);
                                 }}
-                                className="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-[#F8F6F1] dark:hover:bg-[#2C332C] flex items-center gap-2 text-[#46644B] dark:text-[#8EAA92]"
+                                className="min-h-11 w-full text-left px-2.5 rounded-lg hover:bg-[#F8F6F1] dark:hover:bg-[#2C332C] flex items-center gap-2 text-[#46644B] dark:text-[#8EAA92]"
                               >
                                 <span className="material-symbols-outlined text-[15px]">calendar_month</span>
                                 <span>Open Tracker Page</span>
@@ -295,7 +293,7 @@ const AddAddiction: React.FC = () => {
                                 setDeleteConfirmGoal(habitName);
                                 setOpenMenuId(null);
                               }}
-                              className="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-[#FDECEB] dark:hover:bg-[#441B1B] flex items-center gap-2 text-[#BA1A1A] dark:text-[#FFB4AB]"
+                              className="min-h-11 w-full text-left px-2.5 rounded-lg hover:bg-[#FDECEB] dark:hover:bg-[#441B1B] flex items-center gap-2 text-[#BA1A1A] dark:text-[#FFB4AB]"
                             >
                               <span className="material-symbols-outlined text-[15px]">delete</span>
                               <span>Delete Goal</span>
@@ -367,17 +365,6 @@ const AddAddiction: React.FC = () => {
               })
             )}
 
-            <button
-              type="button"
-              onClick={() => {
-                setFormError("");
-                setActiveTab("new");
-              }}
-              className="w-full py-3.5 px-4 rounded-2xl border border-dashed border-[#E3DED5] dark:border-[#313831] bg-white dark:bg-[#212521] hover:bg-[#E8EBDD]/40 transition-colors flex items-center justify-center gap-2 text-xs font-semibold text-[#252B25] dark:text-[#E8EBDD]"
-            >
-              <span className="material-symbols-outlined text-[18px] text-[#46644B] dark:text-[#8EAA92]">add</span>
-              <span>Create New Target or Boundary</span>
-            </button>
           </div>
         )}
 
@@ -390,7 +377,7 @@ const AddAddiction: React.FC = () => {
             <div className="border-b border-[#E3DED5]/80 dark:border-[#313831] pb-3 flex items-center justify-between">
               <div>
                 <h2 className="font-serif text-lg font-medium text-[#252B25] dark:text-[#E8EBDD]">
-                  Configure New Goal
+                  Create a goal
                 </h2>
                 <p className="text-xs text-[#77786F] dark:text-[#A6ABA0]">
                   Flexible tracking tailored to your specific pathway.
@@ -413,20 +400,29 @@ const AddAddiction: React.FC = () => {
               </label>
               <div className="grid grid-cols-2 gap-2 text-xs">
                 {[
-                  { id: "abstinence", label: "Continuous Abstinence", desc: "Day streak & milestone resets" },
-                  { id: "frequency", label: "Frequency Cap", desc: "Max occurrences per week" },
-                  { id: "quantity", label: "Quantity / Stepper", desc: "Units, minutes, or counts" },
-                  { id: "specialized", label: "Specialized Tracking", desc: "Urge delay, curfews, somatic" },
+                  { id: "abstinence", label: "Daily check-in", desc: "Record one intentional check-in each day", unavailable: false },
+                  { id: "frequency", label: "Frequency cap", desc: "Unavailable · existing records are preserved", unavailable: true },
+                  { id: "quantity", label: "Quantity tracking", desc: "Unavailable · existing records are preserved", unavailable: true },
+                  {
+                    id: "specialized",
+                    label: "Specialized count",
+                    desc: ["sesh", "weed", "porn"].includes(goalTitle.trim().toLowerCase())
+                      ? "Use the dedicated count tracker"
+                      : "Available for Sesh, Weed, or Porn goals",
+                    unavailable: !["sesh", "weed", "porn"].includes(goalTitle.trim().toLowerCase()),
+                  },
                 ].map((item) => (
                   <button
                     key={item.id}
                     type="button"
+                    disabled={item.unavailable}
+                    aria-pressed={modality === item.id}
                     onClick={() => setModality(item.id)}
                     className={`p-2.5 rounded-xl border text-left transition-all ${
                       modality === item.id
                         ? "border-[#46644B] bg-[#E8EBDD]/50 dark:bg-[#2C332C] text-[#252B25] dark:text-[#E8EBDD]"
                         : "border-[#E3DED5] dark:border-[#313831] bg-[#F8F6F1] dark:bg-[#181B18] text-[#77786F] dark:text-[#A6ABA0] hover:text-[#252B25]"
-                    }`}
+                    } ${item.unavailable ? "cursor-not-allowed opacity-65" : ""}`}
                   >
                     <span className="block font-semibold">{item.label}</span>
                     <span className="text-[11px] opacity-80">{item.desc}</span>
@@ -517,15 +513,9 @@ const AddAddiction: React.FC = () => {
               )}
 
               {modality === "specialized" && (
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-[#77786F] dark:text-[#A6ABA0]">Curfew / pause window:</span>
-                  <input
-                    type="time"
-                    value={curfewTime}
-                    onChange={(e) => setCurfewTime(e.target.value)}
-                    className="px-2 py-1 rounded-lg border border-[#E3DED5] dark:border-[#313831] bg-white dark:bg-[#212521] text-xs text-[#252B25] dark:text-[#E8EBDD]"
-                  />
-                </div>
+                <p className="text-xs leading-relaxed text-[#77786F] dark:text-[#A6ABA0]">
+                  Specialized counts are available for the built-in Sesh, Weed, and Porn trackers. Curfews and quantity caps are not enforced.
+                </p>
               )}
             </div>
 
@@ -570,12 +560,17 @@ const AddAddiction: React.FC = () => {
         {/* Delete Confirmation Modal */}
         {deleteConfirmGoal && (
           <div className="fixed inset-0 z-50 bg-[#252B25]/50 backdrop-blur-xs flex items-center justify-center p-4">
-            <div className="w-full max-w-sm bg-white dark:bg-[#212521] rounded-2xl p-5 shadow-xl border border-[#E3DED5] dark:border-[#313831] space-y-3">
+            <div
+              role="alertdialog"
+              aria-modal="true"
+              aria-labelledby="delete-goal-heading"
+              className="w-full max-w-sm bg-white dark:bg-[#212521] rounded-2xl p-5 shadow-xl border border-[#E3DED5] dark:border-[#313831] space-y-3"
+            >
               <div className="w-10 h-10 rounded-full bg-[#FDECEB] text-[#BA1A1A] flex items-center justify-center">
                 <span className="material-symbols-outlined text-[20px]">delete</span>
               </div>
               <div className="space-y-1">
-                <h3 className="font-serif text-lg font-medium text-[#252B25] dark:text-[#E8EBDD]">
+                <h3 id="delete-goal-heading" className="font-serif text-lg font-medium text-[#252B25] dark:text-[#E8EBDD]">
                   Delete "{deleteConfirmGoal}"?
                 </h3>
                 <p className="text-xs text-[#77786F] dark:text-[#A6ABA0] leading-relaxed">
@@ -586,14 +581,14 @@ const AddAddiction: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => handleDeleteGoal(deleteConfirmGoal)}
-                  className="flex-1 py-2 bg-[#BA1A1A] text-white text-xs font-semibold rounded-xl hover:bg-[#A31616]"
+                  className="min-h-11 flex-1 py-2 bg-[#BA1A1A] text-white text-xs font-semibold rounded-xl hover:bg-[#A31616]"
                 >
                   Confirm Delete
                 </button>
                 <button
                   type="button"
                   onClick={() => setDeleteConfirmGoal(null)}
-                  className="py-2 px-3 border border-[#E3DED5] dark:border-[#313831] text-xs rounded-xl"
+                  className="min-h-11 py-2 px-3 border border-[#E3DED5] dark:border-[#313831] text-xs rounded-xl"
                 >
                   Cancel
                 </button>
@@ -607,11 +602,14 @@ const AddAddiction: React.FC = () => {
           <div className="fixed inset-0 z-50 bg-[#252B25]/50 backdrop-blur-xs flex items-center justify-center p-4">
             <form
               onSubmit={handleSaveEdit}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="edit-goal-heading"
               className="w-full max-w-sm bg-white dark:bg-[#212521] rounded-2xl border border-[#E3DED5] dark:border-[#313831] p-5 space-y-4 shadow-xl"
             >
               <div className="flex items-center justify-between border-b border-[#E3DED5]/80 dark:border-[#313831] pb-2">
                 <div>
-                  <h3 className="font-serif text-lg font-medium text-[#252B25] dark:text-[#E8EBDD]">
+                  <h3 id="edit-goal-heading" className="font-serif text-lg font-medium text-[#252B25] dark:text-[#E8EBDD]">
                     Edit {getDisplayName(editingTracker.name)}
                   </h3>
                   <span className="text-xs text-[#77786F] dark:text-[#A6ABA0]">
@@ -621,7 +619,7 @@ const AddAddiction: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setEditingTracker(null)}
-                  className="w-7 h-7 rounded-lg flex items-center justify-center text-[#77786F]"
+                  className="min-h-11 min-w-11 rounded-lg flex items-center justify-center text-[#77786F]"
                 >
                   <span className="material-symbols-outlined text-[18px]">close</span>
                 </button>
@@ -655,26 +653,35 @@ const AddAddiction: React.FC = () => {
                   <select
                     value={editModality}
                     onChange={(e) => setEditModality(e.target.value)}
+                    aria-label="Goal tracking modality"
                     className="w-full px-3 py-2 rounded-xl border border-[#E3DED5] dark:border-[#313831] bg-[#F8F6F1] dark:bg-[#181B18] text-[#252B25] dark:text-[#E8EBDD] text-xs focus:outline-none"
                   >
                     <option value="abstinence">Continuous Abstinence</option>
-                    <option value="frequency">Frequency Cap</option>
-                    <option value="quantity">Quantity / Stepper</option>
-                    <option value="specialized">Specialized</option>
+                    <option value="frequency" disabled>Frequency cap · unavailable (legacy)</option>
+                    <option value="quantity" disabled>Quantity tracking · unavailable (legacy)</option>
+                    <option
+                      value="specialized"
+                      disabled={editModality !== "specialized" && !["sesh", "weed", "porn"].includes(editName.trim().toLowerCase())}
+                    >
+                      Specialized daily count
+                    </option>
                   </select>
+                  {(editModality === "frequency" || editModality === "quantity") && (
+                    <p className="mt-1 text-[11px] leading-relaxed text-[#5E4D45] dark:text-[#D5C3B9]">
+                      This older tracking mode is retained in your records but is not enforced. Changing to daily check-ins will keep the historical records.
+                    </p>
+                  )}
+                  {editModality === "specialized" && (
+                    <p className="mt-1 text-[11px] leading-relaxed text-[#5E4D45] dark:text-[#D5C3B9]">
+                      Dedicated daily counts are only available for the built-in Sesh, Weed, and Porn pages. Curfews and quantity caps are not enforced.
+                    </p>
+                  )}
                 </div>
 
                 {(editModality === "quantity" || editModality === "frequency") && (
-                  <div className="flex items-center justify-between">
-                    <span className="text-[#77786F] dark:text-[#A6ABA0]">Ceiling limit:</span>
-                    <input
-                      type="number"
-                      min="1"
-                      value={editLimitVal}
-                      onChange={(e) => setEditLimitVal(Math.max(1, parseInt(e.target.value, 10) || 1))}
-                      className="w-16 px-2 py-1 rounded-lg border border-[#E3DED5] dark:border-[#313831] bg-[#F8F6F1] dark:bg-[#181B18] text-center font-mono font-semibold"
-                    />
-                  </div>
+                  <p className="text-[#5E4D45] dark:text-[#D5C3B9] leading-relaxed">
+                    This saved limit is retained for compatibility but is not enforced by daily check-in tracking.
+                  </p>
                 )}
               </div>
 

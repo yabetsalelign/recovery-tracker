@@ -1,10 +1,23 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import type { ThemeContextType } from "../types";
+import { resolveInitialTheme } from "../utils/themePreferences";
 
 export const ThemeContext = createContext<ThemeContextType | null>(null);
 
+const getPreferredTheme = (): "light" | "dark" => {
+  const savedTheme = localStorage.getItem("theme");
+  const prefersDark =
+    typeof window.matchMedia === "function" &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches;
+  return resolveInitialTheme(savedTheme, prefersDark);
+};
+
 export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [theme, setTheme] = useState<string>(() => localStorage.getItem("theme") || "light");
+  const [theme, setTheme] = useState<string>(getPreferredTheme);
+  const [hasExplicitTheme, setHasExplicitTheme] = useState<boolean>(() => {
+    const savedTheme = localStorage.getItem("theme");
+    return savedTheme === "light" || savedTheme === "dark";
+  });
   const [fontScale, setFontScale] = useState<string>(() => localStorage.getItem("fontScale") || "standard");
   const [gentleTransitions, setGentleTransitions] = useState<boolean>(
     () => localStorage.getItem("gentleTransitions") === "true"
@@ -19,8 +32,11 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     } else {
       document.documentElement.classList.remove("dark");
     }
-    localStorage.setItem("theme", theme);
-  }, [theme]);
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute("content", theme === "dark" ? "#1A1614" : "#FFF8F2");
+    if (hasExplicitTheme) localStorage.setItem("theme", theme);
+  }, [theme, hasExplicitTheme]);
 
   useEffect(() => {
     if (fontScale === "comfort") {
@@ -45,6 +61,8 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   }, [discreetMode]);
 
   const toggleTheme = (newTheme: string) => {
+    if (newTheme !== "light" && newTheme !== "dark") return;
+    setHasExplicitTheme(true);
     setTheme(newTheme);
   };
 

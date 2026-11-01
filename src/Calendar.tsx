@@ -4,6 +4,7 @@ import {
   startOfMonth,
   endOfMonth,
   eachDayOfInterval,
+  addDays,
   isSameDay,
   addMonths,
   subMonths,
@@ -38,6 +39,11 @@ const Calendar: React.FC = () => {
     return paramDate || contextSelectedDate || format(new Date(), "yyyy-MM-dd");
   });
 
+  useEffect(() => {
+    const date = new Date(`${selectedDateStr}T00:00:00`);
+    if (!isNaN(date.getTime())) setCurrentMonth(date);
+  }, [selectedDateStr]);
+
   // Note state for selected day
   const [selectedDayNote, setSelectedDayNote] = useState<string>("");
   const [selectedNoteHabit, setSelectedNoteHabit] = useState<string>(() => {
@@ -71,6 +77,25 @@ const Calendar: React.FC = () => {
   const handleSaveNote = () => {
     saveNote(selectedNoteHabit, selectedDateStr, selectedDayNote);
     setIsEditingNote(false);
+  };
+
+  const handleCalendarKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>, date: Date) => {
+    const offsets: Record<string, number> = {
+      ArrowLeft: -1,
+      ArrowRight: 1,
+      ArrowUp: -7,
+      ArrowDown: 7,
+    };
+    const offset = offsets[event.key];
+    if (offset === undefined) return;
+    event.preventDefault();
+    const nextDate = addDays(date, offset);
+    const nextDateStr = format(nextDate, "yyyy-MM-dd");
+    setSelectedDateStr(nextDateStr);
+    setTimeout(() => {
+      const nextButton = document.getElementById(`calendar-day-${nextDateStr}`);
+      if (nextButton instanceof HTMLButtonElement) nextButton.focus();
+    }, 0);
   };
 
   const getDayStatus = (dateStr: string): "complete" | "partial" | "rest" => {
@@ -109,6 +134,9 @@ const Calendar: React.FC = () => {
   const selectedDayFormatted = !isNaN(selectedDateObj.getTime())
     ? format(selectedDateObj, "EEEE, MMMM d, yyyy")
     : selectedDateStr;
+  const selectedDayCompact = !isNaN(selectedDateObj.getTime())
+    ? format(selectedDateObj, "EEE, MMM d, yyyy")
+    : selectedDateStr;
 
   const totalCompletedForSelectedDay = trackers.filter((t) => t.checkIns?.[selectedDateStr]).length;
   const isSelectedDayComplete = totalCompletedForSelectedDay === trackers.length && trackers.length > 0;
@@ -119,18 +147,19 @@ const Calendar: React.FC = () => {
       <div className="pt-2 pb-6 space-y-4">
         {/* Month Navigation Bar */}
         <section className="flex items-center justify-between pt-1">
-          <h1 className="font-serif text-2xl md:text-3xl text-[#252B25] dark:text-[#E8EBDD] tracking-tight font-medium">
+          <h1 className="whitespace-nowrap font-serif text-2xl md:text-3xl text-[#252B25] dark:text-[#E8EBDD] tracking-tight font-medium">
             {format(currentMonth, "MMMM yyyy")}
           </h1>
-          <div className="flex items-center space-x-1.5">
+          <div className="flex shrink-0 items-center gap-1">
             <button
               type="button"
+              aria-label="Go to current month"
               onClick={() => {
                 const today = new Date();
                 setCurrentMonth(today);
                 setSelectedDateStr(format(today, "yyyy-MM-dd"));
               }}
-              className="h-8 px-2.5 rounded-lg bg-white dark:bg-[#212521] border border-[#E3DED5] dark:border-[#313831] text-[#252B25] dark:text-[#E8EBDD] text-xs font-semibold hover:bg-[#F2EFE8] dark:hover:bg-[#2C332C] transition-colors shadow-xs"
+              className="min-h-11 px-2.5 rounded-lg bg-white dark:bg-[#212521] border border-[#E3DED5] dark:border-[#313831] text-[#252B25] dark:text-[#E8EBDD] text-xs font-semibold hover:bg-[#F2EFE8] dark:hover:bg-[#2C332C] transition-colors shadow-xs"
             >
               Today
             </button>
@@ -138,7 +167,7 @@ const Calendar: React.FC = () => {
               type="button"
               aria-label="Previous Month"
               onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-              className="w-8 h-8 rounded-lg bg-white dark:bg-[#212521] border border-[#E3DED5] dark:border-[#313831] text-[#252B25] dark:text-[#E8EBDD] flex items-center justify-center hover:bg-[#F2EFE8] dark:hover:bg-[#2C332C] transition-colors shadow-xs"
+              className="min-h-11 min-w-11 rounded-lg bg-white dark:bg-[#212521] border border-[#E3DED5] dark:border-[#313831] text-[#252B25] dark:text-[#E8EBDD] flex items-center justify-center hover:bg-[#F2EFE8] dark:hover:bg-[#2C332C] transition-colors shadow-xs"
             >
               <span className="material-symbols-outlined text-[18px]">chevron_left</span>
             </button>
@@ -146,31 +175,34 @@ const Calendar: React.FC = () => {
               type="button"
               aria-label="Next Month"
               onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-              className="w-8 h-8 rounded-lg bg-white dark:bg-[#212521] border border-[#E3DED5] dark:border-[#313831] text-[#252B25] dark:text-[#E8EBDD] flex items-center justify-center hover:bg-[#F2EFE8] dark:hover:bg-[#2C332C] transition-colors shadow-xs"
+              className="min-h-11 min-w-11 rounded-lg bg-white dark:bg-[#212521] border border-[#E3DED5] dark:border-[#313831] text-[#252B25] dark:text-[#E8EBDD] flex items-center justify-center hover:bg-[#F2EFE8] dark:hover:bg-[#2C332C] transition-colors shadow-xs"
             >
               <span className="material-symbols-outlined text-[18px]">chevron_right</span>
             </button>
           </div>
         </section>
 
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,1.1fr)_minmax(340px,0.9fr)] lg:items-start">
         {/* Calendar Card */}
-        <section className="w-full bg-white dark:bg-[#212521] rounded-2xl border border-[#E3DED5] dark:border-[#313831] p-4 shadow-xs">
+        <section className="w-full bg-white dark:bg-[#212521] rounded-2xl border border-[#E3DED5] dark:border-[#313831] p-4 md:p-6 shadow-xs">
           {/* Weekday Headers */}
           <div className="grid grid-cols-7 gap-1 text-center mb-1.5">
             {["M", "T", "W", "T", "F", "S", "S"].map((day, i) => (
-              <span
+              <abbr
                 key={i}
+                title={["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"][i]}
+                aria-label={["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"][i]}
                 className="text-[11px] font-semibold uppercase tracking-wider text-[#77786F] dark:text-[#A6ABA0]"
               >
                 {day}
-              </span>
+              </abbr>
             ))}
           </div>
 
           {/* Date Grid */}
-          <div className="grid grid-cols-7 gap-1 text-center">
+          <div role="group" aria-label={`${format(currentMonth, "MMMM yyyy")} dates`} className="grid grid-cols-7 gap-1 text-center">
             {leadingBlanks.map((_, i) => (
-              <div key={`blank-${i}`} className="h-10 flex flex-col items-center justify-center opacity-20">
+              <div key={`blank-${i}`} className="h-11 flex flex-col items-center justify-center opacity-20">
                 <span className="text-xs text-[#77786F]">•</span>
               </div>
             ))}
@@ -188,9 +220,14 @@ const Calendar: React.FC = () => {
               return (
                 <button
                   key={dateStr}
+                  id={`calendar-day-${dateStr}`}
                   type="button"
+                  aria-label={format(dateObj, "EEEE, MMMM d, yyyy")}
+                  aria-pressed={isSelected}
+                  aria-current={isToday ? "date" : undefined}
                   onClick={() => setSelectedDateStr(dateStr)}
-                  className={`h-10 rounded-xl flex flex-col items-center justify-center transition-all relative ${
+                  onKeyDown={(event) => handleCalendarKeyDown(event, dateObj)}
+                  className={`h-11 rounded-xl flex flex-col items-center justify-center transition-all relative ${
                     isSelected
                       ? "bg-[#46644B] text-white shadow-xs"
                       : "hover:bg-[#F7F4EE] dark:hover:bg-[#181B18] text-[#252B25] dark:text-[#E8EBDD]"
@@ -227,29 +264,31 @@ const Calendar: React.FC = () => {
         </section>
 
         {/* Selected Day Detail View */}
-        <section className="flex flex-col space-y-3">
+        <section className="flex flex-col space-y-3 lg:sticky lg:top-24">
           {/* Day Status Card */}
           <div className="bg-white dark:bg-[#212521] rounded-2xl border border-[#E3DED5] dark:border-[#313831] p-4 shadow-xs space-y-3">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <span className="text-[11px] uppercase tracking-wider text-[#77786F] dark:text-[#A6ABA0] font-semibold">
                   Selected Day
                 </span>
-                <h2 className="font-serif text-xl font-medium text-[#252B25] dark:text-[#E8EBDD]">
-                  {selectedDayFormatted}
+                <h2 className="font-serif text-lg sm:text-xl font-medium text-[#252B25] dark:text-[#E8EBDD]">
+                  <time dateTime={selectedDateStr} aria-label={selectedDayFormatted}>
+                    {selectedDayCompact}
+                  </time>
                 </h2>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <button
                   type="button"
                   onClick={() => navigate(`/day?date=${selectedDateStr}`)}
-                  className="px-2.5 py-1 rounded-lg border border-[#E3DED5] dark:border-[#313831] hover:bg-[#F2EFE8] text-xs font-semibold text-[#252B25] dark:text-[#E8EBDD] flex items-center gap-1"
+                  className="min-h-11 px-2.5 rounded-lg border border-[#E3DED5] dark:border-[#313831] hover:bg-[#F2EFE8] text-xs font-semibold text-[#252B25] dark:text-[#E8EBDD] flex items-center gap-1"
                 >
                   <span>Day View</span>
                   <span className="material-symbols-outlined text-[14px]">open_in_new</span>
                 </button>
                 <span
-                  className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold ${
+                  className={`inline-flex min-h-11 items-center gap-1 px-2.5 rounded-full text-xs font-semibold ${
                     isSelectedDayComplete
                       ? "bg-[#E8EBDD] dark:bg-[#2C332C] text-[#46644B] dark:text-[#8EAA92]"
                       : "bg-[#F8F6F1] dark:bg-[#181B18] text-[#77786F] dark:text-[#A6ABA0] border border-[#E3DED5] dark:border-[#313831]"
@@ -289,7 +328,7 @@ const Calendar: React.FC = () => {
 
             {trackers.length === 0 ? (
               <p className="text-xs text-[#77786F] dark:text-[#A6ABA0] text-center py-2">
-                No active habits configured. Visit Home or Add Goals to create one!
+                No active goals yet. Add one from Home to begin tracking.
               </p>
             ) : (
               <div className="space-y-2">
@@ -325,8 +364,10 @@ const Calendar: React.FC = () => {
 
                       <button
                         type="button"
+                        aria-label={isChecked ? `Remove ${getDisplayName(habitName)} check-in for ${selectedDayFormatted}` : `Record ${getDisplayName(habitName)} check-in for ${selectedDayFormatted}`}
+                        aria-pressed={isChecked}
                         onClick={() => toggleCheckIn(habitName, selectedDateStr)}
-                        className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+                        className={`min-h-11 min-w-11 rounded-full flex items-center justify-center transition-all ${
                           isChecked
                             ? "bg-[#46644B] text-white shadow-xs"
                             : "border border-[#E3DED5] dark:border-[#313831] text-[#77786F] hover:border-[#46644B]"
@@ -440,6 +481,7 @@ const Calendar: React.FC = () => {
             )}
           </div>
         </section>
+        </div>
       </div>
     </Layout>
   );

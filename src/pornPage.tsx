@@ -21,12 +21,8 @@ interface DateModalState {
 const PornPage: React.FC = () => {
   const navigate = useNavigate();
   const { discreetMode } = useTheme();
-  const { pornData, logSpecializedCount, calculateSpecializedStreak } = useRecovery();
+  const { pornData, pornNotes, savePornNotes, logSpecializedCount, calculateSpecializedStreak } = useRecovery();
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
-
-  const [notes, setNotes] = useState<string>(() => {
-    return (pornData as Record<string, any>)?.notes || "";
-  });
 
   const [activeDateModal, setActiveDateModal] = useState<DateModalState | null>(null);
 
@@ -54,11 +50,7 @@ const PornPage: React.FC = () => {
   };
 
   const handleNotesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const val = e.target.value;
-    setNotes(val);
-    const existing = JSON.parse(localStorage.getItem("pornData") || "{}");
-    existing.notes = val;
-    localStorage.setItem("pornData", JSON.stringify(existing));
+    savePornNotes(e.target.value);
   };
 
   return (
@@ -96,7 +88,7 @@ const PornPage: React.FC = () => {
                 Continuous Reset Flow
               </span>
               <span className="font-serif text-2xl font-medium text-[#46644B] dark:text-[#8EAA92]">
-                {streak} {streak === 1 ? "day" : "days"} free
+                {streak} {streak === 1 ? "day" : "days"}
               </span>
             </div>
           </div>
@@ -114,15 +106,17 @@ const PornPage: React.FC = () => {
             <div className="flex items-center gap-1">
               <button
                 type="button"
+                aria-label="Previous month"
                 onClick={() => setCurrentMonth((prev) => subMonths(prev, 1))}
-                className="w-8 h-8 rounded-lg flex items-center justify-center border border-[#E3DED5] dark:border-[#313831] hover:bg-[#F2EFE8] text-xs"
+                className="min-h-11 min-w-11 rounded-lg flex items-center justify-center border border-[#E3DED5] dark:border-[#313831] hover:bg-[#F2EFE8] text-xs"
               >
                 <span className="material-symbols-outlined text-[16px]">chevron_left</span>
               </button>
               <button
                 type="button"
+                aria-label="Next month"
                 onClick={() => setCurrentMonth((prev) => addMonths(prev, 1))}
-                className="w-8 h-8 rounded-lg flex items-center justify-center border border-[#E3DED5] dark:border-[#313831] hover:bg-[#F2EFE8] text-xs"
+                className="min-h-11 min-w-11 rounded-lg flex items-center justify-center border border-[#E3DED5] dark:border-[#313831] hover:bg-[#F2EFE8] text-xs"
               >
                 <span className="material-symbols-outlined text-[16px]">chevron_right</span>
               </button>
@@ -151,6 +145,7 @@ const PornPage: React.FC = () => {
                 <button
                   key={dateStr}
                   type="button"
+                  aria-label={`${format(dateObj, "EEEE, MMMM d, yyyy")}: ${isLogged ? `${count} count recorded` : "no count recorded"}`}
                   onClick={() => handleDayClick(dateStr)}
                   className={`h-11 rounded-xl flex flex-col items-center justify-center border transition-all ${
                     isZero
@@ -173,10 +168,10 @@ const PornPage: React.FC = () => {
             <span>Click any day to log or adjust count</span>
             <div className="flex items-center gap-2">
               <span className="flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-[#46644B]"></span> 0 (Clean)
+                <span className="w-2 h-2 rounded-full bg-[#46644B]"></span> 0 (No count recorded)
               </span>
               <span className="flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-[#B16F4C]"></span> &gt;0 (Impulse)
+                <span className="w-2 h-2 rounded-full bg-[#B16F4C]"></span> &gt;0 (Occurrence recorded)
               </span>
             </div>
           </div>
@@ -189,7 +184,7 @@ const PornPage: React.FC = () => {
           </span>
           <textarea
             rows={3}
-            value={notes}
+            value={pornNotes}
             onChange={handleNotesChange}
             placeholder="Record observations on fatigue, solitude, or late-night triggers..."
             className="w-full p-3 rounded-xl border border-[#E3DED5] dark:border-[#313831] bg-[#F8F6F1] dark:bg-[#181B18] text-xs text-[#252B25] dark:text-[#E8EBDD] focus:outline-none focus:border-[#46644B] resize-none"
