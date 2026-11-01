@@ -2,74 +2,38 @@ import React, { useState, useMemo } from "react";
 import { format, subDays, eachDayOfInterval } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import Layout from "./components/Layout";
-import { useTheme } from "./context/ThemeContext";
 import { useRecovery } from "./context/RecoveryContext";
 
 const Progress: React.FC = () => {
   const navigate = useNavigate();
-  const { discreetMode } = useTheme();
   const {
     trackers,
-    calculateStreak,
     calculateLongestStreak,
-    exportCSV,
+    calculateStreak,
   } = useRecovery();
 
-  const [timeHorizon, setTimeHorizon] = useState<string>("30"); // "7" | "30" | "90" | "all"
+  const [timeHorizon, setTimeHorizon] = useState<string>("30");
 
-  const getDisplayName = (name: string): string => {
-    if (discreetMode) {
-      const lower = (name || "").toLowerCase();
-      if (lower === "sesh") return "Habit S";
-      if (lower === "weed") return "Habit W";
-      if (lower === "porn") return "Habit P";
-      return name ? name.slice(0, 1).toUpperCase() + " Tracker" : "Habit Tracker";
-    }
-    return name;
-  };
-
-  const getHabitIcon = (name: string): string => {
-    const lower = (name || "").toLowerCase();
-    if (lower.includes("alcohol") || lower.includes("drink") || lower.includes("sobriety")) return "water_drop";
-    if (lower.includes("sesh") || lower.includes("smoke") || lower.includes("nicotine")) return "air";
-    if (lower.includes("weed") || lower.includes("cannabis")) return "nature";
-    if (lower.includes("porn") || lower.includes("screen") || lower.includes("curfew")) return "bedtime";
-    return "spa";
-  };
-
-  // Horizon days calculation
   const horizonNum = timeHorizon === "all" ? 90 : parseInt(timeHorizon, 10) || 30;
 
-  const { presenceDays, consistencyPct, depthPct, longestStreak } = useMemo(() => {
+  const { presenceDays, longestStreak } = useMemo(() => {
     const daysInHorizon = eachDayOfInterval({
       start: subDays(new Date(), horizonNum - 1),
       end: new Date(),
     });
 
     let pDays = 0;
-    const totalPossibleChecks = horizonNum * Math.max(1, trackers.length);
-    let totalActualChecks = 0;
-
     daysInHorizon.forEach((dateObj) => {
       const dateStr = format(dateObj, "yyyy-MM-dd");
       const anyChecked = trackers.some((t) => t.checkIns?.[dateStr]);
       if (anyChecked) pDays++;
-      trackers.forEach((t) => {
-        if (t.checkIns?.[dateStr]) totalActualChecks++;
-      });
     });
 
-    const cPct = Math.round((pDays / horizonNum) * 100) || 0;
-    const dPct = trackers.length > 0 ? Math.round((totalActualChecks / totalPossibleChecks) * 100) : 0;
-
-    // True historical longest streak across all habits
     const maxStreaks = trackers.map((t) => calculateLongestStreak(t.checkIns));
     const lStreak = maxStreaks.length > 0 ? Math.max(...maxStreaks) : 0;
 
     return {
       presenceDays: pDays,
-      consistencyPct: cPct,
-      depthPct: dPct,
       longestStreak: lStreak,
     };
   }, [horizonNum, trackers, calculateLongestStreak]);
@@ -81,6 +45,7 @@ const Progress: React.FC = () => {
       end: new Date(),
     });
   }, []);
+
   const timelineData = useMemo(
     () =>
       timelineDays.map((day) => {
@@ -92,42 +57,44 @@ const Progress: React.FC = () => {
       }),
     [timelineDays, trackers]
   );
+
   const hasTimelineActivity = timelineData.some(({ checksCount, hasNote }) => checksCount > 0 || hasNote);
+
+  // Active streaks count
+  const activeStreakMax = useMemo(() => {
+    const streaks = trackers.map((t) => calculateStreak(t.checkIns));
+    return streaks.length > 0 ? Math.max(...streaks) : 0;
+  }, [trackers, calculateStreak]);
 
   return (
     <Layout title="Progress">
-      <div className="pt-2 pb-6 space-y-6">
-        {/* Page Title & Perspective Note */}
-        <div className="pt-1 flex flex-col space-y-1.5">
-          <div className="inline-flex items-center gap-1.5 self-start px-2.5 py-0.5 rounded-full bg-[#E8EBDD] dark:bg-[#2C332C] text-[#46644B] dark:text-[#8EAA92] border border-[#46644B]/10">
-            <span className="material-symbols-outlined text-[13px]">nature_people</span>
-            <span className="text-[11px] font-semibold tracking-wider uppercase">Quiet Rhythm</span>
-          </div>
-          <h1 className="font-serif text-3xl font-medium tracking-tight text-[#252B25] dark:text-[#E8EBDD]">
-            Your Progress & Rhythm
+      <div className="max-w-2xl mx-auto py-4 sm:py-6 space-y-6">
+        <header className="space-y-1">
+          <h1 className="font-serif text-3xl sm:text-4xl font-medium tracking-tight text-[#261810] dark:text-[#F4EFEA]">
+            Progress
           </h1>
-          <p className="text-xs text-[#77786F] dark:text-[#A6ABA0] leading-relaxed">
-            Observing recurring patterns with gentle curiosity, not judgment. Every intentional pause reinforces steady renewal.
+          <p className="text-xs text-[#6B5B54] dark:text-[#A99A8F]">
+            A quiet view of your consistency over time.
           </p>
-        </div>
+        </header>
 
-        {/* Time Horizon Filter */}
-        <div className="bg-[#F2EFE8] dark:bg-[#212521] p-1 rounded-xl border border-[#E3DED5] dark:border-[#313831] flex items-center justify-between">
+        {/* Time Horizon Selector */}
+        <div role="group" aria-label="Select time horizon" className="p-1 rounded-xl bg-[#FBF2E7] dark:bg-[#1E1B18] flex items-center gap-1">
           {[
-            { id: "7", label: "7 Days" },
-            { id: "30", label: "30 Days" },
-            { id: "90", label: "90 Days" },
-            { id: "all", label: "All Time" },
+            { id: "7", label: "7 days" },
+            { id: "30", label: "30 days" },
+            { id: "90", label: "90 days" },
+            { id: "all", label: "All time" },
           ].map((tab) => (
             <button
               key={tab.id}
               type="button"
               aria-pressed={timeHorizon === tab.id}
               onClick={() => setTimeHorizon(tab.id)}
-              className={`min-h-11 flex-1 py-1.5 px-2 text-center rounded-lg text-xs font-semibold transition-all ${
+              className={`min-h-11 flex-1 py-1.5 px-2 rounded-lg text-xs font-semibold transition-colors ${
                 timeHorizon === tab.id
-                  ? "bg-white dark:bg-[#2C332C] text-[#46644B] dark:text-[#8EAA92] shadow-xs"
-                  : "text-[#77786F] dark:text-[#A6ABA0] hover:text-[#252B25]"
+                  ? "bg-white dark:bg-[#2A2522] text-[#261810] dark:text-[#F4EFEA] shadow-xs"
+                  : "text-[#6B5B54] dark:text-[#A99A8F] hover:text-[#261810]"
               }`}
             >
               {tab.label}
@@ -135,97 +102,60 @@ const Progress: React.FC = () => {
           ))}
         </div>
 
-        {/* Summary Cards */}
-        <div className="space-y-3">
-          {/* Days Tracked Card */}
-          <div className="p-5 bg-white dark:bg-[#212521] rounded-2xl border border-[#E3DED5] dark:border-[#313831] shadow-xs space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] uppercase tracking-wider text-[#77786F] dark:text-[#A6ABA0] font-semibold">
-                Days With Presence
-              </span>
-              <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-[#E8EBDD] dark:bg-[#2C332C] text-[#46644B] dark:text-[#8EAA92] text-[11px] font-semibold border border-[#46644B]/10">
-                {consistencyPct}% consistency
-              </span>
-            </div>
-            <div className="flex items-baseline gap-2">
-              <span className="font-serif text-4xl font-medium text-[#46644B] dark:text-[#8EAA92]">
+        {/* Summary Metric Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="bg-white dark:bg-[#2A2522] rounded-2xl p-5 border border-[#D2C3BE] dark:border-[#39302B] space-y-1">
+            <span className="text-xs font-semibold text-[#6B5B54] dark:text-[#A99A8F]">
+              Days with entries
+            </span>
+            <div className="flex items-baseline gap-1.5">
+              <span className="font-serif text-3xl sm:text-4xl font-medium text-[#261810] dark:text-[#F4EFEA]">
                 {presenceDays}
               </span>
-              <span className="font-serif text-xl text-[#77786F] dark:text-[#A6ABA0]">
-                / {horizonNum} days tracked
+              <span className="text-xs text-[#6B5B54] dark:text-[#A99A8F]">
+                of {horizonNum} days
               </span>
             </div>
-            <div className="w-full bg-[#E8EBDD]/60 dark:bg-[#313831] h-1.5 rounded-full overflow-hidden">
-              <div
-                className="bg-[#46644B] dark:bg-[#8EAA92] h-full rounded-full transition-all duration-500"
-                style={{ width: `${consistencyPct}%` }}
-              ></div>
-            </div>
-            <p className="text-xs text-[#77786F] dark:text-[#A6ABA0] leading-relaxed pt-0.5">
-              Honest check-ins logged with intention. Missed days are welcomed back gently without guilt.
-            </p>
           </div>
 
-          {/* Secondary Metrics Grid */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="p-4 bg-white dark:bg-[#212521] rounded-2xl border border-[#E3DED5] dark:border-[#313831] shadow-xs flex flex-col justify-between">
-              <span className="text-[11px] uppercase tracking-wider text-[#77786F] dark:text-[#A6ABA0] font-semibold">
-                Longest Flow
+          <div className="bg-white dark:bg-[#2A2522] rounded-2xl p-5 border border-[#D2C3BE] dark:border-[#39302B] space-y-1">
+            <span className="text-xs font-semibold text-[#6B5B54] dark:text-[#A99A8F]">
+              Longest streak
+            </span>
+            <div className="flex items-baseline gap-1.5">
+              <span className="font-serif text-3xl sm:text-4xl font-medium text-[#261810] dark:text-[#F4EFEA]">
+                {longestStreak}
               </span>
-              <div className="my-2 flex items-baseline gap-1">
-                <span className="font-serif text-3xl font-medium text-[#252B25] dark:text-[#E8EBDD]">
-                  {longestStreak}
-                </span>
-                <span className="text-xs text-[#77786F] dark:text-[#A6ABA0]">days</span>
-              </div>
-              <p className="text-[11.5px] text-[#77786F] dark:text-[#A6ABA0] leading-snug">
-                Longest contiguous sequence of recorded check-ins.
-              </p>
-            </div>
-
-            <div className="p-4 bg-white dark:bg-[#212521] rounded-2xl border border-[#E3DED5] dark:border-[#313831] shadow-xs flex flex-col justify-between">
-              <span className="text-[11px] uppercase tracking-wider text-[#77786F] dark:text-[#A6ABA0] font-semibold">
-                Check-In Depth
+              <span className="text-xs text-[#6B5B54] dark:text-[#A99A8F]">
+                {longestStreak === 1 ? "day" : "consecutive days"}
               </span>
-              <div className="my-2 flex items-baseline gap-1">
-                <span className="font-serif text-3xl font-medium text-[#252B25] dark:text-[#E8EBDD]">
-                  {depthPct}%
-                </span>
-                <span className="text-xs text-[#46644B] dark:text-[#8EAA92] font-semibold">rate</span>
-              </div>
-              <p className="text-[11.5px] text-[#77786F] dark:text-[#A6ABA0] leading-snug">
-                Ratio of completed commitments in this time window.
-              </p>
             </div>
           </div>
         </div>
 
-        {/* Emotional Rhythm Timeline Visualization */}
-        <div className="min-w-0 p-4 sm:p-5 bg-white dark:bg-[#212521] rounded-2xl border border-[#E3DED5] dark:border-[#313831] shadow-xs space-y-4">
-          <div className="flex items-start justify-between">
-            <div>
-              <span className="text-[11px] uppercase tracking-wider text-[#77786F] dark:text-[#A6ABA0] font-semibold">
-                Inner Weather
-              </span>
-              <h2 className="font-serif text-lg text-[#252B25] dark:text-[#E8EBDD] font-medium mt-0.5">
-                Consistency Rhythm (Past 21 Days)
-              </h2>
-            </div>
-            <span className="material-symbols-outlined text-[#46644B] dark:text-[#8EAA92] text-[20px]">insights</span>
+        {/* 21-Day Timeline Chart */}
+        <section aria-labelledby="timeline-heading" className="bg-white dark:bg-[#2A2522] rounded-2xl border border-[#D2C3BE] dark:border-[#39302B] p-5 space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 id="timeline-heading" className="font-serif text-lg font-medium text-[#261810] dark:text-[#F4EFEA]">
+              Last 21 days
+            </h2>
+            <span className="text-xs text-[#6B5B54] dark:text-[#A99A8F]">
+              Current streak: {activeStreakMax} {activeStreakMax === 1 ? "day" : "days"}
+            </span>
           </div>
 
-          {/* Timeline Bar Chart */}
-          <div className="pt-2 pb-1">
+          <div className="pt-2">
             {!hasTimelineActivity && (
-              <p className="mb-3 rounded-lg bg-[#F8F6F1] dark:bg-[#181B18] px-3 py-2 text-xs leading-relaxed text-[#77786F] dark:text-[#D0C4BA]">
+              <p className="mb-3 rounded-xl bg-[#FBF2E7] dark:bg-[#1E1B18] px-3.5 py-2.5 text-xs text-[#6B5B54] dark:text-[#A99A8F]">
                 Your recent rhythm will take shape as you record check-ins or reflections.
               </p>
             )}
+
             <div
               role="img"
-              aria-label="Daily check-in activity for the past 21 days. Select View daily details for exact dates and counts."
-              className={`flex w-full min-w-0 items-end justify-between gap-[2px] sm:gap-1 ${
-                hasTimelineActivity ? "h-24" : "h-14 sm:h-16"
+              aria-label="Daily activity for the past 21 days. Select View daily details for exact dates."
+              className={`flex w-full items-end justify-between gap-1 ${
+                hasTimelineActivity ? "h-20 sm:h-24" : "h-14"
               }`}
             >
               {timelineData.map(({ day, date, checksCount, hasNote, complete }, index) => {
@@ -233,19 +163,18 @@ const Progress: React.FC = () => {
                 const barColor = complete
                   ? "bg-[#46644B] dark:bg-[#8EAA92]"
                   : checksCount > 0 || hasNote
-                    ? "bg-[#B16F4C] dark:bg-[#D49877]"
-                    : "bg-[#E8EBDD] dark:bg-[#313831]";
+                  ? "bg-[#D47A55]"
+                  : "bg-[#D2C3BE]/40 dark:bg-[#39302B]";
                 const showDate = index === 0 || index === 20 || (index + 1) % 5 === 0;
 
                 return (
-                  <div key={date} className="flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-1">
+                  <div key={date} className="flex h-full flex-1 flex-col items-center justify-end gap-1">
                     <div
-                      className={`w-full min-w-0 rounded-t-[3px] transition-all duration-300 ${barColor}`}
+                      className={`w-full rounded-t-sm transition-all ${barColor}`}
                       style={{ height: barHeight }}
                       aria-hidden="true"
-                      title={`${date}: ${checksCount}/${trackers.length} goals checked${hasNote ? ", reflection recorded" : ""}`}
                     />
-                    <span className="h-3 text-[10px] font-mono leading-3 text-[#77786F] dark:text-[#A6ABA0]">
+                    <span className="h-3 text-[10px] font-mono leading-3 text-[#6B5B54] dark:text-[#A99A8F]">
                       {showDate ? format(day, "d") : ""}
                     </span>
                   </div>
@@ -254,138 +183,76 @@ const Progress: React.FC = () => {
             </div>
           </div>
 
-          {/* Minimal Legend */}
-          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 pt-2 border-t border-[#E3DED5]/70 dark:border-[#313831] text-xs">
-            <div className="flex items-center gap-1.5 text-[#77786F] dark:text-[#A6ABA0]">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#46644B] dark:bg-[#8EAA92] inline-block"></span>
-              <span>All Complete</span>
+          {/* Legend */}
+          <div className="flex items-center justify-center gap-4 pt-3 border-t border-[#D2C3BE]/50 dark:border-[#39302B] text-xs text-[#6B5B54] dark:text-[#A99A8F]">
+            <div className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-[#46644B] dark:bg-[#8EAA92]" />
+              <span>All checked</span>
             </div>
-            <div className="flex items-center gap-1.5 text-[#77786F] dark:text-[#A6ABA0]">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#B16F4C] inline-block"></span>
-              <span>Partial / Note</span>
+            <div className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-[#D47A55]" />
+              <span>Partial / note</span>
             </div>
-            <div className="flex items-center gap-1.5 text-[#77786F] dark:text-[#A6ABA0]">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#E8EBDD] dark:bg-[#313831] inline-block"></span>
+            <div className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-[#D2C3BE]/60 dark:bg-[#39302B]" />
               <span>Rest day</span>
             </div>
           </div>
 
-          <details className="border-t border-[#E3DED5]/70 dark:border-[#313831] pt-2">
-            <summary className="min-h-11 cursor-pointer text-xs font-semibold text-[#46644B] dark:text-[#D5A16D]">
+          {/* Details */}
+          <details className="border-t border-[#D2C3BE]/50 dark:border-[#39302B] pt-2">
+            <summary className="min-h-11 cursor-pointer text-xs font-semibold text-[#3D2C24] dark:text-[#D47A55] flex items-center">
               View daily details
             </summary>
-            <ul className="grid gap-1 sm:grid-cols-2">
+            <ul className="grid gap-1 sm:grid-cols-2 pt-2">
               {timelineData.map(({ day, date, checksCount, hasNote, complete }) => {
                 const status = complete
-                  ? "All goals checked"
+                  ? "All trackers checked"
                   : checksCount > 0 || hasNote
-                    ? "Partial activity"
-                    : "No activity recorded";
+                  ? "Partial activity"
+                  : "No activity";
                 return (
-                  <li key={date} className="rounded-lg bg-[#F8F6F1] dark:bg-[#181B18] px-3 py-2 text-xs text-[#5E4D45] dark:text-[#D0C4BA]">
-                    <time dateTime={date}>{format(day, "EEE, MMM d")}</time>
-                    <span>: {status}{trackers.length > 0 ? ` (${checksCount}/${trackers.length} goals)` : ""}</span>
-                    {hasNote && <span>, reflection recorded</span>}
+                  <li
+                    key={date}
+                    className="rounded-xl bg-[#FBF2E7] dark:bg-[#1E1B18] px-3 py-2 text-xs text-[#5E4D45] dark:text-[#D0C4BA]"
+                  >
+                    <time dateTime={date} className="font-semibold">{format(day, "EEE, MMM d")}</time>
+                    <span>: {status}</span>
+                    {hasNote && <span>, note recorded</span>}
                   </li>
                 );
               })}
             </ul>
           </details>
-        </div>
+        </section>
 
-        {/* Active Commitments Breakdown */}
-        <div className="space-y-3">
-          <div className="flex items-baseline justify-between px-0.5">
-            <h2 className="font-serif text-xl text-[#252B25] dark:text-[#E8EBDD] font-medium">
-              Active Commitments
-            </h2>
-            <button
-              type="button"
-              onClick={() => navigate("/streaks")}
-              className="text-xs text-[#46644B] dark:text-[#8EAA92] font-semibold hover:underline"
-            >
-              View Milestones →
-            </button>
-          </div>
-
-          {trackers.length === 0 ? (
-            <p className="text-xs text-[#77786F] dark:text-[#A6ABA0] text-center py-3">
-              No habits being tracked. Add a goal on the Home screen to see analytics.
-            </p>
-          ) : (
-            trackers.map((tracker) => {
-              const habitName = tracker.name;
-              const streak = calculateStreak(tracker.checkIns);
-              return (
-                <div
-                  key={tracker.id || habitName}
-                  className="p-4 bg-white dark:bg-[#212521] rounded-2xl border border-[#E3DED5] dark:border-[#313831] shadow-xs space-y-2.5"
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-lg bg-[#E8EBDD] dark:bg-[#2C332C] text-[#46644B] dark:text-[#8EAA92] flex items-center justify-center border border-[#46644B]/10">
-                        <span className="material-symbols-outlined text-[18px]">
-                          {getHabitIcon(habitName)}
-                        </span>
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-semibold text-[#252B25] dark:text-[#E8EBDD] leading-tight">
-                          {getDisplayName(habitName)}
-                        </h3>
-                        <span className="text-xs text-[#77786F] dark:text-[#A6ABA0]">
-                          Daily presence & commitment
-                        </span>
-                      </div>
-                    </div>
-                    <span className="font-serif text-lg text-[#46644B] dark:text-[#8EAA92] font-medium">
-                      {streak} d flow
-                    </span>
-                  </div>
-
-                  <p className="text-xs text-[#77786F] dark:text-[#A6ABA0] leading-relaxed">
-                    {streak > 0
-                      ? `Consistent ${streak}-day steady practice. Keep showing up for yourself.`
-                      : "Start today for a fresh beginning. Every intentional moment counts."}
-                  </p>
-                </div>
-              );
-            })
-          )}
-        </div>
-
-        {/* Data Autonomy Card & Functional CSV Export */}
-        <div className="p-5 bg-white dark:bg-[#212521] rounded-2xl border border-[#E3DED5] dark:border-[#313831] shadow-xs space-y-3.5">
-          <div className="flex items-start gap-3">
-            <div className="w-9 h-9 rounded-xl bg-[#E8EBDD] dark:bg-[#2C332C] flex items-center justify-center text-[#46644B] dark:text-[#8EAA92] border border-[#46644B]/15 shrink-0">
-              <span className="material-symbols-outlined text-[20px]">shield</span>
-            </div>
-            <div className="space-y-0.5">
-              <h3 className="font-semibold text-sm text-[#252B25] dark:text-[#E8EBDD]">
-                Local Device Autonomy
-              </h3>
-              <p className="text-xs text-[#77786F] dark:text-[#A6ABA0] leading-relaxed">
-                Your metrics reside entirely on this device. No remote sync, no telemetry, and no external ad trackers.
-              </p>
-            </div>
-          </div>
+        {/* Milestone and Counter Links */}
+        <div className="grid grid-cols-2 gap-3 pt-2">
+          <button
+            type="button"
+            onClick={() => navigate("/streaks")}
+            className="p-4 bg-white dark:bg-[#2A2522] rounded-2xl border border-[#D2C3BE] dark:border-[#39302B] text-left hover:border-[#3D2C24]/30 transition-colors"
+          >
+            <span className="font-semibold text-xs text-[#261810] dark:text-[#F4EFEA] block">
+              Milestones →
+            </span>
+            <span className="text-xs text-[#6B5B54] dark:text-[#A99A8F]">
+              View habit milestone goals
+            </span>
+          </button>
 
           <button
             type="button"
-            onClick={exportCSV}
-            className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-[#F8F6F1] dark:bg-[#181B18] hover:bg-[#E8EBDD] dark:hover:bg-[#282D28] border border-[#E3DED5] dark:border-[#313831] text-[#252B25] dark:text-[#E8EBDD] text-xs font-semibold shadow-xs transition-colors cursor-pointer active:scale-[0.99]"
+            onClick={() => navigate("/counter")}
+            className="p-4 bg-white dark:bg-[#2A2522] rounded-2xl border border-[#D2C3BE] dark:border-[#39302B] text-left hover:border-[#3D2C24]/30 transition-colors"
           >
-            <span className="material-symbols-outlined text-[18px] text-[#46644B] dark:text-[#8EAA92]">
-              download
+            <span className="font-semibold text-xs text-[#261810] dark:text-[#F4EFEA] block">
+              Day counter →
             </span>
-            <span>Export Local Data as CSV</span>
+            <span className="text-xs text-[#6B5B54] dark:text-[#A99A8F]">
+              Continuous sobriety timer
+            </span>
           </button>
-        </div>
-
-        {/* Philosophical Footnote */}
-        <div className="py-2 text-center">
-          <p className="font-serif text-base italic text-[#77786F] dark:text-[#A6ABA0]">
-            “Rhythm is found in returning, not in perfection.”
-          </p>
         </div>
       </div>
     </Layout>

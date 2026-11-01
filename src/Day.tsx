@@ -20,7 +20,7 @@ const Day: React.FC = () => {
       if (lower === "sesh") return "Habit S";
       if (lower === "weed") return "Habit W";
       if (lower === "porn") return "Habit P";
-      return name ? name.slice(0, 1).toUpperCase() + " Tracker" : "Habit Tracker";
+      return name ? name.slice(0, 1).toUpperCase() + " Tracker" : "Tracker";
     }
     return name;
   };
@@ -31,7 +31,7 @@ const Day: React.FC = () => {
     if (lower.includes("sesh") || lower.includes("smoke") || lower.includes("nicotine")) return "air";
     if (lower.includes("weed") || lower.includes("cannabis")) return "nature";
     if (lower.includes("porn") || lower.includes("screen") || lower.includes("curfew")) return "bedtime";
-    return "eco";
+    return "spa";
   };
 
   const selectedDateObj = new Date(targetDateStr + "T00:00:00");
@@ -43,93 +43,88 @@ const Day: React.FC = () => {
 
   return (
     <Layout title="Day Detail">
-      <div className="pt-2 pb-6 space-y-5">
-        <header className="flex items-center justify-between pt-1">
+      <div className="max-w-2xl mx-auto py-4 sm:py-6 space-y-6">
+        <header className="flex items-center justify-between">
           <div>
-            <span className="text-[11px] uppercase tracking-wider text-[#77786F] dark:text-[#A6ABA0] font-medium">
-              Daily Record
-            </span>
-            <h1 className="font-serif text-2xl md:text-3xl font-medium text-[#252B25] dark:text-[#E8EBDD]">
+            <h1 className="font-serif text-2xl sm:text-3xl font-medium tracking-tight text-[#261810] dark:text-[#F4EFEA]">
               {formattedDay}
             </h1>
+            <p className="text-xs text-[#6B5B54] dark:text-[#A99A8F] mt-0.5">
+              {completedCount} of {trackers.length} checked
+            </p>
           </div>
           <button
             type="button"
             onClick={() => navigate(`/calendar?date=${targetDateStr}`)}
-            className="px-3 py-1.5 rounded-lg border border-[#E3DED5] dark:border-[#313831] bg-white dark:bg-[#212521] text-xs font-semibold text-[#252B25] dark:text-[#E8EBDD] hover:bg-[#F2EFE8] transition-colors"
+            className="min-h-11 px-3 rounded-xl border border-[#D2C3BE] dark:border-[#39302B] bg-white dark:bg-[#2A2522] text-xs font-semibold text-[#261810] dark:text-[#F4EFEA] hover:bg-[#FBF2E7] dark:hover:bg-[#1E1B18] transition-colors"
           >
             ← Calendar
           </button>
         </header>
 
-        <section className="bg-white dark:bg-[#212521] rounded-2xl border border-[#E3DED5] dark:border-[#313831] p-5 shadow-xs space-y-4">
-          <div className="flex items-center justify-between border-b border-[#E3DED5]/70 dark:border-[#313831] pb-3">
-            <h2 className="font-serif text-lg font-medium text-[#252B25] dark:text-[#E8EBDD]">
-              Daily Habit Check-Ins
-            </h2>
-            <span className="text-xs text-[#77786F] dark:text-[#A6ABA0]">
-              {completedCount} of {trackers.length} checked
-            </span>
-          </div>
+        <section className="bg-white dark:bg-[#2A2522] rounded-2xl border border-[#D2C3BE] dark:border-[#39302B] p-5 space-y-3">
+          <h2 className="font-serif text-lg font-medium text-[#261810] dark:text-[#F4EFEA] pb-2 border-b border-[#D2C3BE]/50 dark:border-[#39302B]">
+            Daily check-ins
+          </h2>
 
           {trackers.length === 0 ? (
             <div className="text-center py-6 space-y-2">
-              <p className="text-xs text-[#77786F] dark:text-[#A6ABA0]">
-                No active goals yet. Add one to begin tracking.
+              <p className="text-xs text-[#6B5B54] dark:text-[#A99A8F]">
+                No active trackers yet.
               </p>
               <button
                 type="button"
                 onClick={() => navigate("/add-addiction")}
-                className="px-3.5 py-1.5 rounded-xl bg-[#46644B] text-white text-xs font-semibold"
+                className="min-h-11 px-4 py-2 rounded-xl bg-[#3D2C24] dark:bg-[#D47A55] text-white dark:text-[#211710] text-xs font-semibold"
               >
-                Add a goal
+                Add a tracker
               </button>
             </div>
           ) : (
-            <div className="space-y-2.5">
+            <div className="space-y-2">
               {trackers.map((tracker) => {
                 const habitName = tracker.name;
                 const isChecked = Boolean(tracker.checkIns?.[targetDateStr]);
                 return (
                   <div
                     key={tracker.id || habitName}
-                    className="p-3.5 bg-[#F8F6F1] dark:bg-[#181B18] rounded-xl border border-[#E3DED5]/70 dark:border-[#313831] flex items-center justify-between"
+                    className="p-3.5 bg-[#FBF2E7] dark:bg-[#1E1B18] rounded-xl flex items-center justify-between gap-3"
                   >
                     <div className="flex items-center gap-3">
-                      <div
-                        className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
-                          isChecked
-                            ? "bg-[#46644B] text-white"
-                            : "bg-[#E3DED5] dark:bg-[#2C332C] text-[#252B25] dark:text-[#E8EBDD]"
-                        }`}
-                      >
+                      <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-white dark:bg-[#2A2522] text-[#3D2C24] dark:text-[#D47A55]">
                         <span className="material-symbols-outlined text-[18px]">
                           {getHabitIcon(habitName)}
                         </span>
                       </div>
                       <div>
-                        <h3 className="font-semibold text-sm text-[#252B25] dark:text-[#E8EBDD]">
+                        <h3 className="font-semibold text-sm text-[#261810] dark:text-[#F4EFEA]">
                           {getDisplayName(habitName)}
                         </h3>
-                        <p className="text-xs text-[#77786F] dark:text-[#A6ABA0]">
-                          Status: {isChecked ? "Checked in" : "Not checked in"} on this date
+                        <p className="text-xs text-[#6B5B54] dark:text-[#A99A8F]">
+                          {isChecked ? "Checked in" : "Not checked in"}
                         </p>
                       </div>
                     </div>
 
                     <button
                       type="button"
-                      onClick={() => toggleCheckIn(habitName, targetDateStr)}
-                      className={`px-3 py-1.5 text-xs rounded-lg font-semibold transition-all flex items-center gap-1 ${
+                      aria-label={
                         isChecked
-                          ? "bg-[#46644B] text-white shadow-xs"
-                          : "bg-white dark:bg-[#212521] border border-[#E3DED5] dark:border-[#313831] text-[#77786F] dark:text-[#A6ABA0] hover:text-[#252B25]"
+                          ? `Remove check-in for ${getDisplayName(habitName)}`
+                          : `Check in for ${getDisplayName(habitName)}`
+                      }
+                      aria-pressed={isChecked}
+                      onClick={() => toggleCheckIn(habitName, targetDateStr)}
+                      className={`min-h-11 px-3 py-1.5 text-xs rounded-xl font-semibold transition-colors flex items-center gap-1.5 ${
+                        isChecked
+                          ? "bg-[#3D2C24] dark:bg-[#D47A55] text-white dark:text-[#211710]"
+                          : "bg-white dark:bg-[#2A2522] border border-[#D2C3BE] dark:border-[#39302B] text-[#5E4D45] dark:text-[#D0C4BA]"
                       }`}
                     >
                       <span className="material-symbols-outlined text-[15px]">
-                        {isChecked ? "done" : "radio_button_unchecked"}
+                        {isChecked ? "check" : "radio_button_unchecked"}
                       </span>
-                      <span>{isChecked ? "Checked in" : "Check in"}</span>
+                      <span>{isChecked ? "Checked" : "Check in"}</span>
                     </button>
                   </div>
                 );
@@ -137,23 +132,6 @@ const Day: React.FC = () => {
             </div>
           )}
         </section>
-
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={() => navigate(`/calendar?date=${targetDateStr}`)}
-            className="flex-1 py-2.5 rounded-xl border border-[#E3DED5] dark:border-[#313831] bg-white dark:bg-[#212521] text-xs font-semibold text-[#252B25] dark:text-[#E8EBDD] hover:bg-[#F2EFE8] transition-colors"
-          >
-            ← Back to Calendar
-          </button>
-          <button
-            type="button"
-            onClick={() => navigate("/home")}
-            className="flex-1 py-2.5 rounded-xl bg-[#46644B] text-white text-xs font-semibold hover:bg-[#38503C] transition-colors"
-          >
-            Dashboard
-          </button>
-        </div>
       </div>
     </Layout>
   );

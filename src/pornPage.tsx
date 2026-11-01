@@ -53,54 +53,48 @@ const PornPage: React.FC = () => {
     savePornNotes(e.target.value);
   };
 
+  const title = discreetMode ? "Impulse tracker" : "Porn tracker";
+
   return (
-    <Layout title={discreetMode ? "Impulse Tracker" : "Porn Habit Tracker"}>
-      <div className="pt-2 pb-6 space-y-5">
-        <header className="space-y-1">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-[#B16F4C] dark:text-[#D49877]">
-              Specialized Moderation
-            </span>
-            <button
-              type="button"
-              onClick={() => navigate("/home")}
-              className="text-xs font-semibold text-[#46644B] dark:text-[#8EAA92] hover:underline"
-            >
-              ← Dashboard
-            </button>
+    <Layout title={title}>
+      <div className="max-w-2xl mx-auto py-4 sm:py-6 space-y-6">
+        <header className="flex items-center justify-between">
+          <div>
+            <h1 className="font-serif text-3xl sm:text-4xl font-medium tracking-tight text-[#261810] dark:text-[#F4EFEA]">
+              {title}
+            </h1>
+            <p className="text-xs text-[#6B5B54] dark:text-[#A99A8F] mt-0.5">
+              Record daily counts. Days at zero reflect mindful pauses.
+            </p>
           </div>
-          <h1 className="font-serif text-3xl font-medium tracking-tight text-[#252B25] dark:text-[#E8EBDD]">
-            {discreetMode ? "Digital Impulse Tracker" : "Porn Recovery Tracker"}
-          </h1>
-          <p className="text-xs text-[#77786F] dark:text-[#A6ABA0] leading-relaxed">
-            Cultivating healthy digital boundaries, emotional grounding, and neurological reset.
-          </p>
+          <button
+            type="button"
+            onClick={() => navigate("/progress")}
+            className="min-h-11 px-3 rounded-xl border border-[#D2C3BE] dark:border-[#39302B] bg-white dark:bg-[#2A2522] text-xs font-semibold text-[#261810] dark:text-[#F4EFEA] hover:bg-[#FBF2E7] dark:hover:bg-[#1E1B18] transition-colors"
+          >
+            ← Progress
+          </button>
         </header>
 
-        {/* Milestone Streak Banner */}
-        <div className="p-4 rounded-2xl bg-white dark:bg-[#212521] border border-[#E3DED5] dark:border-[#313831] shadow-xs flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#E8EBDD] dark:bg-[#2C332C] flex items-center justify-center text-[#46644B] dark:text-[#8EAA92]">
-              <span className="material-symbols-outlined text-[20px]">bedtime</span>
-            </div>
-            <div>
-              <span className="text-[11px] uppercase tracking-wider text-[#77786F] dark:text-[#A6ABA0] font-semibold block">
-                Continuous Reset Flow
-              </span>
-              <span className="font-serif text-2xl font-medium text-[#46644B] dark:text-[#8EAA92]">
-                {streak} {streak === 1 ? "day" : "days"}
-              </span>
-            </div>
+        {/* Zero-day streak card */}
+        <div className="p-5 rounded-2xl bg-white dark:bg-[#2A2522] border border-[#D2C3BE] dark:border-[#39302B] flex items-center justify-between">
+          <div>
+            <span className="text-xs font-semibold text-[#6B5B54] dark:text-[#A99A8F] block">
+              Consecutive zero-count days
+            </span>
+            <span className="font-serif text-3xl font-medium text-[#261810] dark:text-[#F4EFEA]">
+              {streak} {streak === 1 ? "day" : "days"}
+            </span>
           </div>
-          <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-[#E8EBDD] dark:bg-[#2C332C] text-[#46644B] dark:text-[#8EAA92]">
-            {streak >= 7 ? "7-Day Renewal" : "In progress"}
+          <span className="text-xs font-medium px-3 py-1 rounded-full bg-[#FBF2E7] dark:bg-[#1E1B18] text-[#5E4D45] dark:text-[#D0C4BA]">
+            {streak > 0 ? "Active streak" : "Start today"}
           </span>
         </div>
 
         {/* Calendar Card */}
-        <div className="bg-white dark:bg-[#212521] rounded-2xl border border-[#E3DED5] dark:border-[#313831] p-4 shadow-xs space-y-3">
-          <div className="flex items-center justify-between pb-2 border-b border-[#E3DED5]/80 dark:border-[#313831]">
-            <h2 className="font-serif text-lg font-medium text-[#252B25] dark:text-[#E8EBDD]">
+        <div className="bg-white dark:bg-[#2A2522] rounded-2xl border border-[#D2C3BE] dark:border-[#39302B] p-5 space-y-3">
+          <div className="flex items-center justify-between pb-2 border-b border-[#D2C3BE]/50 dark:border-[#39302B]">
+            <h2 className="font-serif text-lg font-medium text-[#261810] dark:text-[#F4EFEA]">
               {format(currentMonth, "MMMM yyyy")}
             </h2>
             <div className="flex items-center gap-1">
@@ -108,7 +102,7 @@ const PornPage: React.FC = () => {
                 type="button"
                 aria-label="Previous month"
                 onClick={() => setCurrentMonth((prev) => subMonths(prev, 1))}
-                className="min-h-11 min-w-11 rounded-lg flex items-center justify-center border border-[#E3DED5] dark:border-[#313831] hover:bg-[#F2EFE8] text-xs"
+                className="min-h-11 min-w-11 rounded-xl flex items-center justify-center border border-[#D2C3BE] dark:border-[#39302B] hover:bg-[#FBF2E7] dark:hover:bg-[#1E1B18] text-xs"
               >
                 <span className="material-symbols-outlined text-[16px]">chevron_left</span>
               </button>
@@ -116,16 +110,16 @@ const PornPage: React.FC = () => {
                 type="button"
                 aria-label="Next month"
                 onClick={() => setCurrentMonth((prev) => addMonths(prev, 1))}
-                className="min-h-11 min-w-11 rounded-lg flex items-center justify-center border border-[#E3DED5] dark:border-[#313831] hover:bg-[#F2EFE8] text-xs"
+                className="min-h-11 min-w-11 rounded-xl flex items-center justify-center border border-[#D2C3BE] dark:border-[#39302B] hover:bg-[#FBF2E7] dark:hover:bg-[#1E1B18] text-xs"
               >
                 <span className="material-symbols-outlined text-[16px]">chevron_right</span>
               </button>
             </div>
           </div>
 
-          <div className="grid grid-cols-7 gap-1 text-center mb-1">
+          <div className="grid grid-cols-7 gap-1 text-center">
             {["M", "T", "W", "T", "F", "S", "S"].map((d, i) => (
-              <span key={i} className="text-[11px] font-semibold text-[#77786F] dark:text-[#A6ABA0]">
+              <span key={i} className="text-xs font-semibold text-[#6B5B54] dark:text-[#A99A8F] py-1">
                 {d}
               </span>
             ))}
@@ -133,132 +127,136 @@ const PornPage: React.FC = () => {
 
           <div className="grid grid-cols-7 gap-1 text-center">
             {leadingBlanks.map((_, i) => (
-              <div key={`blank-${i}`} className="h-11 opacity-20"></div>
+              <div key={`blank-${i}`} className="h-11" />
             ))}
+
             {daysThisMonth.map((dateObj) => {
               const dateStr = format(dateObj, "yyyy-MM-dd");
               const count = pornData[dateStr];
-              const isLogged = count !== undefined;
+              const isRecorded = count !== undefined;
               const isZero = count === 0;
 
               return (
                 <button
                   key={dateStr}
                   type="button"
-                  aria-label={`${format(dateObj, "EEEE, MMMM d, yyyy")}: ${isLogged ? `${count} count recorded` : "no count recorded"}`}
+                  aria-label={`${format(dateObj, "MMMM d")}: ${isRecorded ? `${count} count` : "No record"}`}
                   onClick={() => handleDayClick(dateStr)}
-                  className={`h-11 rounded-xl flex flex-col items-center justify-center border transition-all ${
+                  className={`h-11 rounded-xl flex flex-col items-center justify-center text-xs transition-colors ${
                     isZero
-                      ? "bg-[#E8EBDD] dark:bg-[#2C332C] border-[#46644B]/40 text-[#46644B] dark:text-[#8EAA92]"
-                      : isLogged
-                      ? "bg-[#FDECEB] dark:bg-[#3A271E] border-[#B16F4C]/40 text-[#B16F4C] dark:text-[#D49877]"
-                      : "bg-[#F8F6F1] dark:bg-[#181B18] border-[#E3DED5] dark:border-[#313831] text-[#252B25] dark:text-[#E8EBDD] hover:border-[#46644B]"
+                      ? "bg-[#46644B] dark:bg-[#8EAA92] text-white dark:text-[#211710] font-semibold"
+                      : isRecorded
+                      ? "bg-[#D47A55] text-white font-semibold"
+                      : "hover:bg-[#FBF2E7] dark:hover:bg-[#1E1B18] text-[#261810] dark:text-[#F4EFEA]"
                   }`}
                 >
-                  <span className="text-xs font-semibold">{format(dateObj, "d")}</span>
-                  <span className="text-[10px] font-mono leading-none">
-                    {isLogged ? `${count}x` : "-"}
-                  </span>
+                  <span>{format(dateObj, "d")}</span>
+                  {isRecorded && (
+                    <span className="text-[10px] leading-none opacity-90">
+                      {count}
+                    </span>
+                  )}
                 </button>
               );
             })}
           </div>
 
-          <div className="pt-2 border-t border-[#E3DED5]/80 dark:border-[#313831] flex items-center justify-between text-[11px] text-[#77786F] dark:text-[#A6ABA0]">
-            <span>Click any day to log or adjust count</span>
-            <div className="flex items-center gap-2">
-              <span className="flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-[#46644B]"></span> 0 (No count recorded)
-              </span>
-              <span className="flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-[#B16F4C]"></span> &gt;0 (Occurrence recorded)
-              </span>
+          <div className="flex items-center justify-center gap-4 pt-3 border-t border-[#D2C3BE]/50 dark:border-[#39302B] text-xs text-[#6B5B54] dark:text-[#A99A8F]">
+            <div className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#46644B] dark:bg-[#8EAA92]" />
+              <span>Zero count</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#D47A55]" />
+              <span>Logged usage</span>
             </div>
           </div>
         </div>
 
-        {/* Accompanying Journal Thoughts */}
-        <div className="bg-white dark:bg-[#212521] rounded-2xl border border-[#E3DED5] dark:border-[#313831] p-4 shadow-xs space-y-2">
-          <span className="text-[11px] uppercase tracking-wider text-[#77786F] dark:text-[#A6ABA0] font-semibold block">
-            Reflective Notes on Triggers & Wind-down
-          </span>
+        {/* Private Notes */}
+        <section className="bg-white dark:bg-[#2A2522] rounded-2xl border border-[#D2C3BE] dark:border-[#39302B] p-5 space-y-2">
+          <h2 className="font-serif text-lg font-medium text-[#261810] dark:text-[#F4EFEA]">
+            Tracker notes
+          </h2>
           <textarea
             rows={3}
             value={pornNotes}
             onChange={handleNotesChange}
-            placeholder="Record observations on fatigue, solitude, or late-night triggers..."
-            className="w-full p-3 rounded-xl border border-[#E3DED5] dark:border-[#313831] bg-[#F8F6F1] dark:bg-[#181B18] text-xs text-[#252B25] dark:text-[#E8EBDD] focus:outline-none focus:border-[#46644B] resize-none"
+            placeholder="Add any triggers, patterns, or notes..."
+            className="w-full p-3 rounded-xl bg-[#FBF2E7] dark:bg-[#1E1B18] text-xs text-[#261810] dark:text-[#F4EFEA] border border-[#D2C3BE] dark:border-[#39302B] focus:outline-none resize-none"
           />
-        </div>
+        </section>
       </div>
 
-      {/* Accessible Stepper Dialog */}
+      {/* Date Count Modal */}
       {activeDateModal && (
-        <div className="fixed inset-0 z-50 bg-[#252B25]/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="w-full max-w-sm bg-white dark:bg-[#212521] rounded-2xl p-5 shadow-xl border border-[#E3DED5] dark:border-[#313831] space-y-4">
-            <div className="flex items-center justify-between border-b border-[#E3DED5] dark:border-[#313831] pb-2">
-              <h3 className="font-serif text-lg font-medium text-[#252B25] dark:text-[#E8EBDD]">
-                Log Entry ({activeDateModal.dateStr})
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="porn-modal-title"
+            className="w-full max-w-xs bg-white dark:bg-[#2A2522] rounded-2xl p-5 border border-[#D2C3BE] dark:border-[#39302B] shadow-xl space-y-4"
+          >
+            <div className="flex items-center justify-between">
+              <h3 id="porn-modal-title" className="font-serif text-lg font-medium text-[#261810] dark:text-[#F4EFEA]">
+                Record count
               </h3>
               <button
                 type="button"
                 onClick={() => setActiveDateModal(null)}
-                className="w-7 h-7 flex items-center justify-center text-[#77786F]"
+                className="min-h-11 min-w-11 flex items-center justify-center text-[#6B5B54] dark:text-[#A99A8F]"
                 aria-label="Close"
               >
                 <span className="material-symbols-outlined text-[18px]">close</span>
               </button>
             </div>
 
-            <p className="text-xs text-[#77786F] dark:text-[#A6ABA0]">
-              Enter count for this day. 0 represents a complete day of pause and presence.
+            <p className="text-xs text-[#6B5B54] dark:text-[#A99A8F]">
+              Date: {activeDateModal.dateStr}
             </p>
 
-            <div className="flex items-center justify-center gap-3 py-3">
+            <div className="flex items-center justify-center gap-3 py-2">
               <button
                 type="button"
+                aria-label="Decrease count"
                 onClick={() =>
                   setActiveDateModal((prev) =>
                     prev ? { ...prev, count: Math.max(0, prev.count - 1) } : null
                   )
                 }
-                className="w-10 h-10 rounded-xl bg-[#F8F6F1] dark:bg-[#181B18] border border-[#E3DED5] dark:border-[#313831] font-bold text-lg flex items-center justify-center hover:bg-[#E8EBDD]"
+                className="min-h-11 min-w-11 rounded-xl bg-[#FBF2E7] dark:bg-[#1E1B18] border border-[#D2C3BE] dark:border-[#39302B] text-base font-semibold flex items-center justify-center"
               >
                 -
               </button>
-              <input
-                type="number"
-                min="0"
-                value={activeDateModal.count}
-                onChange={(e) => {
-                  const val = Math.max(0, parseInt(e.target.value, 10) || 0);
-                  setActiveDateModal((prev) => (prev ? { ...prev, count: val } : null));
-                }}
-                className="font-serif text-3xl font-medium w-16 text-center text-[#252B25] dark:text-[#E8EBDD] bg-transparent border-b border-[#E3DED5] dark:border-[#313831] focus:outline-none focus:border-[#46644B]"
-              />
+              <span className="font-serif text-3xl font-medium w-16 text-center text-[#261810] dark:text-[#F4EFEA]">
+                {activeDateModal.count}
+              </span>
               <button
                 type="button"
+                aria-label="Increase count"
                 onClick={() =>
-                  setActiveDateModal((prev) => (prev ? { ...prev, count: prev.count + 1 } : null))
+                  setActiveDateModal((prev) =>
+                    prev ? { ...prev, count: prev.count + 1 } : null
+                  )
                 }
-                className="w-10 h-10 rounded-xl bg-[#F8F6F1] dark:bg-[#181B18] border border-[#E3DED5] dark:border-[#313831] font-bold text-lg flex items-center justify-center hover:bg-[#E8EBDD]"
+                className="min-h-11 min-w-11 rounded-xl bg-[#FBF2E7] dark:bg-[#1E1B18] border border-[#D2C3BE] dark:border-[#39302B] text-base font-semibold flex items-center justify-center"
               >
                 +
               </button>
             </div>
 
-            <div className="flex gap-2 pt-1">
+            <div className="flex gap-2">
               <button
                 type="button"
                 onClick={handleSaveCount}
-                className="flex-1 py-2.5 rounded-xl bg-[#46644B] text-white text-xs font-semibold hover:bg-[#38503C] transition-colors"
+                className="min-h-11 flex-1 py-2 px-3 rounded-xl bg-[#3D2C24] dark:bg-[#D47A55] text-white dark:text-[#211710] text-xs font-semibold"
               >
-                Save Entry
+                Save
               </button>
               <button
                 type="button"
                 onClick={() => setActiveDateModal(null)}
-                className="py-2.5 px-4 rounded-xl border border-[#E3DED5] dark:border-[#313831] text-xs font-medium"
+                className="min-h-11 py-2 px-4 rounded-xl border border-[#D2C3BE] dark:border-[#39302B] text-xs font-semibold text-[#5E4D45] dark:text-[#D0C4BA]"
               >
                 Cancel
               </button>
