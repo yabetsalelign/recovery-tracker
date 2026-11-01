@@ -1,4 +1,7 @@
 .vercel
+# OS metadata
+desktop.ini
+.DS_Store
 # Logs
 logs
 *.log

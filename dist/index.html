@@ -3,14 +3,39 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Recovery Tracker — a private, local-first app for tracking daily habits, logging journal entries, and visualizing your streak progress over time." />
+  <meta name="theme-color" content="#F7F4EE" />
+  <meta property="og:title" content="Recovery Tracker" />
+  <meta property="og:description" content="Track daily habits, journal your journey, and visualize your progress — all stored privately in your browser." />
+  <meta property="og:type" content="website" />
   <title>Recovery Tracker</title>
   <base href="/" />
-  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <script type="module" crossorigin src="/assets/index-CO2qmUCB.js"></script>
-  <link rel="modulepreload" crossorigin href="/assets/vendor-VMMwfm1Z.js">
-  <link rel="stylesheet" crossorigin href="/assets/index-BvhQhF3q.css">
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="apple-touch-icon" href="/app-icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <script>
+    (function () {
+      try {
+        var theme = localStorage.getItem("theme");
+        if (theme === "dark") {
+          document.documentElement.classList.add("dark");
+        } else {
+          document.documentElement.classList.remove("dark");
+        }
+        if (localStorage.getItem("fontScale") === "comfort") {
+          document.documentElement.classList.add("font-scale-comfort");
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <script type="module" crossorigin src="/assets/index-2sgoHOx1.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/vendor-HsIJ2JkS.js">
+  <link rel="stylesheet" crossorigin href="/assets/index-DCni14e-.css">
 </head>
 <body>
-  <div id="root"></div>
+  <div id="root"></div>
 </body>
 </html>
