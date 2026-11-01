@@ -58,7 +58,7 @@ const Streaks: React.FC = () => {
             <button
               type="button"
               onClick={() => navigate("/add-addiction")}
-              className="min-h-11 px-4 py-2 bg-[#3D2C24] dark:bg-[#D47A55] text-white dark:text-[#211710] rounded-xl text-xs font-semibold"
+              className="min-h-11 px-4 py-2 btn-primary rounded-xl text-xs font-semibold"
             >
               Add a tracker
             </button>
@@ -78,7 +78,7 @@ const Streaks: React.FC = () => {
                 >
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-xl bg-[#FBF2E7] dark:bg-[#1E1B18] text-[#3D2C24] dark:text-[#D47A55] flex items-center justify-center shrink-0">
+                      <div className="icon-badge w-9 h-9">
                         <span className="material-symbols-outlined text-[20px]">
                           {getHabitIcon(habitName)}
                         </span>
@@ -105,7 +105,7 @@ const Streaks: React.FC = () => {
 
                   <div className="w-full bg-[#FBF2E7] dark:bg-[#1E1B18] h-1.5 rounded-full overflow-hidden">
                     <div
-                      className="bg-[#3D2C24] dark:bg-[#D47A55] h-full rounded-full transition-all"
+                      className="bg-[#B06060] dark:bg-[#C47A6A] h-full rounded-full transition-all"
                       style={{ width: `${progressPct}%` }}
                     />
                   </div>

@@ -181,7 +181,7 @@ const AddAddiction: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setActiveTab("new")}
-                  className="min-h-11 px-4 py-2 rounded-xl bg-[#3D2C24] dark:bg-[#D47A55] text-white dark:text-[#211710] text-xs font-semibold inline-flex items-center gap-1"
+                  className="min-h-11 px-4 py-2 rounded-xl btn-primary text-xs font-semibold inline-flex items-center gap-1"
                 >
                   <span>Add a goal</span>
                 </button>
@@ -200,7 +200,7 @@ const AddAddiction: React.FC = () => {
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-[#FBF2E7] dark:bg-[#1E1B18] text-[#3D2C24] dark:text-[#D47A55] flex items-center justify-center shrink-0">
+                        <div className="icon-badge">
                           <span className="material-symbols-outlined text-[20px]">
                             {getHabitIcon(habitName)}
                           </span>
@@ -315,7 +315,7 @@ const AddAddiction: React.FC = () => {
 
             <button
               type="submit"
-              className="w-full min-h-11 py-2.5 px-4 rounded-xl bg-[#3D2C24] dark:bg-[#D47A55] text-white dark:text-[#211710] text-xs font-semibold hover:opacity-90 transition-opacity"
+              className="w-full min-h-11 py-2.5 px-4 rounded-xl btn-primary text-xs font-semibold"
             >
               <span>Add a goal</span>
             </button>
@@ -364,7 +364,7 @@ const AddAddiction: React.FC = () => {
             <div className="flex gap-2">
               <button
                 type="submit"
-                className="min-h-11 flex-1 py-2 px-3 rounded-xl bg-[#3D2C24] dark:bg-[#D47A55] text-white dark:text-[#211710] text-xs font-semibold"
+                className="min-h-11 flex-1 py-2 px-3 rounded-xl btn-primary text-xs font-semibold"
               >
                 Save
               </button>

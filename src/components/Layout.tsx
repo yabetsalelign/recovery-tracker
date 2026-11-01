@@ -32,7 +32,7 @@ const Layout: React.FC<LayoutProps> = ({
               onClick={() => navigate("/home")}
               aria-label="Recovery Tracker home"
             >
-              <div className="w-8 h-8 rounded-xl flex items-center justify-center bg-[#3D2C24] dark:bg-[#D47A55] text-white dark:text-[#211710]">
+              <div className="brand-badge">
                 <span className="material-symbols-outlined text-[18px]">
                   spa
                 </span>
@@ -53,7 +53,7 @@ const Layout: React.FC<LayoutProps> = ({
                     onClick={() => navigate(item.path)}
                     className={`min-h-11 px-3.5 rounded-xl text-xs font-semibold transition-colors ${
                       isActive
-                        ? "bg-[#3D2C24] text-white dark:bg-[#D47A55] dark:text-[#211710]"
+                        ? "nav-active"
                         : "text-[#5E4D45] dark:text-[#D0C4BA] hover:bg-[#FBF2E7] dark:hover:bg-[#2A2522]"
                     }`}
                   >
@@ -90,7 +90,7 @@ const Layout: React.FC<LayoutProps> = ({
                   onClick={() => navigate(item.path)}
                   className={`flex min-w-[56px] min-h-[44px] flex-col items-center justify-center rounded-xl px-2 transition-colors ${
                     isActive
-                      ? "text-[#3D2C24] dark:text-[#D47A55] font-bold"
+                      ? "nav-active-mobile font-bold"
                       : "text-[#6B5B54] dark:text-[#A99A8F] hover:text-[#261810]"
                   }`}
                 >

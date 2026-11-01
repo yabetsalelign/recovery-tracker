@@ -142,7 +142,7 @@ const Settings: React.FC = () => {
             <button
               type="button"
               onClick={() => showNotification("Name saved")}
-              className="min-h-11 px-4 rounded-xl bg-[#3D2C24] dark:bg-[#D47A55] text-white dark:text-[#211710] text-xs font-semibold"
+              className="min-h-11 px-4 rounded-xl btn-primary text-xs font-semibold"
             >
               Save
             </button>
@@ -247,8 +247,8 @@ const Settings: React.FC = () => {
               role="switch"
               aria-checked={gentleTransitions}
               onClick={() => setGentleTransitions(!gentleTransitions)}
-              className={`min-h-11 min-w-11 w-11 h-6 rounded-full p-0.5 flex items-center transition-colors ${
-                gentleTransitions ? "bg-[#3D2C24] dark:bg-[#D47A55]" : "bg-[#D2C3BE] dark:bg-[#39302B]"
+              className={`min-h-11 w-11 h-6 rounded-full p-0.5 flex items-center transition-colors ${
+                gentleTransitions ? "bg-[#B06060] dark:bg-[#C47A6A]" : "bg-[#D2C3BE] dark:bg-[#39302B]"
               }`}
             >
               <div
@@ -281,7 +281,7 @@ const Settings: React.FC = () => {
               aria-checked={discreetMode}
               onClick={() => setDiscreetMode(!discreetMode)}
               className={`min-h-11 min-w-11 w-11 h-6 rounded-full p-0.5 flex items-center transition-colors ${
-                discreetMode ? "bg-[#3D2C24] dark:bg-[#D47A55]" : "bg-[#D2C3BE] dark:bg-[#39302B]"
+                discreetMode ? "bg-[#B06060] dark:bg-[#C47A6A]" : "bg-[#D2C3BE] dark:bg-[#39302B]"
               }`}
             >
               <div
@@ -460,7 +460,7 @@ const Settings: React.FC = () => {
             <button
               type="button"
               onClick={() => setShowBreathingModal(false)}
-              className="min-h-11 w-full py-2 rounded-xl bg-[#3D2C24] dark:bg-[#D47A55] text-white dark:text-[#211710] text-xs font-semibold"
+              className="min-h-11 w-full py-2 rounded-xl btn-primary text-xs font-semibold"
             >
               Done
             </button>
@@ -510,7 +510,7 @@ const Settings: React.FC = () => {
             <button
               type="button"
               onClick={() => setShowSupportModal(false)}
-              className="min-h-11 w-full py-2 rounded-xl bg-[#3D2C24] dark:bg-[#D47A55] text-white dark:text-[#211710] text-xs font-semibold"
+              className="min-h-11 w-full py-2 rounded-xl btn-primary text-xs font-semibold"
             >
               Close
             </button>

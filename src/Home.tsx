@@ -127,8 +127,8 @@ const Home: React.FC = () => {
                   onClick={() => setSelectedMood(chip.id)}
                   className={`min-h-11 px-3 py-2 rounded-xl text-xs font-semibold transition-colors ${
                     isSelected
-                      ? "bg-[#3D2C24] dark:bg-[#D47A55] text-white dark:text-[#211710]"
-                      : "bg-[#FBF2E7] dark:bg-[#1E1B18] text-[#5E4D45] dark:text-[#D0C4BA] border border-[#D2C3BE]/50 dark:border-[#39302B] hover:border-[#3D2C24]/40"
+                      ? "mood-chip-selected"
+                      : "bg-[#FBF2E7] dark:bg-[#1E1B18] text-[#5E4D45] dark:text-[#D0C4BA] border border-[#D2C3BE]/50 dark:border-[#39302B] hover:border-[#B06060]/40"
                   }`}
                 >
                   {chip.label}
@@ -151,8 +151,8 @@ const Home: React.FC = () => {
             onClick={handleCompleteCheckin}
             className={`w-full min-h-11 py-2.5 px-4 rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-2 ${
               hasCompletedTodayCheckin
-                ? "bg-[#FBF2E7] dark:bg-[#1E1B18] text-[#3D2C24] dark:text-[#D47A55] border border-[#3D2C24]/30 dark:border-[#D47A55]/30"
-                : "bg-[#3D2C24] dark:bg-[#D47A55] text-white dark:text-[#211710] hover:opacity-90"
+                ? "btn-primary-soft"
+                : "btn-primary"
             }`}
           >
             <span className="material-symbols-outlined text-[16px]">
@@ -186,7 +186,7 @@ const Home: React.FC = () => {
               <button
                 type="button"
                 onClick={() => navigate("/add-addiction")}
-                className="inline-flex min-h-11 items-center gap-1.5 px-4 py-2 rounded-xl bg-[#3D2C24] dark:bg-[#D47A55] text-white dark:text-[#211710] text-xs font-semibold"
+                className="inline-flex min-h-11 items-center gap-1.5 px-4 py-2 rounded-xl btn-primary text-xs font-semibold"
               >
                 <span>Add a tracker</span>
               </button>
@@ -210,7 +210,7 @@ const Home: React.FC = () => {
                     className="bg-white dark:bg-[#2A2522] rounded-2xl p-4 border border-[#D2C3BE] dark:border-[#39302B] flex flex-col sm:flex-row sm:items-center justify-between gap-3"
                   >
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-10 h-10 rounded-xl bg-[#FBF2E7] dark:bg-[#1E1B18] flex items-center justify-center text-[#3D2C24] dark:text-[#D47A55] shrink-0">
+                      <div className="icon-badge">
                         <span className="material-symbols-outlined text-[20px]">
                           {getHabitIcon(habitName)}
                         </span>
@@ -255,8 +255,8 @@ const Home: React.FC = () => {
                         onClick={() => toggleCheckIn(habitName, todayStr)}
                         className={`min-h-11 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-colors ${
                           isCheckedToday
-                            ? "bg-[#FBF2E7] dark:bg-[#1E1B18] text-[#3D2C24] dark:text-[#D47A55] border border-[#3D2C24]/30 dark:border-[#D47A55]/30"
-                            : "bg-[#3D2C24] dark:bg-[#D47A55] text-white dark:text-[#211710] hover:opacity-90"
+                            ? "btn-primary-soft"
+                            : "btn-primary"
                         }`}
                       >
                         <span className="material-symbols-outlined text-[16px]">
@@ -391,7 +391,7 @@ const Home: React.FC = () => {
               <button
                 type="button"
                 onClick={saveSpecializedCount}
-                className="min-h-11 flex-1 py-2 px-3 rounded-xl bg-[#3D2C24] dark:bg-[#D47A55] text-white dark:text-[#211710] text-xs font-semibold"
+                className="min-h-11 flex-1 py-2 px-3 rounded-xl btn-primary text-xs font-semibold"
               >
                 Save
               </button>

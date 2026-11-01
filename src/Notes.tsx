@@ -183,7 +183,7 @@ const Notes: React.FC = () => {
             onClick={() => setActiveFilter(filter.value)}
             className={`min-h-11 shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
               activeFilter.toLowerCase() === filter.value.toLowerCase()
-                ? "bg-[#3D2C24] dark:bg-[#D47A55] text-white dark:text-[#211710] border-transparent"
+                ? "filter-pill-selected"
                 : "bg-white dark:bg-[#2A2522] text-[#5E4D45] dark:text-[#D0C4BA] border-[#D2C3BE] dark:border-[#39302B]"
             }`}
           >
@@ -270,7 +270,7 @@ const Notes: React.FC = () => {
 
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1.6fr)_minmax(280px,1fr)] lg:items-start">
           {/* Main Writing Area */}
-          <section className="bg-white dark:bg-[#2A2522] rounded-2xl border border-[#D2C3BE] dark:border-[#39302B] p-5 sm:p-6 space-y-4">
+          <section className="journal-canvas p-5 sm:p-6 space-y-4">
             {/* Date & Category */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#D2C3BE]/50 dark:border-[#39302B]">
               <div className="flex items-center gap-2">
@@ -293,7 +293,7 @@ const Notes: React.FC = () => {
                   onClick={() => handleGoalChange("General")}
                   className={`min-h-11 px-3 py-1 rounded-full text-xs font-semibold border transition-colors ${
                     selectedGoal === "General"
-                      ? "bg-[#3D2C24] dark:bg-[#D47A55] text-white dark:text-[#211710] border-transparent"
+                      ? "filter-pill-selected"
                       : "bg-[#FBF2E7] dark:bg-[#1E1B18] text-[#5E4D45] dark:text-[#D0C4BA] border-[#D2C3BE]/50 dark:border-[#39302B]"
                   }`}
                 >
@@ -306,7 +306,7 @@ const Notes: React.FC = () => {
                     onClick={() => handleGoalChange(tracker.name)}
                     className={`min-h-11 px-3 py-1 rounded-full text-xs font-semibold border transition-colors ${
                       selectedGoal.toLowerCase() === tracker.name.toLowerCase()
-                        ? "bg-[#3D2C24] dark:bg-[#D47A55] text-white dark:text-[#211710] border-transparent"
+                        ? "filter-pill-selected"
                         : "bg-[#FBF2E7] dark:bg-[#1E1B18] text-[#5E4D45] dark:text-[#D0C4BA] border-[#D2C3BE]/50 dark:border-[#39302B]"
                     }`}
                   >
@@ -317,14 +317,14 @@ const Notes: React.FC = () => {
             </div>
 
             {/* Writing Textarea */}
-            <div className="pt-1">
+            <div className="pt-1 journal-rule">
               <textarea
                 aria-label="Journal entry"
                 rows={12}
                 value={journalText}
                 onChange={(e) => setJournalText(e.target.value)}
                 placeholder="What is on your mind today? Write freely..."
-                className="w-full bg-transparent text-[#261810] dark:text-[#F4EFEA] font-serif text-lg leading-relaxed placeholder:text-[#6B5B54]/60 placeholder:font-sans placeholder:text-sm focus:outline-none resize-y"
+                className="journal-textarea w-full bg-transparent text-[#261810] dark:text-[#F4EFEA] font-serif text-lg leading-relaxed placeholder:text-[#6B5B54]/60 placeholder:font-sans placeholder:text-sm focus:outline-none resize-y"
               />
             </div>
 
@@ -353,7 +353,7 @@ const Notes: React.FC = () => {
                   type="button"
                   disabled={!isDirty || saveStatus === "saving"}
                   onClick={handleSaveReflection}
-                  className="min-h-11 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#3D2C24] dark:bg-[#D47A55] text-white dark:text-[#211710] text-xs font-semibold hover:opacity-90 transition-all disabled:opacity-50"
+                  className="min-h-11 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl btn-primary text-xs font-semibold disabled:opacity-50"
                 >
                   <span className="material-symbols-outlined text-[16px]">
                     {saveStatus === "saved" ? "done" : "check"}

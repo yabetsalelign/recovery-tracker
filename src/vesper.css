@@ -1,0 +1,188 @@
+/*
+ * Vesper Visual Identity — supplemental utilities
+ * Applied on top of index.css tokens.
+ * Warm blush pink primary buttons, journal canvas, and accent surfaces.
+ */
+
+/* ─── Primary action button ──────────────────────────────────────────────── */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  min-height: 44px;
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background-color: #b06060;
+  color: #fff8f2;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease, opacity 0.15s ease;
+}
+.btn-primary:hover {
+  background-color: #9a5050;
+}
+.btn-primary:active {
+  background-color: #884444;
+}
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Dark mode */
+.dark .btn-primary {
+  background-color: #c47a6a;
+  color: #1a1614;
+}
+.dark .btn-primary:hover {
+  background-color: #b56a5a;
+}
+
+/* ─── "Soft" / ghost variant (selected-but-outline state) ────────────────── */
+.btn-primary-soft {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  min-height: 44px;
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background-color: #f6ede2;
+  color: #7a3d3d;
+  border: 1px solid rgba(176, 96, 96, 0.35);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+.btn-primary-soft:hover {
+  background-color: #ede1d6;
+}
+.dark .btn-primary-soft {
+  background-color: #2a2220;
+  color: #c47a6a;
+  border-color: rgba(196, 122, 106, 0.35);
+}
+
+/* ─── Mood chip — selected state ─────────────────────────────────────────── */
+.mood-chip-selected {
+  background-color: #b06060 !important;
+  color: #fff8f2 !important;
+  border-color: transparent !important;
+}
+.dark .mood-chip-selected {
+  background-color: #c47a6a !important;
+  color: #1a1614 !important;
+}
+
+/* ─── Filter pill — selected state ───────────────────────────────────────── */
+.filter-pill-selected {
+  background-color: #b06060 !important;
+  color: #fff8f2 !important;
+  border-color: transparent !important;
+}
+.dark .filter-pill-selected {
+  background-color: #c47a6a !important;
+  color: #1a1614 !important;
+}
+
+/* ─── Nav active pill (desktop top bar) ──────────────────────────────────── */
+.nav-active {
+  background-color: #b06060 !important;
+  color: #fff8f2 !important;
+}
+.dark .nav-active {
+  background-color: #c47a6a !important;
+  color: #1a1614 !important;
+}
+
+/* ─── Nav active icon/label (mobile bottom bar) ──────────────────────────── */
+.nav-active-mobile {
+  color: #b06060 !important;
+}
+.dark .nav-active-mobile {
+  color: #c47a6a !important;
+}
+
+/* ─── Icon badge — warm blush accent ─────────────────────────────────────── */
+.icon-badge {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.75rem;
+  background-color: #f6ede2;
+  color: #9a5a50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.dark .icon-badge {
+  background-color: #2a2220;
+  color: #c47a6a;
+}
+
+/* ─── Journal writing canvas ──────────────────────────────────────────────── */
+.journal-canvas {
+  background-color: #fffbf8;
+  border-radius: 1rem;
+  border: 1px solid #d2c3be;
+  box-shadow: 0 1px 3px rgba(38, 24, 16, 0.06);
+}
+.dark .journal-canvas {
+  background-color: #1e1b18;
+  border-color: #39302b;
+  box-shadow: none;
+}
+
+/* Writing textarea inside the canvas */
+.journal-canvas .journal-textarea {
+  background: transparent;
+  resize: vertical;
+  font-family: "Newsreader", Georgia, serif;
+  font-size: 1.0625rem;
+  line-height: 1.8;
+  color: #261810;
+}
+.dark .journal-canvas .journal-textarea {
+  color: #f4efea;
+}
+
+/* ─── Vesper section card ─────────────────────────────────────────────────── */
+.vesper-card {
+  background-color: #ffffff;
+  border: 1px solid #d2c3be;
+  border-radius: 1rem;
+}
+.dark .vesper-card {
+  background-color: #2a2522;
+  border-color: #39302b;
+}
+
+/* ─── Subtle left-rule accent (used in journal) ──────────────────────────── */
+.journal-rule {
+  border-left: 3px solid rgba(176, 96, 96, 0.2);
+  padding-left: 1rem;
+}
+.dark .journal-rule {
+  border-left-color: rgba(196, 122, 106, 0.2);
+}
+
+/* ─── App-brand logo tint ─────────────────────────────────────────────────── */
+.brand-badge {
+  background-color: #b06060;
+  color: #fff8f2;
+  border-radius: 0.75rem;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dark .brand-badge {
+  background-color: #c47a6a;
+  color: #1a1614;
+}
+

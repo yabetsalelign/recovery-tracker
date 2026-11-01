@@ -207,9 +207,9 @@ const Calendar: React.FC = () => {
                     onKeyDown={(event) => handleCalendarKeyDown(event, dateObj)}
                     className={`h-11 rounded-xl flex flex-col items-center justify-center transition-colors relative ${
                       isSelected
-                        ? "bg-[#3D2C24] dark:bg-[#D47A55] text-white dark:text-[#211710] font-semibold"
+                        ? "btn-primary font-semibold"
                         : "hover:bg-[#FBF2E7] dark:hover:bg-[#1E1B18] text-[#261810] dark:text-[#F4EFEA]"
-                    } ${isToday && !isSelected ? "border border-[#3D2C24]/30 dark:border-[#D47A55]/40" : ""}`}
+                    } ${isToday && !isSelected ? "border border-[#B06060]/30 dark:border-[#C47A6A]/40" : ""}`}
                   >
                     <span className="text-xs">{format(dateObj, "d")}</span>
                     <span
@@ -339,7 +339,7 @@ const Calendar: React.FC = () => {
                     <button
                       type="button"
                       onClick={handleSaveNote}
-                      className="min-h-11 px-3 py-1.5 rounded-xl bg-[#3D2C24] dark:bg-[#D47A55] text-white dark:text-[#211710] text-xs font-semibold"
+                      className="min-h-11 px-3 py-1.5 rounded-xl btn-primary text-xs font-semibold"
                     >
                       Save note
                     </button>
