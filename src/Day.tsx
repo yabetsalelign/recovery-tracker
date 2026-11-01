@@ -75,14 +75,14 @@ const Day: React.FC = () => {
           {trackers.length === 0 ? (
             <div className="text-center py-6 space-y-2">
               <p className="text-xs text-[#77786F] dark:text-[#A6ABA0]">
-                No active habits found. Visit Home to create your first goal!
+                No active goals yet. Add one to begin tracking.
               </p>
               <button
                 type="button"
                 onClick={() => navigate("/add-addiction")}
                 className="px-3.5 py-1.5 rounded-xl bg-[#46644B] text-white text-xs font-semibold"
               >
-                Create Goal
+                Add a goal
               </button>
             </div>
           ) : (

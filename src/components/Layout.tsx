@@ -1,6 +1,6 @@
 import React, { ReactNode } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useUser } from "../context/UserContext";
+import { getActiveNavigationLabel, primaryNavigationItems } from "../utils/navigation";
 
 interface LayoutProps {
   children: ReactNode;
@@ -17,106 +17,86 @@ const Layout: React.FC<LayoutProps> = ({
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { name } = useUser();
-
-  const getInitials = (str?: string): string => {
-    if (!str || !str.trim()) return "RT";
-    const parts = str.trim().split(/\s+/);
-    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-  };
-
-  const navItems = [
-    { label: "Home", path: "/home", icon: "spa", matchPaths: ["/home", "/", "/sesh", "/weed", "/porn"] },
-    { label: "Calendar", path: "/calendar", icon: "calendar_today", matchPaths: ["/calendar", "/day"] },
-    { label: "Journal", path: "/notes", icon: "edit_note", matchPaths: ["/notes"] },
-    { label: "Progress", path: "/progress", icon: "monitoring", matchPaths: ["/progress", "/streaks", "/counter"] },
-    { label: "Settings", path: "/settings", icon: "settings", matchPaths: ["/settings"] },
-  ];
 
   const currentPath = location.pathname;
+  const activeNavigationLabel = getActiveNavigationLabel(currentPath);
 
   return (
-    <div className="min-h-screen bg-[#F7F4EE] dark:bg-[#181B18] text-[#252B25] dark:text-[#E8EBDD] font-sans transition-colors duration-200">
+    <div className="min-h-screen bg-paper dark:bg-[#211B18] text-[#261810] dark:text-[#F8EFE4] font-sans transition-colors duration-200">
       {/* Top App Bar */}
       {!hideHeader && (
-        <header className="fixed top-0 inset-x-0 z-40 pt-safe bg-[#F7F4EE]/95 dark:bg-[#181B18]/95 backdrop-blur-md border-b border-[#E3DED5] dark:border-[#313831] transition-colors duration-200">
-          <div className="h-14 px-4 flex items-center justify-between max-w-md md:max-w-xl lg:max-w-2xl mx-auto">
-            <div
-              className="flex items-center gap-2.5 cursor-pointer"
+        <header className="fixed top-0 inset-x-0 z-40 pt-safe bg-[#FFF8F2]/95 dark:bg-[#211B18]/95 backdrop-blur-md border-b border-[#D2C3BE] dark:border-[#51433D] transition-colors duration-200">
+          <div className="h-16 px-3 sm:px-4 md:px-8 flex items-center justify-between gap-3 max-w-6xl mx-auto">
+            <button
+              type="button"
+              className="flex min-w-0 shrink-0 items-center gap-2.5 text-left"
               onClick={() => navigate("/home")}
+              aria-label="Recovery Tracker home"
             >
               <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-[#46644B] text-white shadow-xs">
                 <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>
                   spa
                 </span>
               </div>
-              <div className="flex flex-col">
-                <span className="font-serif text-[17px] font-medium leading-none text-[#252B25] dark:text-[#E8EBDD]">
+              <div className="flex min-w-0 flex-col">
+                <span className="whitespace-nowrap font-serif text-sm sm:text-lg font-semibold leading-none text-[#261810] dark:text-[#F8EFE4]">
                   Recovery Tracker
                 </span>
                 {title && (
-                  <span className="text-[11px] uppercase tracking-wider mt-0.5 text-[#77786F] dark:text-[#A6ABA0] font-medium">
+                  <span className="hidden min-[400px]:block text-[11px] uppercase tracking-wider mt-1 text-[#5E4D45] dark:text-[#D5C3B9] font-semibold">
                     {title}
                   </span>
                 )}
               </div>
-            </div>
+            </button>
 
-            <div className="flex items-center gap-1.5">
-              <button
-                aria-label="Add and Manage Goals"
-                className="w-9 h-9 flex items-center justify-center rounded-lg text-[#77786F] dark:text-[#A6ABA0] hover:text-[#252B25] dark:hover:text-[#E8EBDD] hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-                onClick={() => navigate("/add-addiction")}
-                title="Add and Manage Goals"
-              >
-                <span className="material-symbols-outlined text-[20px]">add_task</span>
-              </button>
-
-              <button
-                aria-label="Settings and Privacy"
-                className="w-9 h-9 flex items-center justify-center rounded-lg text-[#77786F] dark:text-[#A6ABA0] hover:text-[#252B25] dark:hover:text-[#E8EBDD] hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-                onClick={() => navigate("/settings")}
-                title="Settings & Privacy"
-              >
-                <span className="material-symbols-outlined text-[20px]">tune</span>
-              </button>
-
-              <div
-                className="w-8 h-8 rounded-full flex items-center justify-center font-medium text-xs bg-[#E3DED5] dark:bg-[#2C332C] text-[#252B25] dark:text-[#E8EBDD] cursor-pointer"
-                onClick={() => navigate("/settings")}
-                title={name || "Your Profile"}
-              >
-                <span>{getInitials(name)}</span>
-              </div>
-            </div>
+            <nav aria-label="Primary navigation" className="hidden md:flex items-center gap-1">
+              {primaryNavigationItems.map((item) => {
+                const isActive = activeNavigationLabel === item.label;
+                return (
+                  <button
+                    key={item.label}
+                    type="button"
+                    aria-current={isActive ? "page" : undefined}
+                    onClick={() => navigate(item.path)}
+                    className={`min-h-11 px-3 rounded-full text-sm font-semibold transition-colors ${
+                      isActive
+                        ? "bg-[#FDD0C6] text-[#3D2C24]"
+                        : "text-[#5E4D45] hover:bg-[#F6EDE2] dark:text-[#D5C3B9] dark:hover:bg-[#453630]"
+                    }`}
+                  >
+                    {item.label}
+                  </button>
+                );
+              })}
+            </nav>
           </div>
         </header>
       )}
 
       {/* Main Content Area */}
-      <main className={`relative w-full ${!hideHeader ? "pt-16" : "pt-4"} ${!hideNav ? "pb-24" : "pb-8"} min-h-screen`}>
-        <div className="w-full max-w-md md:max-w-xl lg:max-w-2xl mx-auto px-4">
+      <main className={`relative w-full ${!hideHeader ? "pt-20" : "pt-4"} ${!hideNav ? "pb-24 md:pb-10" : "pb-8"} min-h-screen`}>
+        <div className="w-full max-w-6xl mx-auto px-4 md:px-8">
           {children}
         </div>
       </main>
 
       {/* Persistent Bottom Navigation */}
       {!hideNav && (
-        <nav className="fixed bottom-0 inset-x-0 z-40 pb-safe bg-[#F7F4EE]/95 dark:bg-[#181B18]/95 backdrop-blur-md border-t border-[#E3DED5] dark:border-[#313831] transition-colors duration-200">
-          <div className="flex items-center justify-around h-16 max-w-md md:max-w-xl lg:max-w-2xl mx-auto px-2">
-            {navItems.map((item) => {
-              const isActive = item.matchPaths.some((p) =>
-                p === "/" ? currentPath === "/" : currentPath.startsWith(p)
-              );
+        <nav aria-label="Primary navigation" className="md:hidden fixed bottom-0 inset-x-0 z-40 pb-safe bg-[#FFF8F2]/95 dark:bg-[#211B18]/95 backdrop-blur-md border-t border-[#D2C3BE] dark:border-[#51433D] transition-colors duration-200">
+          <div className="flex items-center justify-around h-16 max-w-md mx-auto px-2">
+            {primaryNavigationItems.map((item) => {
+              const isActive = activeNavigationLabel === item.label;
               return (
                 <button
                   key={item.label}
+                  type="button"
+                  aria-current={isActive ? "page" : undefined}
                   onClick={() => navigate(item.path)}
-                  className={`flex flex-col items-center justify-center min-w-[56px] min-h-[44px] transition-colors duration-150 ${
+                  className={`flex min-w-[56px] min-h-[44px] flex-col items-center justify-center rounded-xl px-2 transition-colors duration-150 ${
                     isActive
-                      ? "text-[#46644B] dark:text-[#8EAA92] font-semibold"
-                      : "text-[#77786F] dark:text-[#A6ABA0] hover:text-[#252B25] dark:hover:text-[#E8EBDD]"
+                      ? "bg-[#FDD0C6]/60 text-[#3D2C24] dark:bg-[#453630] dark:text-[#FDD0C6] font-semibold"
+                      : "text-[#5E4D45] dark:text-[#D5C3B9] hover:text-[#261810] dark:hover:text-[#F8EFE4]"
                   }`}
                 >
                   <span

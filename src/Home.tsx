@@ -129,63 +129,28 @@ const Home: React.FC = () => {
             <span className="text-[11px] uppercase tracking-wider text-[#77786F] dark:text-[#A6ABA0] font-medium">
               Your recovery
             </span>
-            <h1 className="font-serif text-2xl md:text-3xl font-medium text-[#252B25] dark:text-[#E8EBDD] mt-0.5">
+            <h1 className="font-serif text-3xl md:text-4xl font-semibold text-[#252B25] dark:text-[#E8EBDD] mt-0.5">
               Today · {todayDisplay}
             </h1>
           </div>
           <div className="flex items-center space-x-1.5 self-center">
             <span className="inline-block w-2 h-2 rounded-full bg-[#46644B]"></span>
             <span className="text-xs text-[#77786F] dark:text-[#A6ABA0] font-medium">
-              {totalDaysTracked > 0 ? `Day ${totalDaysTracked}` : "Day 1"}
+              {totalDaysTracked > 0 ? `${totalDaysTracked} days recorded` : "A fresh start"}
             </span>
           </div>
         </header>
 
-        {/* Quick Tools Navigation Bar */}
-        <div className="grid grid-cols-2 gap-2 text-xs">
-          <button
-            type="button"
-            onClick={() => navigate("/counter")}
-            className="flex items-center justify-between p-3 rounded-xl bg-white dark:bg-[#212521] border border-[#E3DED5] dark:border-[#313831] hover:border-[#46644B] transition-all text-left shadow-xs"
-          >
-            <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-[#46644B] dark:text-[#8EAA92] text-[20px]">
-                hourglass_top
-              </span>
-              <div>
-                <span className="font-semibold block text-[#252B25] dark:text-[#E8EBDD]">Day Counter</span>
-                <span className="text-[11px] text-[#77786F] dark:text-[#A6ABA0]">Sovereign timer</span>
-              </div>
-            </div>
-            <span className="material-symbols-outlined text-[16px] text-[#77786F]">chevron_right</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => navigate("/streaks")}
-            className="flex items-center justify-between p-3 rounded-xl bg-white dark:bg-[#212521] border border-[#E3DED5] dark:border-[#313831] hover:border-[#46644B] transition-all text-left shadow-xs"
-          >
-            <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-[#B16F4C] dark:text-[#D49877] text-[20px]">
-                workspace_premium
-              </span>
-              <div>
-                <span className="font-semibold block text-[#252B25] dark:text-[#E8EBDD]">Milestones</span>
-                <span className="text-[11px] text-[#77786F] dark:text-[#A6ABA0]">Consecutive flows</span>
-              </div>
-            </div>
-            <span className="material-symbols-outlined text-[16px] text-[#77786F]">chevron_right</span>
-          </button>
-        </div>
-
-        {/* PRIORITY 1: TODAY'S TRACKING / CHECK-IN */}
-        <section className="bg-white dark:bg-[#212521] rounded-2xl p-5 shadow-xs border border-[#E3DED5] dark:border-[#313831] space-y-4">
+          <div className="grid gap-6 lg:grid-cols-[minmax(0,1.3fr)_minmax(300px,0.8fr)] lg:items-start">
+            <div className="space-y-6">
+          {/* PRIORITY 1: TODAY'S TRACKING / CHECK-IN */}
+          <section aria-labelledby="daily-pulse-heading" className="bg-white dark:bg-[#212521] rounded-2xl p-4 md:p-5 shadow-xs border border-[#E3DED5] dark:border-[#313831] space-y-3">
           <div className="space-y-1">
-            <h2 className="font-serif text-xl font-medium text-[#252B25] dark:text-[#E8EBDD]">
+            <h2 id="daily-pulse-heading" className="font-serif text-xl font-medium text-[#252B25] dark:text-[#E8EBDD]">
               How are you feeling today?
             </h2>
             <p className="text-xs text-[#77786F] dark:text-[#A6ABA0] leading-relaxed">
-              Start where you are. Every sensation is informative, not definitive.
+              A gentle check-in, separate from your goal records.
             </p>
           </div>
 
@@ -194,7 +159,7 @@ const Home: React.FC = () => {
             <span className="text-[11px] font-semibold uppercase tracking-wider text-[#77786F] dark:text-[#A6ABA0] block">
               Emotional weather
             </span>
-            <div className="flex flex-wrap gap-2">
+            <div role="group" aria-label="Select your emotional weather" className="flex flex-wrap gap-2">
               {[
                 { id: "grounded", label: "Grounded" },
                 { id: "okay", label: "Doing okay" },
@@ -206,8 +171,9 @@ const Home: React.FC = () => {
                   <button
                     key={chip.id}
                     type="button"
+                    aria-pressed={isSelected}
                     onClick={() => setSelectedMood(chip.id)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                    className={`min-h-11 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                       isSelected
                         ? "bg-[#46644B] text-white shadow-xs"
                         : "bg-[#F8F6F1] dark:bg-[#181B18] text-[#77786F] dark:text-[#A6ABA0] hover:text-[#252B25] dark:hover:text-[#E8EBDD] border border-[#E3DED5]/60 dark:border-[#313831]"
@@ -220,10 +186,12 @@ const Home: React.FC = () => {
             </div>
           </div>
 
-          {/* Context note input */}
-          <div className="space-y-1.5">
+          <details>
+            <summary className="min-h-11 cursor-pointer flex items-center text-xs font-semibold text-[#69483F] dark:text-[#D5A16D]">
+              Add a note (optional)
+            </summary>
             <label
-              className="text-[11px] font-semibold uppercase tracking-wider text-[#77786F] dark:text-[#A6ABA0] block"
+              className="text-[11px] font-semibold uppercase tracking-wider text-[#77786F] dark:text-[#A6ABA0] block mb-1.5"
               htmlFor="checkin-note"
             >
               Optional context or physical cues
@@ -236,13 +204,13 @@ const Home: React.FC = () => {
               placeholder="Chest tension, quiet morning tea, social fatigue..."
               className="w-full bg-[#F8F6F1] dark:bg-[#181B18] rounded-xl p-3 text-xs text-[#252B25] dark:text-[#E8EBDD] placeholder:text-[#77786F]/60 border border-[#E3DED5]/80 dark:border-[#313831] focus:outline-none focus:border-[#46644B] resize-none"
             />
-          </div>
+          </details>
 
           {/* Primary Action Button */}
           <button
             type="button"
             onClick={handleCompleteCheckin}
-            className={`w-full py-3 rounded-xl text-xs font-semibold tracking-wide transition-all flex items-center justify-center space-x-2 shadow-xs ${
+            className={`w-full min-h-11 py-3 rounded-xl text-xs font-semibold tracking-wide transition-all flex items-center justify-center space-x-2 shadow-xs ${
               hasCompletedTodayCheckin
                 ? "bg-[#E8EBDD] dark:bg-[#2C332C] text-[#46644B] dark:text-[#8EAA92] border border-[#46644B]/20"
                 : "bg-[#46644B] hover:bg-[#38503C] text-white active:scale-[0.99]"
@@ -251,7 +219,7 @@ const Home: React.FC = () => {
             <span className="material-symbols-outlined text-[18px]">
               {hasCompletedTodayCheckin ? "done_all" : "check_circle"}
             </span>
-            <span>{hasCompletedTodayCheckin ? "Checked in for today (Update)" : "Complete today’s check-in"}</span>
+            <span>{hasCompletedTodayCheckin ? "Update emotional check-in" : "Save emotional check-in"}</span>
           </button>
         </section>
 
@@ -269,15 +237,15 @@ const Home: React.FC = () => {
             <button
               type="button"
               onClick={() => navigate("/add-addiction")}
-              className="inline-flex items-center space-x-1 text-[#46644B] dark:text-[#8EAA92] hover:underline text-xs font-medium py-1 px-2 rounded-lg transition-colors"
+              className="inline-flex min-h-11 items-center space-x-1 text-[#46644B] dark:text-[#8EAA92] hover:underline text-xs font-medium py-1 px-2 rounded-lg transition-colors"
             >
               <span className="material-symbols-outlined text-[16px]">add</span>
-              <span>Add goal</span>
+              <span>Add a goal</span>
             </button>
           </div>
 
           {trackers.length === 0 ? (
-            <div className="bg-white dark:bg-[#212521] rounded-2xl p-6 text-center border border-[#E3DED5] dark:border-[#313831] space-y-3 shadow-xs">
+            <div className="bg-white dark:bg-[#212521] rounded-2xl p-4 text-center border border-[#E3DED5] dark:border-[#313831] space-y-3 shadow-xs">
               <div className="w-10 h-10 rounded-full bg-[#E8EBDD] dark:bg-[#2C332C] text-[#46644B] dark:text-[#8EAA92] flex items-center justify-center mx-auto">
                 <span className="material-symbols-outlined text-[20px]">spa</span>
               </div>
@@ -289,13 +257,6 @@ const Home: React.FC = () => {
                   Begin by adding a habit, boundary, or reflection goal you want to gently track.
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={() => navigate("/add-addiction")}
-                className="px-4 py-2 rounded-xl bg-[#46644B] text-white text-xs font-semibold hover:bg-[#38503C] transition-colors"
-              >
-                Create Your First Goal
-              </button>
             </div>
           ) : (
             <div className="space-y-3">
@@ -324,9 +285,9 @@ const Home: React.FC = () => {
                           </h3>
                           <p className="text-xs text-[#77786F] dark:text-[#A6ABA0]">
                             {tracker.modality === "frequency"
-                              ? `Frequency Cap · Max ${tracker.limitVal || 1}/wk`
+                              ? "Frequency cap · unavailable; daily check-ins only"
                               : tracker.modality === "quantity"
-                              ? `Quantity · Max ${tracker.limitVal || 1}/day`
+                              ? "Quantity tracking · unavailable; daily check-ins only"
                               : isSpecialized
                               ? "Specialized impulse tracking"
                               : "Abstinence · Continuous"}
@@ -336,8 +297,10 @@ const Home: React.FC = () => {
 
                       <button
                         type="button"
+                        aria-label={isCheckedToday ? `Remove ${getDisplayName(habitName)} check-in for today` : `Record ${getDisplayName(habitName)} check-in for today`}
+                        aria-pressed={isCheckedToday}
                         onClick={() => toggleCheckIn(habitName, todayStr)}
-                        className={`inline-flex items-center space-x-1 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
+                        className={`inline-flex min-h-11 items-center space-x-1 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
                           isCheckedToday
                             ? "bg-[#E8EBDD] dark:bg-[#2C332C] text-[#46644B] dark:text-[#8EAA92]"
                             : "bg-[#F8F6F1] dark:bg-[#181B18] text-[#77786F] dark:text-[#A6ABA0] hover:text-[#252B25] border border-[#E3DED5] dark:border-[#313831]"
@@ -372,13 +335,14 @@ const Home: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => navigate(`/${lower}`)}
-                          className="inline-flex items-center space-x-1 text-xs text-[#46644B] dark:text-[#8EAA92] hover:underline font-medium"
+                          className="inline-flex min-h-11 items-center space-x-1 text-xs text-[#46644B] dark:text-[#8EAA92] hover:underline font-medium"
                         >
                           <span className="material-symbols-outlined text-[16px]">calendar_month</span>
                           <span>Open {habitName} page</span>
                         </button>
                         <button
                           type="button"
+                          aria-label={`Record ${getDisplayName(habitName)} count for today`}
                           onClick={() => {
                             const specType = lower as "sesh" | "weed" | "porn";
                             setActiveSpecializedModal({
@@ -386,7 +350,7 @@ const Home: React.FC = () => {
                               count: getSpecializedCurrentCount(specType),
                             });
                           }}
-                          className="inline-flex items-center space-x-1 bg-[#F8F6F1] dark:bg-[#181B18] hover:bg-[#E8EBDD] text-[#B16F4C] dark:text-[#D49877] px-2.5 py-1 rounded-lg text-xs font-semibold border border-[#E3DED5] dark:border-[#313831] transition-colors"
+                          className="inline-flex min-h-11 items-center space-x-1 bg-[#F8F6F1] dark:bg-[#181B18] hover:bg-[#E8EBDD] text-[#B16F4C] dark:text-[#D49877] px-2.5 py-1 rounded-lg text-xs font-semibold border border-[#E3DED5] dark:border-[#313831] transition-colors"
                         >
                           <span className="material-symbols-outlined text-[15px]">bolt</span>
                           <span>Log count ({getSpecializedCurrentCount(lower as "sesh" | "weed" | "porn")})</span>
@@ -400,6 +364,44 @@ const Home: React.FC = () => {
           )}
         </section>
 
+        <div className="grid grid-cols-2 gap-2 text-xs">
+          <button
+            type="button"
+            onClick={() => navigate("/counter")}
+            className="flex min-h-14 items-center justify-between gap-2 rounded-xl border border-[#E3DED5] dark:border-[#313831] bg-white dark:bg-[#212521] p-3 text-left shadow-xs transition-all hover:border-[#46644B]"
+          >
+            <span className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-[#46644B] dark:text-[#D5A16D] text-[20px]" aria-hidden="true">
+                hourglass_top
+              </span>
+              <span>
+                <span className="block font-semibold text-[#252B25] dark:text-[#E8EBDD]">Day Counter</span>
+                <span className="text-[11px] text-[#77786F] dark:text-[#A6ABA0]">Sovereign timer</span>
+              </span>
+            </span>
+            <span className="material-symbols-outlined text-[16px] text-[#77786F]" aria-hidden="true">chevron_right</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => navigate("/streaks")}
+            className="flex min-h-14 items-center justify-between gap-2 rounded-xl border border-[#E3DED5] dark:border-[#313831] bg-white dark:bg-[#212521] p-3 text-left shadow-xs transition-all hover:border-[#46644B]"
+          >
+            <span className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-[#B16F4C] dark:text-[#D5A16D] text-[20px]" aria-hidden="true">
+                workspace_premium
+              </span>
+              <span>
+                <span className="block font-semibold text-[#252B25] dark:text-[#E8EBDD]">Milestones</span>
+                <span className="text-[11px] text-[#77786F] dark:text-[#A6ABA0]">Recorded patterns</span>
+              </span>
+            </span>
+            <span className="material-symbols-outlined text-[16px] text-[#77786F]" aria-hidden="true">chevron_right</span>
+          </button>
+        </div>
+
+          </div>
+          <div className="space-y-6">
         {/* PRIORITY 3: OVERVIEW & RECENT ACTIVITY */}
         <section className="space-y-3">
           <div className="flex items-center justify-between">
@@ -443,7 +445,7 @@ const Home: React.FC = () => {
               <button
                 type="button"
                 onClick={() => navigate("/notes")}
-                className="text-[#46644B] dark:text-[#8EAA92] hover:underline text-xs font-semibold transition-colors"
+                className="min-h-11 px-2 text-[#46644B] dark:text-[#8EAA92] hover:underline text-xs font-semibold transition-colors"
               >
                 Open journal
               </button>
@@ -452,17 +454,19 @@ const Home: React.FC = () => {
             <p className="font-serif text-base italic text-[#252B25] dark:text-[#E8EBDD] leading-relaxed">
               {latestNote
                 ? `“${latestNote.text}”`
-                : "“Start where you are. Take an evening walk instead of ruminating. Every quiet breath centers your thoughts.”"}
+                : "Your reflections will appear here when you write them."}
             </p>
 
             <div className="flex items-center justify-between pt-1">
-              <span className="px-2.5 py-0.5 rounded-full bg-[#E8EBDD] dark:bg-[#2C332C] text-[#46644B] dark:text-[#8EAA92] text-[11px] font-medium">
-                {latestNote ? latestNote.habit : "Quiet Reflection"}
-              </span>
+              {latestNote && (
+                <span className="px-2.5 py-0.5 rounded-full bg-[#E8EBDD] dark:bg-[#2C332C] text-[#46644B] dark:text-[#8EAA92] text-[11px] font-medium">
+                  {latestNote.habit}
+                </span>
+              )}
               <button
                 type="button"
                 onClick={() => navigate("/notes")}
-                className="inline-flex items-center space-x-1 text-[#77786F] dark:text-[#A6ABA0] hover:text-[#252B25] text-xs font-medium"
+                className="inline-flex min-h-11 items-center space-x-1 px-2 text-[#77786F] dark:text-[#A6ABA0] hover:text-[#252B25] text-xs font-medium"
               >
                 <span className="material-symbols-outlined text-[15px]">add</span>
                 <span>New reflection</span>
@@ -481,22 +485,29 @@ const Home: React.FC = () => {
             Recovery is not a performance trial. Slips and urges are signals for care, never reasons for punitive evaluation.
           </p>
         </aside>
+          </div>
+        </div>
       </div>
 
       {/* Accessible Specialized Intake Modal */}
       {activeSpecializedModal && (
         <div className="fixed inset-0 z-50 bg-[#252B25]/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="w-full max-w-sm bg-white dark:bg-[#212521] rounded-2xl p-5 shadow-xl border border-[#E3DED5] dark:border-[#313831] space-y-4">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="specialized-count-heading"
+            className="w-full max-w-sm bg-white dark:bg-[#212521] rounded-2xl p-5 shadow-xl border border-[#E3DED5] dark:border-[#313831] space-y-4"
+          >
             <div className="flex items-center justify-between border-b border-[#E3DED5] dark:border-[#313831] pb-2">
               <div className="flex items-center gap-2">
                 <span className="material-symbols-outlined text-[#B16F4C] text-[20px]">tune</span>
-                <h3 className="font-serif text-lg font-medium text-[#252B25] dark:text-[#E8EBDD]">
+                <h3 id="specialized-count-heading" className="font-serif text-lg font-medium text-[#252B25] dark:text-[#E8EBDD]">
                   Log {activeSpecializedModal.type} Count
                 </h3>
               </div>
               <button
                 onClick={() => setActiveSpecializedModal(null)}
-                className="w-7 h-7 flex items-center justify-center text-[#77786F] hover:bg-black/5 dark:hover:bg-white/5 rounded-lg"
+                className="min-h-11 min-w-11 flex items-center justify-center text-[#77786F] hover:bg-black/5 dark:hover:bg-white/5 rounded-lg"
                 aria-label="Close"
               >
                 <span className="material-symbols-outlined text-[18px]">close</span>
@@ -504,21 +515,23 @@ const Home: React.FC = () => {
             </div>
 
             <p className="text-xs text-[#77786F] dark:text-[#A6ABA0]">
-              Record your usage or urges for today ({todayStr}). Setting to 0 indicates a clean pause day!
+              Record a count for today ({todayStr}). A count of 0 records no consumption for that day.
             </p>
 
             <div className="flex items-center justify-center gap-3 py-2">
               <button
                 type="button"
+                aria-label="Decrease count"
                 onClick={() =>
                   setActiveSpecializedModal((prev) => (prev ? { ...prev, count: Math.max(0, (prev.count || 0) - 1) } : null))
                 }
-                className="w-10 h-10 rounded-xl bg-[#F8F6F1] dark:bg-[#181B18] border border-[#E3DED5] dark:border-[#313831] text-lg font-bold flex items-center justify-center hover:bg-[#E8EBDD]"
+                className="min-h-11 min-w-11 rounded-xl bg-[#F8F6F1] dark:bg-[#181B18] border border-[#E3DED5] dark:border-[#313831] text-lg font-bold flex items-center justify-center hover:bg-[#E8EBDD]"
               >
                 -
               </button>
               <input
                 type="number"
+                aria-label={`Count for ${activeSpecializedModal.type}`}
                 min="0"
                 value={activeSpecializedModal.count}
                 onChange={(e) => {
@@ -529,10 +542,11 @@ const Home: React.FC = () => {
               />
               <button
                 type="button"
+                aria-label="Increase count"
                 onClick={() =>
                   setActiveSpecializedModal((prev) => (prev ? { ...prev, count: (prev.count || 0) + 1 } : null))
                 }
-                className="w-10 h-10 rounded-xl bg-[#F8F6F1] dark:bg-[#181B18] border border-[#E3DED5] dark:border-[#313831] text-lg font-bold flex items-center justify-center hover:bg-[#E8EBDD]"
+                className="min-h-11 min-w-11 rounded-xl bg-[#F8F6F1] dark:bg-[#181B18] border border-[#E3DED5] dark:border-[#313831] text-lg font-bold flex items-center justify-center hover:bg-[#E8EBDD]"
               >
                 +
               </button>
@@ -542,14 +556,14 @@ const Home: React.FC = () => {
               <button
                 type="button"
                 onClick={saveSpecializedCount}
-                className="flex-1 py-2.5 rounded-xl bg-[#46644B] text-white text-xs font-semibold hover:bg-[#38503C] transition-colors"
+                className="min-h-11 flex-1 py-2.5 rounded-xl bg-[#46644B] text-white text-xs font-semibold hover:bg-[#38503C] transition-colors"
               >
                 Save Record
               </button>
               <button
                 type="button"
                 onClick={() => setActiveSpecializedModal(null)}
-                className="py-2.5 px-4 rounded-xl bg-[#F8F6F1] dark:bg-[#181B18] border border-[#E3DED5] dark:border-[#313831] text-xs font-medium"
+                className="min-h-11 py-2.5 px-4 rounded-xl bg-[#F8F6F1] dark:bg-[#181B18] border border-[#E3DED5] dark:border-[#313831] text-xs font-medium"
               >
                 Cancel
               </button>

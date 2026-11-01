@@ -1,5 +1,11 @@
 import { format, subDays } from "date-fns";
-import type { CheckInsMap, SpecializedTrackerData } from "../types";
+import type {
+  CheckInsMap,
+  EmotionalWeatherMap,
+  GeneralNotesMap,
+  SpecializedTrackerData,
+  TrackerRecord,
+} from "../types";
 
 /**
  * Mathematically rigorous consecutive calendar-day streak calculation.
@@ -131,4 +137,72 @@ export const escapeCsvValue = (str: unknown): string => {
   if (str === null || str === undefined) return '""';
   const s = String(str).replace(/"/g, '""');
   return `"${s}"`;
+};
+
+export const buildRecoveryCsv = ({
+  trackers,
+  generalNotes,
+  emotionalWeather,
+  seshData,
+  weedData,
+  pornData,
+  pornNotes,
+}: {
+  trackers: TrackerRecord[];
+  generalNotes: GeneralNotesMap;
+  emotionalWeather: EmotionalWeatherMap;
+  seshData: SpecializedTrackerData;
+  weedData: SpecializedTrackerData;
+  pornData: SpecializedTrackerData;
+  pornNotes: string;
+}): string => {
+  const rows = [
+    ["Record Type", "Date", "Tracker", "Status", "Note", "Mood", "Count"]
+      .map(escapeCsvValue)
+      .join(","),
+  ];
+  const addRow = (values: unknown[]) => rows.push(values.map(escapeCsvValue).join(","));
+
+  trackers.forEach((tracker) => {
+    const dates = new Set([
+      ...Object.keys(tracker.checkIns || {}),
+      ...Object.keys(tracker.notes || {}),
+    ]);
+    dates.forEach((date) => {
+      addRow([
+        "Goal",
+        date,
+        tracker.name,
+        tracker.checkIns?.[date] ? "Checked" : "Unchecked",
+        tracker.notes?.[date] || "",
+        "",
+        "",
+      ]);
+    });
+  });
+
+  Object.entries(generalNotes).forEach(([date, note]) => {
+    addRow(["Journal", date, "General Reflection", "", note, "", ""]);
+  });
+
+  Object.entries(emotionalWeather).forEach(([date, entry]) => {
+    addRow(["Emotional weather", date, "", entry.checkedIn ? "Submitted" : "", entry.note, entry.mood, ""]);
+  });
+
+  ([
+    ["Sesh", seshData],
+    ["Weed", weedData],
+    ["Porn", pornData],
+  ] as const).forEach(([name, data]) => {
+    Object.entries(data).forEach(([date, count]) => {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || typeof count !== "number") return;
+      addRow(["Specialized tracker", date, name, "", "", "", count]);
+    });
+  });
+
+  if (pornNotes) {
+    addRow(["Specialized note", "", "Porn", "", pornNotes, "", ""]);
+  }
+
+  return rows.join("\n");
 };

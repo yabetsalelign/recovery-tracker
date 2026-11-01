@@ -64,7 +64,7 @@ const Streaks: React.FC = () => {
               onClick={() => navigate("/add-addiction")}
               className="px-4 py-2 bg-[#46644B] text-white rounded-xl text-xs font-semibold hover:bg-[#38503C]"
             >
-              Add Goal
+              Add a goal
             </button>
           </div>
         ) : (
@@ -82,7 +82,7 @@ const Streaks: React.FC = () => {
                   ? "A full week of progress. One day at a time, you are showing up."
                   : streak >= 1
                   ? "Keep it up! The journey of renewal begins with a single intentional choice."
-                  : "Start today for a fresh beginning. Every moment is a clean slate.";
+                  : "Start today for a fresh beginning. Every moment is an opportunity to return.";
 
               const nextTarget = streak >= 30 ? 60 : streak >= 14 ? 30 : streak >= 7 ? 14 : 7;
               const progressPct = Math.min(100, Math.round((streak / nextTarget) * 100));

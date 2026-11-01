@@ -39,6 +39,12 @@ export type CheckInsMap = Record<string, boolean>;
 export type NotesMap = Record<string, string>;
 export type GeneralNotesMap = Record<string, string>;
 export type SpecializedTrackerData = Record<string, number>;
+export interface EmotionalWeatherEntry {
+  mood: string;
+  note: string;
+  checkedIn: boolean;
+}
+export type EmotionalWeatherMap = Record<string, EmotionalWeatherEntry>;
 
 export interface NoteEntry {
   id: string;
@@ -80,6 +86,8 @@ export interface BackupPayload {
   seshData?: SpecializedTrackerData;
   weedData?: SpecializedTrackerData;
   pornData?: SpecializedTrackerData;
+  pornNotes?: string;
+  emotionalWeather?: EmotionalWeatherMap;
 }
 
 export interface RecoveryContextType {
@@ -89,6 +97,8 @@ export interface RecoveryContextType {
   seshData: SpecializedTrackerData;
   weedData: SpecializedTrackerData;
   pornData: SpecializedTrackerData;
+  pornNotes: string;
+  emotionalWeather: EmotionalWeatherMap;
   selectedDate: string;
   setSelectedDate: (date: string) => void;
   counterStartDate: string;
@@ -96,6 +106,7 @@ export interface RecoveryContextType {
   toggleCheckIn: (habitName: string, dateStr: string) => void;
   setCheckIn: (habitName: string, dateStr: string, isChecked: boolean) => void;
   completeDailyCheckin: (dateStr: string, mood?: string, note?: string) => void;
+  savePornNotes: (text: string) => void;
   addGoal: (goalConfig: GoalConfig) => ActionResult;
   updateGoal: (oldName: string, newConfig: Partial<GoalConfig>) => ActionResult;
   deleteGoal: (goalToDelete: string) => void;
