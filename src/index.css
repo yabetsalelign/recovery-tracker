@@ -227,7 +227,7 @@
 
 .dark [class~="bg-[#FDD0C6]"],
 .dark [class~="bg-[#FDD0C6]/60"] {
-  background-color: #54372e !important;
+  background-color: #FDD0C6 !important;
 }
 
 .dark [class~="bg-[#46644B]"] {

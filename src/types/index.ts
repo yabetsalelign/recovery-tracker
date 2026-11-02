@@ -119,8 +119,8 @@ export interface RecoveryContextType {
   completeDailyCheckin: (dateStr: string, mood?: string, note?: string) => void;
   savePornNotes: (text: string) => void;
   addGoal: (goalConfig: GoalConfig) => ActionResult;
-  updateGoal: (oldName: string, newConfig: Partial<GoalConfig>) => ActionResult;
-  deleteGoal: (goalToDelete: string) => void;
+  updateGoal: (trackerId: string, newConfig: Partial<GoalConfig>) => ActionResult;
+  deleteGoal: (trackerId: string) => void;
   saveNote: (habitName: string, dateStr: string, text: string) => void;
   deleteNote: (habitName: string, dateStr: string) => void;
   getNote: (habitName: string, dateStr: string) => string;

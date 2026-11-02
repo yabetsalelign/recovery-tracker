@@ -327,8 +327,10 @@ export function applyToggleCheckIn(
   dateStr: string
 ): CanonicalTrackerRecord[] {
   const lower = habitName.toLowerCase();
+  const matches = trackers.filter((tracker) => tracker.id === habitName || tracker.name.toLowerCase() === lower);
+  const targetId = matches.length === 1 ? matches[0].id : null;
   return trackers.map((t) => {
-    if (t.name.toLowerCase() !== lower) return t;
+    if (!targetId || t.id !== targetId) return t;
 
     const currentRec = t.records[dateStr];
     const isChecked =
@@ -384,8 +386,10 @@ export function applySetCheckIn(
   isChecked: boolean
 ): CanonicalTrackerRecord[] {
   const lower = habitName.toLowerCase();
+  const matches = trackers.filter((tracker) => tracker.id === habitName || tracker.name.toLowerCase() === lower);
+  const targetId = matches.length === 1 ? matches[0].id : null;
   return trackers.map((t) => {
-    if (t.name.toLowerCase() !== lower) return t;
+    if (!targetId || t.id !== targetId) return t;
 
     const currentRec = t.records[dateStr];
     const newRecords = { ...t.records };
@@ -485,9 +489,11 @@ export function applySaveNote(
 ): CanonicalTrackerRecord[] {
   const trimmed = (text || "").trim();
   const lower = habitName.toLowerCase();
+  const matches = trackers.filter((tracker) => tracker.id === habitName || tracker.name.toLowerCase() === lower);
+  const targetId = matches.length === 1 ? matches[0].id : null;
 
   return trackers.map((t) => {
-    if (t.name.toLowerCase() !== lower) return t;
+    if (!targetId || t.id !== targetId) return t;
 
     const currentRec = t.records[dateStr];
     const newRecords = { ...t.records };
@@ -518,8 +524,10 @@ export function applyDeleteNote(
   dateStr: string
 ): CanonicalTrackerRecord[] {
   const lower = habitName.toLowerCase();
+  const matches = trackers.filter((tracker) => tracker.id === habitName || tracker.name.toLowerCase() === lower);
+  const targetId = matches.length === 1 ? matches[0].id : null;
   return trackers.map((t) => {
-    if (t.name.toLowerCase() !== lower) return t;
+    if (!targetId || t.id !== targetId) return t;
 
     const currentRec = t.records[dateStr];
     if (!currentRec || currentRec.note === undefined) return t;
@@ -549,6 +557,26 @@ export function applyTrackerDayRecord(
     else delete records[dateStr];
     return { ...tracker, records };
   });
+}
+
+/** Update tracker metadata by canonical ID, preserving its records and metadata. */
+export function applyUpdateTracker(
+  trackers: CanonicalTrackerRecord[], trackerId: string,
+  changes: Partial<Pick<CanonicalTrackerRecord, "name" | "category" | "modality" | "target" | "startDate">>,
+  effectiveDate?: string
+): CanonicalTrackerRecord[] {
+  return trackers.map((tracker) => {
+    if (tracker.id !== trackerId) return tracker;
+    const targetChanged = changes.target && JSON.stringify(changes.target) !== JSON.stringify(tracker.target);
+    const history = targetChanged && effectiveDate
+      ? [...(tracker.targetHistory?.length ? tracker.targetHistory : [{ effectiveDate: tracker.startDate, target: tracker.target }]), { effectiveDate, target: changes.target! }]
+      : tracker.targetHistory;
+    return { ...tracker, ...changes, ...(targetChanged ? { targetHistory: history } : {}) };
+  });
+}
+
+export function applyDeleteTracker(trackers: CanonicalTrackerRecord[], trackerId: string): CanonicalTrackerRecord[] {
+  return trackers.filter((tracker) => tracker.id !== trackerId);
 }
 
 export function applyTrackerDayStatus(

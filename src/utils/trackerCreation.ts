@@ -19,7 +19,6 @@ export function createCanonicalTracker(
   const name = draft.name.trim();
   if (!name) return { success: false, error: "Tracker name cannot be empty." };
   if (name.toLowerCase() === "general") return { success: false, error: "'General' is reserved for journal reflections." };
-  if (existing.some((tracker) => tracker.name.toLowerCase() === name.toLowerCase())) return { success: false, error: `A goal named "${name}" already exists.` };
   const startDate = draft.startDate || today.toISOString().slice(0, 10);
   if (!isValidDateFormat(startDate)) return { success: false, error: "Start date must be a valid calendar date." };
   const targetValidation = validateTrackerTarget(draft.modality, draft.target);

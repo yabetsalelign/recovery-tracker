@@ -50,9 +50,11 @@ import {
   applyTrackerGeneralNote,
   applyTrackerDayNote,
   applyDeleteTrackerDayNote,
+  applyUpdateTracker,
+  applyDeleteTracker,
 } from "../utils/canonicalStore";
 import { inferLegacyModality, resolveBackupPayload } from "../utils/unifiedMigration";
-import { validateDayRecordStatus, isFiniteNonNegativeNumber } from "../utils/unifiedCalculations";
+import { validateDayRecordStatus, validateTrackerTarget, isFiniteNonNegativeNumber } from "../utils/unifiedCalculations";
 import { createCanonicalTracker } from "../utils/trackerCreation";
 
 export const RecoveryContext = createContext<RecoveryContextType | null>(null);
@@ -299,66 +301,35 @@ export const RecoveryProvider: React.FC<{ children: ReactNode }> = ({ children }
     return { success: true, data: created.data };
   }, [canonicalTrackers]);
 
-  const updateGoal = useCallback((oldName: string, newConfig: Partial<GoalConfig>): ActionResult => {
-    const trimmedNew = (newConfig?.name || newConfig?.title || oldName).trim();
+  const updateGoal = useCallback((trackerId: string, newConfig: Partial<GoalConfig>): ActionResult => {
+    const existing = canonicalTrackers.find((tracker) => tracker.id === trackerId);
+    if (!existing) return { success: false, error: "Tracker not found." };
+    const trimmedNew = (newConfig?.name || newConfig?.title || existing.name).trim();
     if (!trimmedNew) return { success: false, error: "Goal title cannot be empty" };
 
     if (trimmedNew.toLowerCase() === "general") {
       return { success: false, error: "'General' is reserved for journal reflections" };
     }
 
-    let isDuplicate = false;
-    setCanonicalTrackers((prev) => {
-      const collision = prev.find(
-        (t) =>
-          t.name.toLowerCase() === trimmedNew.toLowerCase() &&
-          t.name.toLowerCase() !== oldName.toLowerCase()
-      );
-      if (collision) {
-        isDuplicate = true;
-        return prev;
-      }
-
-      return prev.map((t) => {
-        if (t.name.toLowerCase() === oldName.toLowerCase()) {
-          const updatedCategory = (newConfig.category || t.category) as TrackerCategory;
-          let updatedModality = t.modality;
-          let updatedTarget = t.target;
-
-          if (newConfig.modality && newConfig.modality !== t.modality) {
-            const inferred = inferLegacyModality({
-              ...newConfig,
-              name: trimmedNew,
-              category: updatedCategory,
-            });
-            updatedModality = inferred.modality;
-            updatedTarget = inferred.target;
-          }
-
-          return {
-            ...t,
-            name: trimmedNew,
-            category: updatedCategory,
-            modality: updatedModality,
-            target: updatedTarget,
-            startDate: newConfig.startDate || t.startDate,
-          };
-        }
-        return t;
-      });
-    });
-
-    if (isDuplicate) {
-      return { success: false, error: `A goal named "${trimmedNew}" already exists.` };
-    }
+    const updatedCategory = (newConfig.category || existing.category) as TrackerCategory;
+    const updatedModality = (newConfig.modality || existing.modality) as TrackingModality;
+    const updatedTarget = newConfig.target || (newConfig.modality && newConfig.modality !== existing.modality
+      ? inferLegacyModality({ ...newConfig, name: trimmedNew, category: updatedCategory }).target
+      : existing.target);
+    const targetValidation = validateTrackerTarget(updatedModality, updatedTarget);
+    if (!targetValidation.valid) return { success: false, error: targetValidation.error || "Invalid tracker target." };
+    const effectiveDate = format(new Date(), "yyyy-MM-dd");
+    if (newConfig.startDate && !/^\d{4}-\d{2}-\d{2}$/.test(newConfig.startDate)) return { success: false, error: "Start date must be a valid calendar date." };
+    setCanonicalTrackers((prev) => applyUpdateTracker(prev, trackerId, {
+      name: trimmedNew, category: updatedCategory, modality: updatedModality, target: updatedTarget,
+      ...(newConfig.startDate ? { startDate: newConfig.startDate } : {}),
+    }, effectiveDate));
     return { success: true };
-  }, []);
+  }, [canonicalTrackers]);
 
-  const deleteGoal = useCallback((goalToDelete: string) => {
-    if (!goalToDelete) return;
-    setCanonicalTrackers((prev) =>
-      prev.filter((t) => t.name.toLowerCase() !== goalToDelete.toLowerCase())
-    );
+  const deleteGoal = useCallback((trackerId: string) => {
+    if (!trackerId) return;
+    setCanonicalTrackers((prev) => applyDeleteTracker(prev, trackerId));
   }, []);
 
   const saveNote = useCallback((habitName: string, dateStr: string, text: string) => {

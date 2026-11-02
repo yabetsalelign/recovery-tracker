@@ -199,7 +199,7 @@
 
 /* ─── Mobile Bottom Navigation Active State ─────────────────────────────── */
 .nav-active-mobile {
-  color: #D47A55 !important;
+  color: #A65335 !important;
 }
 
 .dark .nav-active-mobile {
@@ -297,9 +297,9 @@
 
 .tracker-calendar-nav {
   min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center;
-  border: 1px solid #D2C3BE; border-radius: .8rem; color: #261810; font-size: 1.15rem;
+  border: 1px solid #78564F; border-radius: .8rem; color: #261810; font-size: 1.15rem;
 }
-.dark .tracker-calendar-nav { border-color: #39302B; color: #F4EFEA; }
+.dark .tracker-calendar-nav { border-color: #A99A8F; color: #F4EFEA; }
 .tracker-calendar-day {
   min-width: 0; min-height: 44px; display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: 2px; border: 1px solid transparent; border-radius: .8rem; color: #261810; font-size: .875rem;
@@ -309,19 +309,24 @@
 .dark .tracker-calendar-day:hover:not(:disabled) { background: #302923; }
 .tracker-calendar-day.successful { background: #46644B; color: white; }
 .dark .tracker-calendar-day.successful { background: #8EAA92; color: #1A1614; }
-.tracker-calendar-day.lapse, .tracker-calendar-day.breach { background: #D47A55; color: white; }
+.tracker-calendar-day.lapse, .tracker-calendar-day.breach { background: #CE714E; color: #261810; }
+.dark .tracker-calendar-day.lapse, .dark .tracker-calendar-day.breach { background: #D47A55; color: #1A1614; }
 .tracker-calendar-day.recorded { background: #FDD0C6; color: #261810; }
 .dark .tracker-calendar-day.recorded { background: #70493B; color: #F4EFEA; }
 .tracker-calendar-day.planned-rest-day { border-style: dashed; border-color: #78564F; }
-.tracker-calendar-day.selected { outline: 2px solid #D47A55; outline-offset: 1px; }
-.tracker-calendar-day.today:not(.selected) { border-color: #D47A55; }
+.dark .tracker-calendar-day.planned-rest-day { border-color: #A99A8F; }
+.tracker-calendar-day.selected { outline: 2px solid #A65335; outline-offset: 1px; }
+.dark .tracker-calendar-day.selected { outline-color: #D47A55; }
+.tracker-calendar-day.today:not(.selected) { border-color: #A65335; }
+.dark .tracker-calendar-day.today:not(.selected) { border-color: #D47A55; }
 .tracker-calendar-day:disabled { opacity: .35; cursor: not-allowed; }
 .tracker-legend-dot { display: inline-block; width: .65rem; height: .65rem; border-radius: 50%; background: #E7DDD4; }
 .tracker-legend-dot.successful { background: #46644B; }
-.tracker-legend-dot.lapse { background: #D47A55; }
+.tracker-legend-dot.lapse { background: #A65335; }
 .tracker-legend-dot.planned-rest-day { border: 1px dashed #78564F; background: transparent; }
 .tracker-legend-dot.recorded { background: #FDD0C6; }
 .dark .tracker-legend-dot.successful { background: #8EAA92; }
+.dark .tracker-legend-dot.lapse { background: #D47A55; }
 .dark .tracker-legend-dot.recorded { background: #70493B; }
 .tracker-field {
   width: 100%; min-height: 44px; padding: .65rem .8rem; border-radius: .8rem; border: 1px solid #D2C3BE;

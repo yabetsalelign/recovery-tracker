@@ -106,7 +106,7 @@ const Day: React.FC = () => {
                           : `Check in for ${getDisplayName(habitName)}`
                       }
                       aria-pressed={isChecked}
-                      onClick={() => toggleCheckIn(habitName, targetDateStr)}
+                      onClick={() => toggleCheckIn(String(tracker.id), targetDateStr)}
                       className={`min-h-11 px-3 py-1.5 text-xs rounded-xl font-semibold transition-colors flex items-center gap-1.5 ${
                         isChecked
                           ? "bg-[#3D2C24] dark:bg-[#D47A55] text-white dark:text-[#211710]"

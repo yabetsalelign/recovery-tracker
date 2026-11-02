@@ -3,6 +3,7 @@ import Layout from "./components/Layout";
 import { useTheme } from "./context/ThemeContext";
 import { useUser } from "./context/UserContext";
 import { useRecovery } from "./context/RecoveryContext";
+import ThemePreview from "./components/ThemePreview";
 
 interface ToastState {
   show: boolean;
@@ -160,39 +161,22 @@ const Settings: React.FC = () => {
               Theme
             </span>
             <div className="grid grid-cols-2 gap-2.5">
-              <button
-                type="button"
-                aria-pressed={theme === "light"}
-                onClick={() => {
+              <ThemePreview
+                theme="light"
+                selected={theme === "light"}
+                onSelect={() => {
                   toggleTheme("light");
-                  showNotification("Warm Paper theme active");
+                  showNotification("Daylight theme active");
                 }}
-                className={`min-h-11 p-3.5 rounded-xl border text-left transition-all ${
-                  theme === "light"
-                    ? "border-2 border-[#3D2C24] bg-[#FBF2E7] shadow-xs"
-                    : "border border-[#D2C3BE]/60 dark:border-[#39302B] bg-white dark:bg-[#1E1B18]"
-                }`}
-              >
-                <span className="font-semibold text-xs text-[#261810] block">Warm Paper</span>
-                <span className="text-[11px] text-[#78564F]">Light ivory & cream</span>
-              </button>
-
-              <button
-                type="button"
-                aria-pressed={theme === "dark"}
-                onClick={() => {
+              />
+              <ThemePreview
+                theme="dark"
+                selected={theme === "dark"}
+                onSelect={() => {
                   toggleTheme("dark");
                   showNotification("Charcoal Night theme active");
                 }}
-                className={`min-h-11 p-3.5 rounded-xl border text-left transition-all ${
-                  theme === "dark"
-                    ? "border-2 border-[#D47A55] bg-[#1E1B18] shadow-xs"
-                    : "border border-[#D2C3BE]/60 dark:border-[#39302B] bg-white dark:bg-[#1E1B18]"
-                }`}
-              >
-                <span className="font-semibold text-xs text-[#F4EFEA] block">Charcoal Night</span>
-                <span className="text-[11px] text-[#A99A8F]">Warm dark charcoal</span>
-              </button>
+              />
             </div>
           </div>
 

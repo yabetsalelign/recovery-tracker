@@ -3,11 +3,12 @@ import { eachDayOfInterval, format, subDays } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import Layout from "./components/Layout";
 import { useRecovery } from "./context/RecoveryContext";
-import { calculateUnifiedMetrics, evaluateDayRecord } from "./utils/unifiedCalculations";
+import { calculateUnifiedMetrics, calculateUnifiedLongestStreak, evaluateDayRecord } from "./utils/unifiedCalculations";
 
 const Progress: React.FC = () => {
   const navigate = useNavigate();
-  const { canonicalTrackers } = useRecovery();
+  const { canonicalTrackers, generalNotes } = useRecovery();
+  const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const [timeHorizon, setTimeHorizon] = useState("30");
   const today = format(new Date(), "yyyy-MM-dd");
   const days = timeHorizon === "all" ? 0 : Number(timeHorizon);
