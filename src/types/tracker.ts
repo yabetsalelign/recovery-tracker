@@ -130,4 +130,3 @@ export interface TrackerMetrics {
   totalEvaluatedDays: number;
   adherencePercentage: number;
 }
-

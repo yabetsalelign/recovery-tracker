@@ -729,4 +729,3 @@ describe("Unified Migration - Suite 7: Part A Regression Tests for Data Preserva
     assert.equal(t.legacyMetadata.originalModality, undefined);
   });
 });
-

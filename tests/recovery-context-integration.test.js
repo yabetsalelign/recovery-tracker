@@ -316,4 +316,3 @@ describe("RecoveryContext Integration - Stage 3 Persistence & Operations", () =>
     assert.equal(resolved.trackers.length, 0); // Authoritative empty array!
   });
 });
-

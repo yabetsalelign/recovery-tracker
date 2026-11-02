@@ -19,4 +19,3 @@ export function getHabitIcon(name: string): string {
   // default — botanical / growth
   return "spa";
 }
-
