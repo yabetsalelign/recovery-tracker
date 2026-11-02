@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Layout from "./components/Layout";
 import { useTheme } from "./context/ThemeContext";
 import { useUser } from "./context/UserContext";
 import { useRecovery } from "./context/RecoveryContext";
 import ThemePreview from "./components/ThemePreview";
+import { useOverlayBackHandler } from "./components/BackNavigation";
+import { Capacitor } from "@capacitor/core";
+import { LocalNotifications } from "@capacitor/local-notifications";
 
 interface ToastState {
   show: boolean;
@@ -26,9 +29,17 @@ const Settings: React.FC = () => {
   const { exportJSON, exportCSV, validateAndImportJSON, resetAllData } = useRecovery();
 
   const [toast, setToast] = useState<ToastState>({ show: false, message: "" });
+  const [reminderEnabled, setReminderEnabled] = useState(() => localStorage.getItem("dailyReminderEnabled") === "true");
+  const [reminderTime, setReminderTime] = useState(() => localStorage.getItem("dailyReminderTime") || "20:00");
   const [showWipeModal, setShowWipeModal] = useState<boolean>(false);
   const [showBreathingModal, setShowBreathingModal] = useState<boolean>(false);
   const [showSupportModal, setShowSupportModal] = useState<boolean>(false);
+  const closeTopDialog = useCallback(() => {
+    if (showSupportModal) setShowSupportModal(false);
+    else if (showBreathingModal) setShowBreathingModal(false);
+    else if (showWipeModal) setShowWipeModal(false);
+  }, [showBreathingModal, showSupportModal, showWipeModal]);
+  useOverlayBackHandler(showWipeModal || showBreathingModal || showSupportModal, closeTopDialog);
 
   // Breathing state
   const [breathPhase, setBreathPhase] = useState<string>("Inhale");
@@ -81,6 +92,38 @@ const Settings: React.FC = () => {
       showNotification("CSV downloaded");
     } catch {
       showNotification("Error generating CSV");
+    }
+  };
+
+  const setDailyReminder = async (enabled: boolean) => {
+    if (!enabled) {
+      await LocalNotifications.cancel({ notifications: [{ id: 7101 }] });
+      localStorage.setItem("dailyReminderEnabled", "false");
+      setReminderEnabled(false);
+      return;
+    }
+    let permission = await LocalNotifications.checkPermissions();
+    if (permission.display !== "granted") permission = await LocalNotifications.requestPermissions();
+    if (permission.display !== "granted") {
+      showNotification("Notification permission was not granted");
+      return;
+    }
+    const [hour, minute] = reminderTime.split(":").map(Number);
+    await LocalNotifications.cancel({ notifications: [{ id: 7101 }] });
+    await LocalNotifications.schedule({ notifications: [{ id: 7101, title: "A quiet check-in", body: "Take a moment for your daily reflection.", schedule: { on: { hour, minute }, allowWhileIdle: false }, extra: { discreet: discreetMode } }] });
+    localStorage.setItem("dailyReminderEnabled", "true");
+    localStorage.setItem("dailyReminderTime", reminderTime);
+    setReminderEnabled(true);
+    showNotification("Daily reminder scheduled");
+  };
+
+  const updateReminderTime = async (value: string) => {
+    setReminderTime(value);
+    localStorage.setItem("dailyReminderTime", value);
+    if (reminderEnabled) {
+      const [hour, minute] = value.split(":").map(Number);
+      await LocalNotifications.cancel({ notifications: [{ id: 7101 }] });
+      await LocalNotifications.schedule({ notifications: [{ id: 7101, title: "A quiet check-in", body: "Take a moment for your daily reflection.", schedule: { on: { hour, minute }, allowWhileIdle: false }, extra: { discreet: discreetMode } }] });
     }
   };
 
@@ -243,6 +286,17 @@ const Settings: React.FC = () => {
             </button>
           </div>
         </section>
+
+        {/* Privacy */}
+        {Capacitor.isNativePlatform() && <section aria-labelledby="reminder-heading" className="bg-white dark:bg-[#24201D] rounded-2xl p-5 sm:p-6 border border-[#D2C3BE] dark:border-[#39302B] space-y-3">
+          <h2 id="reminder-heading" className="font-serif text-lg font-medium">Daily check-in reminder</h2>
+          <p className="text-xs text-[#78564F] dark:text-[#A99A8F]">A private, neutral reminder on this device. Tracker names are never included.</p>
+          <div className="flex flex-wrap items-center gap-3">
+            <button type="button" role="switch" aria-checked={reminderEnabled} onClick={() => void setDailyReminder(!reminderEnabled)} className={`min-h-11 min-w-11 rounded-full px-3 text-xs font-semibold ${reminderEnabled ? "bg-[#FDD0C6] text-[#261810]" : "bg-[#D2C3BE] text-[#261810]"}`}>{reminderEnabled ? "On" : "Off"}</button>
+            <label className="text-xs font-semibold" htmlFor="daily-reminder-time">Reminder time</label>
+            <input id="daily-reminder-time" type="time" value={reminderTime} onChange={(event) => void updateReminderTime(event.target.value)} className="min-h-11 rounded-xl border border-[#D2C3BE] dark:border-[#39302B] bg-[#FBF2E7] dark:bg-[#1E1B18] px-3 text-sm" />
+          </div>
+        </section>}
 
         {/* Privacy */}
         <section aria-labelledby="privacy-heading" className="bg-white dark:bg-[#24201D] rounded-2xl p-5 sm:p-6 border border-[#D2C3BE] dark:border-[#39302B] shadow-[0_1px_3px_rgba(38,24,16,0.04)] space-y-3">

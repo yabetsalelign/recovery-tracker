@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "./components/Layout";
 import { useTheme } from "./context/ThemeContext";
@@ -6,9 +6,12 @@ import { useRecovery } from "./context/RecoveryContext";
 import type { TrackerRecord } from "./types";
 import type { TrackerCategory, TrackingModality, TrackerTarget } from "./types/tracker";
 import { getHabitIcon } from "./utils/habitIcons";
+import { useBackNavigation } from "./components/BackNavigation";
+import { useOverlayBackHandler } from "./components/BackNavigation";
 
 const AddAddiction: React.FC = () => {
   const navigate = useNavigate();
+  const { goBack } = useBackNavigation();
   const { discreetMode } = useTheme();
   const {
     trackers,
@@ -49,6 +52,11 @@ const AddAddiction: React.FC = () => {
   const [editError, setEditError] = useState<string>("");
 
   const [deleteConfirmGoal, setDeleteConfirmGoal] = useState<string | null>(null);
+  const closeTopDialog = useCallback(() => {
+    if (editingTracker) setEditingTracker(null);
+    else if (deleteConfirmGoal) setDeleteConfirmGoal(null);
+  }, [deleteConfirmGoal, editingTracker]);
+  useOverlayBackHandler(Boolean(editingTracker || deleteConfirmGoal), closeTopDialog);
 
   const getDisplayName = (name: string): string => {
     if (discreetMode) {
@@ -182,7 +190,7 @@ const AddAddiction: React.FC = () => {
           </div>
           <button
             type="button"
-            onClick={() => navigate("/home")}
+            onClick={() => goBack("/home")}
             className="min-h-11 px-3.5 rounded-full border border-[#D2C3BE] dark:border-[#39302B] bg-white dark:bg-[#24201D] text-xs font-semibold text-[#261810] dark:text-[#F4EFEA] hover:bg-[#FBF2E7] dark:hover:bg-[#1E1B18] transition-colors shadow-xs"
           >
             ← Home

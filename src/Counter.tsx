@@ -1,8 +1,8 @@
 import React from "react";
 import { differenceInDays } from "date-fns";
-import { useNavigate } from "react-router-dom";
 import Layout from "./components/Layout";
 import { useRecovery } from "./context/RecoveryContext";
+import { useBackNavigation } from "./components/BackNavigation";
 
 interface Milestone {
   target: number;
@@ -10,7 +10,7 @@ interface Milestone {
 }
 
 const Counter: React.FC = () => {
-  const navigate = useNavigate();
+  const { goBack } = useBackNavigation();
   const { counterStartDate, setCounterStartDate } = useRecovery();
 
   const startDate = new Date(counterStartDate + "T00:00:00");
@@ -42,7 +42,7 @@ const Counter: React.FC = () => {
           </div>
           <button
             type="button"
-            onClick={() => navigate("/progress")}
+            onClick={() => goBack("/progress")}
             className="min-h-11 px-3.5 rounded-full btn-secondary text-xs font-semibold"
           >
             ← Progress

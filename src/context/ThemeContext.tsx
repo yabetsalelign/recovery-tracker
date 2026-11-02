@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import type { ThemeContextType } from "../types";
 import { resolveInitialTheme } from "../utils/themePreferences";
+import { Capacitor } from "@capacitor/core";
+import { StatusBar, Style } from "@capacitor/status-bar";
 
 export const ThemeContext = createContext<ThemeContextType | null>(null);
 
@@ -36,6 +38,10 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       .querySelector('meta[name="theme-color"]')
       ?.setAttribute("content", theme === "dark" ? "#1A1614" : "#FFF8F2");
     if (hasExplicitTheme) localStorage.setItem("theme", theme);
+    if (Capacitor.getPlatform() === "android") {
+      void StatusBar.setStyle({ style: theme === "dark" ? Style.Light : Style.Dark });
+      void StatusBar.setBackgroundColor({ color: theme === "dark" ? "#1A1614" : "#FFF8F2" });
+    }
   }, [theme, hasExplicitTheme]);
 
   useEffect(() => {

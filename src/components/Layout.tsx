@@ -21,11 +21,11 @@ const Layout: React.FC<LayoutProps> = ({
   const activeNavigationLabel = getActiveNavigationLabel(currentPath);
 
   return (
-    <div className="min-h-screen bg-[#FFF8F2] dark:bg-[#1A1614] text-[#261810] dark:text-[#F4EFEA] font-sans transition-colors duration-150">
+    <div className="min-h-dvh overflow-x-clip bg-[#FFF8F2] dark:bg-[#1A1614] text-[#261810] dark:text-[#F4EFEA] font-sans transition-colors duration-150">
       {/* Top App Bar */}
       {!hideHeader && (
         <header className="fixed top-0 inset-x-0 z-40 bg-[#FFF8F2]/90 dark:bg-[#1A1614]/90 backdrop-blur-md border-b border-[#D2C3BE]/50 dark:border-[#39302B]">
-          <div className="h-16 px-4 md:px-8 flex items-center justify-between gap-3 max-w-5xl mx-auto">
+          <div className="pt-safe min-h-16 px-4 md:px-8 flex items-center justify-between gap-3 max-w-5xl mx-auto">
             <button
               type="button"
               className="flex items-center gap-2.5 text-left"
@@ -70,7 +70,7 @@ const Layout: React.FC<LayoutProps> = ({
       )}
 
       {/* Main Content Area */}
-      <main className={`relative w-full ${!hideHeader ? "pt-20" : "pt-4"} ${!hideNav ? "pb-24 md:pb-12" : "pb-8"}`}>
+      <main className={`relative w-full min-w-0 ${!hideHeader ? "pt-[calc(5rem+env(safe-area-inset-top))]" : "pt-4"} ${!hideNav ? "pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-12" : "pb-8"}`}>
         <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 md:px-8">
           {children}
         </div>
@@ -80,9 +80,9 @@ const Layout: React.FC<LayoutProps> = ({
       {!hideNav && (
         <nav
           aria-label="Primary navigation"
-          className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-[#FFF8F2]/95 dark:bg-[#1A1614]/95 backdrop-blur-md border-t border-[#D2C3BE]/50 dark:border-[#39302B]"
+          className="md:hidden fixed bottom-0 inset-x-0 z-40 pb-safe bg-[#FFF8F2]/95 dark:bg-[#1A1614]/95 backdrop-blur-md border-t border-[#D2C3BE]/50 dark:border-[#39302B]"
         >
-          <div className="flex items-center justify-around h-16 max-w-md mx-auto px-2">
+          <div className="flex items-center justify-around min-h-16 max-w-md mx-auto px-2">
             {primaryNavigationItems.map((item) => {
               const isActive = activeNavigationLabel === item.label;
               return (

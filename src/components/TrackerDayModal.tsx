@@ -2,9 +2,11 @@ import React, { useEffect, useRef, useState } from "react";
 import { format, parseISO } from "date-fns";
 import type { CanonicalTrackerRecord, DayRecord, DayRecordStatus } from "../types/tracker";
 import { getEffectiveTarget } from "../utils/unifiedCalculations";
+import { useOverlayBackHandler } from "./BackNavigation";
 
 interface Props { tracker: CanonicalTrackerRecord; date: string; initial?: DayRecord; onClose: () => void; onSave: (record: DayRecord | null) => void }
 const TrackerDayModal: React.FC<Props> = ({ tracker, date, initial, onClose, onSave }) => {
+  useOverlayBackHandler(true, onClose);
   const [status, setStatus] = useState<DayRecordStatus | "note_only" | "">(initial?.status || (initial?.note ? "note_only" : ""));
   const [value, setValue] = useState(initial?.value === undefined ? "" : String(initial.value));
   const [time, setTime] = useState(initial?.timestamp || "");

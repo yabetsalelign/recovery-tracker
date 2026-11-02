@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useTheme } from "../context/ThemeContext";
 import ThemePreview from "./ThemePreview";
+import { useOverlayBackHandler } from "./BackNavigation";
 
 const ThemeModal: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
@@ -14,11 +15,12 @@ const ThemeModal: React.FC = () => {
     }
   }, []);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     localStorage.setItem("hasSeenThemeModal", "true");
     sessionStorage.setItem("hasSeenThemeModal", "true");
     setIsOpen(false);
-  };
+  }, []);
+  useOverlayBackHandler(isOpen, handleClose);
 
   const handleThemeSelect = (selectedTheme: string) => {
     toggleTheme(selectedTheme);

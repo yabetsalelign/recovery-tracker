@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { format } from "date-fns";
 import Layout from "./components/Layout";
 import { useTheme } from "./context/ThemeContext";
 import { useRecovery } from "./context/RecoveryContext";
 import type { NoteEntry } from "./types";
+import { useOverlayBackHandler } from "./components/BackNavigation";
 
 interface PendingSwitchState {
   type: "date" | "goal" | "entry" | "discard";
@@ -121,6 +122,11 @@ const Notes: React.FC = () => {
       confirmSwitchWithoutSaving();
     }
   };
+  const dismissDiscardDialog = useCallback(() => {
+    setShowDiscardModal(false);
+    setPendingSwitch(null);
+  }, []);
+  useOverlayBackHandler(showDiscardModal, dismissDiscardDialog);
 
   const allEntries = useMemo(() => getAllNotes(), [getAllNotes]);
 

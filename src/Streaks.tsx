@@ -3,14 +3,16 @@ import { useNavigate } from "react-router-dom";
 import Layout from "./components/Layout";
 import { useRecovery } from "./context/RecoveryContext";
 import { calculateUnifiedMetrics } from "./utils/unifiedCalculations";
+import { useBackNavigation } from "./components/BackNavigation";
 
 const milestoneSteps = [7, 14, 30, 60, 90];
 const Streaks: React.FC = () => {
   const navigate = useNavigate();
+  const { goBack } = useBackNavigation();
   const { canonicalTrackers } = useRecovery();
   const trackers = canonicalTrackers.filter((tracker) => !tracker.isArchived);
   return <Layout title="Milestones"><main className="max-w-2xl mx-auto px-4 sm:px-6 py-5 sm:py-8 space-y-6">
-    <header className="flex items-center justify-between gap-3"><div><h1 className="font-serif text-3xl sm:text-4xl font-medium">Milestones</h1><p className="text-sm text-[#78564F] dark:text-[#A99A8F] mt-1">Meaningful progress for each kind of tracking.</p></div><button type="button" onClick={() => navigate("/progress")} className="min-h-11 px-3.5 rounded-full btn-secondary text-sm">Progress</button></header>
+    <header className="flex items-center justify-between gap-3"><div><h1 className="font-serif text-3xl sm:text-4xl font-medium">Milestones</h1><p className="text-sm text-[#78564F] dark:text-[#A99A8F] mt-1">Meaningful progress for each kind of tracking.</p></div><button type="button" onClick={() => goBack("/progress")} className="min-h-11 px-3.5 rounded-full btn-secondary text-sm">Progress</button></header>
     {trackers.length === 0 ? <section className="vesper-card p-6 text-center space-y-3"><p className="text-sm text-[#78564F] dark:text-[#A99A8F]">No active trackers yet.</p><button type="button" onClick={() => navigate("/add-addiction")} className="min-h-11 px-5 btn-primary rounded-full text-sm">Add a tracker</button></section> : <div className="space-y-3">{trackers.map((tracker) => {
       const metrics = calculateUnifiedMetrics(tracker);
       const isHabit = tracker.modality === "daily_habit";

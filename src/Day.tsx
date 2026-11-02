@@ -1,12 +1,15 @@
 import React from "react";
 import { format } from "date-fns";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Layout from "./components/Layout";
 import { useTheme } from "./context/ThemeContext";
 import { useRecovery } from "./context/RecoveryContext";
 import { getHabitIcon } from "./utils/habitIcons";
+import { useBackNavigation } from "./components/BackNavigation";
 
 const Day: React.FC = () => {
+  const { goBack } = useBackNavigation();
   const navigate = useNavigate();
   const location = useLocation();
   const { discreetMode } = useTheme();
@@ -47,7 +50,7 @@ const Day: React.FC = () => {
           </div>
           <button
             type="button"
-            onClick={() => navigate(`/calendar?date=${targetDateStr}`)}
+            onClick={() => goBack(`/calendar?date=${targetDateStr}`)}
             className="min-h-11 px-3 rounded-xl border border-[#D2C3BE] dark:border-[#39302B] bg-white dark:bg-[#2A2522] text-xs font-semibold text-[#261810] dark:text-[#F4EFEA] hover:bg-[#FBF2E7] dark:hover:bg-[#1E1B18] transition-colors"
           >
             ← Calendar

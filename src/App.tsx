@@ -18,6 +18,7 @@ import WeedPage from "./WeedPage";
 import PornPage from "./pornPage";
 import Settings from "./Settings";
 import TrackerPage from "./pages/TrackerPage";
+import { BackNavigationProvider } from "./components/BackNavigation";
 
 const App: React.FC = () => {
   return (
@@ -25,8 +26,9 @@ const App: React.FC = () => {
       <UserProvider>
         <RecoveryProvider>
           <BrowserRouter>
-            <ThemeModal />
-            <Routes>
+            <BackNavigationProvider>
+              <ThemeModal />
+              <Routes>
               <Route path="/porn" element={<PornPage />} />
               <Route path="/tracker/:id" element={<TrackerPage />} />
               <Route path="/weed" element={<WeedPage />} />
@@ -41,7 +43,8 @@ const App: React.FC = () => {
               <Route path="/counter" element={<Counter />} />
               <Route path="/sesh" element={<SeshPage />} />
               <Route path="/settings" element={<Settings />} />
-            </Routes>
+              </Routes>
+            </BackNavigationProvider>
           </BrowserRouter>
         </RecoveryProvider>
       </UserProvider>

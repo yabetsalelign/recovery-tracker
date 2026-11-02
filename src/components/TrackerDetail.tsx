@@ -1,12 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { format } from "date-fns";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import type { CanonicalTrackerRecord, DayRecord } from "../types/tracker";
 import { useRecovery } from "../context/RecoveryContext";
 import { calculateUnifiedMetrics, isValidDateFormat } from "../utils/unifiedCalculations";
 import Layout from "./Layout";
 import TrackerCalendar from "./TrackerCalendar";
 import TrackerDayModal from "./TrackerDayModal";
+import { useBackNavigation } from "./BackNavigation";
 
 interface Props { tracker: CanonicalTrackerRecord }
 function targetDescription(tracker: CanonicalTrackerRecord): string {
@@ -17,7 +18,7 @@ function targetDescription(tracker: CanonicalTrackerRecord): string {
 }
 
 const TrackerDetail: React.FC<Props> = ({ tracker }) => {
-  const navigate = useNavigate();
+  const { goBack } = useBackNavigation();
   const [searchParams] = useSearchParams();
   const requestedDate = searchParams.get("date");
   const initialDate = requestedDate && isValidDateFormat(requestedDate) ? requestedDate : format(new Date(), "yyyy-MM-dd");
@@ -39,7 +40,7 @@ const TrackerDetail: React.FC<Props> = ({ tracker }) => {
   const progressLabel = tracker.modality === "frequency" && tracker.target.rule === "at_most" ? "Within target" : tracker.modality === "daily_habit" ? "Activity" : tracker.modality === "frequency" ? "Consecutive zero days" : tracker.modality === "boundary" ? "Consecutive adherent days" : "Consecutive clean days";
   return <Layout>
     <main className="max-w-3xl mx-auto px-4 sm:px-6 py-5 sm:py-8 space-y-6">
-      <button type="button" onClick={() => navigate("/home")} className="min-h-11 px-3 rounded-full btn-secondary text-sm">← Home</button>
+      <button type="button" onClick={() => goBack("/home")} className="min-h-11 min-w-11 px-3 rounded-full btn-secondary text-sm">← Back</button>
       <header className="space-y-2"><p className="text-sm text-[#78564F] dark:text-[#A99A8F]">{tracker.category}</p><h1 className="font-serif text-4xl sm:text-5xl font-medium tracking-tight break-words">{tracker.name}</h1><p className="text-base text-[#78564F] dark:text-[#A99A8F]">{targetDescription(tracker)}</p></header>
       <section className="flex flex-wrap items-baseline gap-x-4 gap-y-1 py-4 border-y border-[#D2C3BE]/70 dark:border-[#39302B]" aria-label="Current progress"><span className="font-serif text-3xl sm:text-4xl">{progress}</span><span className="text-sm text-[#78564F] dark:text-[#A99A8F]">{progressLabel}</span></section>
       <TrackerCalendar tracker={tracker} selectedDate={selectedDate} onSelect={(date) => { setSelectedDate(date); setEditing(true); }} />
