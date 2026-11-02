@@ -54,7 +54,7 @@ import {
   applyDeleteTracker,
 } from "../utils/canonicalStore";
 import { inferLegacyModality, resolveBackupPayload } from "../utils/unifiedMigration";
-import { validateDayRecordStatus, validateTrackerTarget, isFiniteNonNegativeNumber } from "../utils/unifiedCalculations";
+import { validateDayRecordStatus, validateTrackerTarget, isFiniteNonNegativeNumber, isValidDateFormat } from "../utils/unifiedCalculations";
 import { createCanonicalTracker } from "../utils/trackerCreation";
 
 export const RecoveryContext = createContext<RecoveryContextType | null>(null);
@@ -266,15 +266,10 @@ export const RecoveryProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   const savePornNotes = useCallback((text: string) => {
     const trimmed = text.trim();
-    setCanonicalTrackers((prev) =>
-      prev.map((t) => {
-        if (t.name.toLowerCase() === "porn") {
-          return { ...t, generalNote: trimmed };
-        }
-        return t;
-      })
-    );
-  }, []);
+    const matches = canonicalTrackers.filter((tracker) => tracker.name.toLowerCase() === "porn");
+    if (matches.length !== 1) return;
+    setCanonicalTrackers((prev) => prev.map((tracker) => tracker.id === matches[0].id ? { ...tracker, generalNote: trimmed } : tracker));
+  }, [canonicalTrackers]);
 
   const addGoal = useCallback((goalConfig: GoalConfig): ActionResult => {
     const title = (goalConfig?.title || goalConfig?.name || "").trim();
@@ -311,15 +306,16 @@ export const RecoveryProvider: React.FC<{ children: ReactNode }> = ({ children }
       return { success: false, error: "'General' is reserved for journal reflections" };
     }
 
+    if (newConfig.modality && newConfig.modality !== existing.modality) {
+      return { success: false, error: "A tracker’s tracking method cannot be changed after creation." };
+    }
     const updatedCategory = (newConfig.category || existing.category) as TrackerCategory;
-    const updatedModality = (newConfig.modality || existing.modality) as TrackingModality;
-    const updatedTarget = newConfig.target || (newConfig.modality && newConfig.modality !== existing.modality
-      ? inferLegacyModality({ ...newConfig, name: trimmedNew, category: updatedCategory }).target
-      : existing.target);
+    const updatedModality = existing.modality;
+    const updatedTarget = newConfig.target || existing.target;
     const targetValidation = validateTrackerTarget(updatedModality, updatedTarget);
     if (!targetValidation.valid) return { success: false, error: targetValidation.error || "Invalid tracker target." };
     const effectiveDate = format(new Date(), "yyyy-MM-dd");
-    if (newConfig.startDate && !/^\d{4}-\d{2}-\d{2}$/.test(newConfig.startDate)) return { success: false, error: "Start date must be a valid calendar date." };
+    if (newConfig.startDate && !isValidDateFormat(newConfig.startDate)) return { success: false, error: "Start date must be a valid calendar date." };
     setCanonicalTrackers((prev) => applyUpdateTracker(prev, trackerId, {
       name: trimmedNew, category: updatedCategory, modality: updatedModality, target: updatedTarget,
       ...(newConfig.startDate ? { startDate: newConfig.startDate } : {}),

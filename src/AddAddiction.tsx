@@ -12,6 +12,7 @@ const AddAddiction: React.FC = () => {
   const { discreetMode } = useTheme();
   const {
     trackers,
+    canonicalTrackers,
     addGoal,
     updateGoal,
     deleteGoal,
@@ -114,13 +115,15 @@ const AddAddiction: React.FC = () => {
   const openEditModal = (tracker: TrackerRecord) => {
     setEditingTracker(tracker);
     setEditName(tracker.name);
-    setEditModality((tracker.modality as TrackingModality) || "abstinence");
-    setEditFrequencyRule(tracker.limitVal !== undefined ? "at_most" : "zero");
-    setEditLimit(String(tracker.limitVal ?? 2));
-    setEditFrequencyUnit("");
-    setEditMinimum("1");
-    setEditHabitUnit("");
-    setEditCutoff(tracker.curfewTime || "22:00");
+    const canonical = canonicalTrackers.find((item) => item.id === String(tracker.id));
+    const target = canonical?.target;
+    setEditModality(canonical?.modality || (tracker.modality as TrackingModality) || "abstinence");
+    setEditFrequencyRule(target?.rule === "at_most" ? "at_most" : "zero");
+    setEditLimit(String(target?.rule === "at_most" ? target.limit : tracker.limitVal ?? 2));
+    setEditFrequencyUnit(target?.rule === "at_most" ? target.unit || "" : "");
+    setEditMinimum(String(target?.rule === "at_least" ? target.minimum : 1));
+    setEditHabitUnit(target?.rule === "at_least" ? target.unit || "" : "");
+    setEditCutoff(target?.rule === "before_time" ? target.cutoff : tracker.curfewTime || "22:00");
     setEditError("");
   };
 
@@ -293,7 +296,7 @@ const AddAddiction: React.FC = () => {
                         {isSpecialized && (
                           <button
                             type="button"
-                            onClick={() => navigate(`/${lower}`)}
+                            onClick={() => navigate(`/tracker/${encodeURIComponent(String(tracker.id))}`)}
                             className="text-[#78564F] dark:text-[#D47A55] font-semibold hover:underline"
                           >
                             Open tracker →
@@ -408,7 +411,7 @@ const AddAddiction: React.FC = () => {
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
           <form
             onSubmit={handleSaveEdit}
-            className="w-full max-w-xs bg-white dark:bg-[#24201D] rounded-2xl p-6 border border-[#D2C3BE] dark:border-[#39302B] shadow-xl space-y-4"
+            className="w-full max-w-xs max-h-[90vh] overflow-y-auto bg-white dark:bg-[#24201D] rounded-2xl p-6 border border-[#D2C3BE] dark:border-[#39302B] shadow-xl space-y-4"
           >
             <div className="flex items-center justify-between">
               <h3 className="font-serif text-lg font-medium text-[#261810] dark:text-[#F4EFEA]">
@@ -441,9 +444,6 @@ const AddAddiction: React.FC = () => {
               />
             </div>
 
-            <label className="block text-xs font-semibold text-[#78564F] dark:text-[#D0C4BA]">Tracking method
-              <select aria-label="Edit tracking method" value={editModality} onChange={(event) => setEditModality(event.target.value as TrackingModality)} className="mt-1 w-full min-h-11 px-3 rounded-xl tracker-field"><option value="abstinence">Abstinence</option><option value="frequency">Frequency</option><option value="daily_habit">Daily habit</option><option value="boundary">Boundary</option></select>
-            </label>
             {editModality === "frequency" && <div className="space-y-2"><label className="block text-xs font-semibold">Target rule<select aria-label="Frequency target rule" value={editFrequencyRule} onChange={(event) => setEditFrequencyRule(event.target.value as "zero" | "at_most")} className="mt-1 w-full min-h-11 px-3 rounded-xl tracker-field"><option value="zero">Zero</option><option value="at_most">Maximum</option></select></label>{editFrequencyRule === "at_most" && <div className="grid grid-cols-2 gap-2"><label className="text-xs">Maximum<input aria-label="Edit frequency maximum" type="number" min="0" step="any" value={editLimit} onChange={(event) => setEditLimit(event.target.value)} className="mt-1 w-full min-h-11 px-3 rounded-xl tracker-field" /></label><label className="text-xs">Unit<input aria-label="Edit frequency unit" value={editFrequencyUnit} onChange={(event) => setEditFrequencyUnit(event.target.value)} className="mt-1 w-full min-h-11 px-3 rounded-xl tracker-field" /></label></div>}</div>}
             {editModality === "daily_habit" && <div className="grid grid-cols-2 gap-2"><label className="text-xs">Daily minimum<input aria-label="Edit daily habit minimum" type="number" min="0.01" step="any" value={editMinimum} onChange={(event) => setEditMinimum(event.target.value)} className="mt-1 w-full min-h-11 px-3 rounded-xl tracker-field" /></label><label className="text-xs">Unit<input aria-label="Edit daily habit unit" value={editHabitUnit} onChange={(event) => setEditHabitUnit(event.target.value)} className="mt-1 w-full min-h-11 px-3 rounded-xl tracker-field" /></label></div>}
             {editModality === "boundary" && <label className="block text-xs font-semibold">Boundary cutoff<input aria-label="Edit boundary cutoff" type="time" value={editCutoff} onChange={(event) => setEditCutoff(event.target.value)} className="mt-1 w-full min-h-11 px-3 rounded-xl tracker-field" /></label>}

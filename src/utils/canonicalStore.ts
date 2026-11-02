@@ -440,7 +440,10 @@ export function applySpecializedCount(
 
   const numVal = Math.max(0, parseInt(String(count), 10) || 0);
 
-  const existingIdx = trackers.findIndex((t) => t.name.toLowerCase() === lower);
+  const matches = trackers.map((tracker, index) => ({ tracker, index })).filter(({ tracker }) => tracker.name.toLowerCase() === lower);
+  // Legacy specialized-name adapter is safe only when it resolves uniquely.
+  const existingIdx = matches.length === 1 ? matches[0].index : -1;
+  if (matches.length > 1) return trackers;
   if (existingIdx >= 0) {
     return trackers.map((t, idx) => {
       if (idx !== existingIdx) return t;

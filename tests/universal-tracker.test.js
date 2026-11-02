@@ -1,8 +1,8 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { resolveTrackerById, evaluateDayRecord, createDeterministicTrackerId } from "../src/utils/unifiedCalculations.js";
-import { applyTrackerDayRecord, applyTrackerDayStatus, applyTrackerDayNote, applyDeleteTrackerDayNote, toLegacyTrackerRecord, persistCanonicalEnvelope, initializeCanonicalData } from "../src/utils/canonicalStore.js";
+import { resolveTrackerById, evaluateDayRecord, getEffectiveTarget, createDeterministicTrackerId } from "../src/utils/unifiedCalculations.js";
+import { applyTrackerDayRecord, applyTrackerDayStatus, applyTrackerDayNote, applyDeleteTrackerDayNote, applyUpdateTracker, applyDeleteTracker, toLegacyTrackerRecord, persistCanonicalEnvelope, initializeCanonicalData } from "../src/utils/canonicalStore.js";
 import { createCanonicalTracker } from "../src/utils/trackerCreation.js";
 import { resolveBackupPayload } from "../src/utils/unifiedMigration.js";
 
@@ -31,6 +31,10 @@ describe("Universal tracker detail domain behavior", () => {
     const unique = createCanonicalTracker({ name: "Cigarettes", category: "Personal Goal", modality: "frequency", target: { rule: "zero" }, startDate: "2025-01-01" }, [collision]);
     assert.equal(unique.success, true);
     assert.notEqual(unique.data.id, baseId);
+    const sameName = createCanonicalTracker({ name: "Cigarettes", category: "Personal Goal", modality: "frequency", target: { rule: "zero" }, startDate: "2025-01-01" }, [created[1]]);
+    assert.equal(sameName.success, true);
+    assert.equal(sameName.data.name, created[1].name);
+    assert.notEqual(sameName.data.id, created[1].id);
   });
 
   test("resolves by canonical ID when display names are duplicated", () => {
@@ -50,6 +54,34 @@ describe("Universal tracker detail domain behavior", () => {
     assert.equal(updated[0].records["2025-02-01"].legacyExtra, "preserved");
     assert.deepEqual(updated[1], second);
     assert.deepEqual(applyTrackerDayRecord(updated, "first", "2025-02-01", null)[0].records, {});
+  });
+
+  test("updates and deletes duplicate-name trackers independently by canonical ID", () => {
+    const first = base({ id: "first", records: { "2025-02-01": { status: "confirmed_clean", note: "first note" } }, generalNote: "first context" });
+    const second = base({ id: "second", records: { "2025-02-01": { status: "lapsed", note: "second note" } }, generalNote: "second context" });
+    const updated = applyUpdateTracker([first, second], "first", { name: "Renamed", target: { rule: "at_most", limit: 2 } }, "2025-03-01");
+    assert.equal(updated[0].name, "Renamed");
+    assert.deepEqual(updated[0].records, first.records);
+    assert.equal(updated[0].generalNote, first.generalNote);
+    assert.deepEqual(updated[0].targetHistory, [
+      { effectiveDate: "2025-01-01", target: { rule: "zero" } },
+      { effectiveDate: "2025-03-01", target: { rule: "at_most", limit: 2 } },
+    ]);
+    assert.deepEqual(getEffectiveTarget(updated[0], "2025-02-20"), { rule: "zero" });
+    assert.deepEqual(getEffectiveTarget(updated[0], "2025-03-01"), { rule: "at_most", limit: 2 });
+    assert.deepEqual(updated[1], second);
+    const deleted = applyDeleteTracker(updated, "second");
+    assert.deepEqual(deleted, [updated[0]]);
+    assert.equal(deleted[0].id, "first");
+  });
+
+  test("Progress timeline day controls reveal details on activation", () => {
+    const source = readFileSync(new URL("../src/Progress.tsx", import.meta.url), "utf8");
+    assert.match(source, /onClick=\{\(\) => setSelectedDay\(key\)\}/);
+    assert.match(source, /selectedDay && <section aria-live="polite"/);
+    assert.match(source, /generalNotes\[selectedDay\]/);
+    assert.match(source, /isPlannedSkip \? "Planned rest"/);
+    assert.match(source, /: "Unlogged"/);
   });
 
   test("evaluates abstinence clean and lapse statuses separately", () => {
