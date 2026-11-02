@@ -33,9 +33,12 @@ const Layout: React.FC<LayoutProps> = ({
               aria-label="Recovery Tracker home"
             >
               <div className="brand-badge">
-                <span className="material-symbols-outlined text-[18px]">
-                  spa
-                </span>
+                <img
+                  src="/favicon.png"
+                  alt=""
+                  aria-hidden="true"
+                  className="w-5 h-5 rounded-full object-cover"
+                />
               </div>
               <span className="font-serif text-lg font-medium leading-none text-[#261810] dark:text-[#F4EFEA]">
                 Recovery Tracker
@@ -51,10 +54,10 @@ const Layout: React.FC<LayoutProps> = ({
                     type="button"
                     aria-current={isActive ? "page" : undefined}
                     onClick={() => navigate(item.path)}
-                    className={`min-h-11 px-3.5 rounded-xl text-xs font-semibold transition-colors ${
+                    className={`min-h-11 px-4 rounded-full text-xs font-semibold transition-colors ${
                       isActive
                         ? "nav-active"
-                        : "text-[#5E4D45] dark:text-[#D0C4BA] hover:bg-[#FBF2E7] dark:hover:bg-[#2A2522]"
+                        : "text-[#78564F] dark:text-[#D0C4BA] hover:bg-[#FBF2E7] dark:hover:bg-[#24201D] hover:text-[#261810] dark:hover:text-[#F4EFEA]"
                     }`}
                   >
                     {item.label}
@@ -95,7 +98,7 @@ const Layout: React.FC<LayoutProps> = ({
                   }`}
                 >
                   <span
-                    className="material-symbols-outlined text-[20px]"
+                    className="material-symbols-outlined text-[22px]"
                     style={{ fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0" }}
                   >
                     {item.icon}

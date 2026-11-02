@@ -86,20 +86,21 @@ describe("Interface refinements", () => {
     assert.ok(notes.includes("Unsaved edits"));
   });
 
-  test("Progress keeps a 21-day timeline with sparse labels and accessible detail rows", () => {
+  test("Progress keeps a 21-day timeline with sparse labels and accessible modality summaries", () => {
     const progress = readFileSync(new URL("../src/Progress.tsx", import.meta.url), "utf8");
 
     assert.ok(progress.includes("start: subDays(new Date(), 20)"));
     assert.ok(progress.includes("index === 0 || index === 20 || (index + 1) % 5 === 0"));
-    assert.ok(progress.includes("View daily details"));
-    assert.ok(progress.includes("Your recent rhythm will take shape"));
+    assert.ok(progress.includes("By tracker"));
+    assert.ok(progress.includes("Unlogged days are not failures"));
   });
 
   test("Goal creation uses one consistent add action", () => {
     const goals = readFileSync(new URL("../src/AddAddiction.tsx", import.meta.url), "utf8");
 
-    assert.ok(goals.includes("<span>Add a goal</span>"));
-    assert.ok(goals.includes("Manage goals"));
+    assert.ok(goals.includes("<span>Add a tracker</span>"));
+    assert.ok(goals.includes("Manage trackers"));
+    assert.ok(goals.includes('"frequency"'));
     assert.ok(!goals.includes("New Target"));
     assert.ok(!goals.includes("Create New Target or Boundary"));
   });

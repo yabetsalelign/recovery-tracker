@@ -6,16 +6,16 @@ export interface PrimaryNavigationItem {
 }
 
 export const primaryNavigationItems: PrimaryNavigationItem[] = [
-  { label: "Home", path: "/home", icon: "spa", matchPaths: ["/home", "/", "/add-addiction"] },
-  { label: "Calendar", path: "/calendar", icon: "calendar_today", matchPaths: ["/calendar", "/day"] },
-  { label: "Journal", path: "/notes", icon: "edit_note", matchPaths: ["/notes"] },
+  { label: "Home", path: "/home", icon: "home", matchPaths: ["/home", "/", "/add-addiction"] },
+  { label: "Calendar", path: "/calendar", icon: "calendar_month", matchPaths: ["/calendar", "/day"] },
+  { label: "Journal", path: "/notes", icon: "menu_book", matchPaths: ["/notes"] },
   {
     label: "Progress",
     path: "/progress",
-    icon: "monitoring",
+    icon: "bar_chart",
     matchPaths: ["/progress", "/streaks", "/counter", "/sesh", "/weed", "/porn"],
   },
-  { label: "Settings", path: "/settings", icon: "settings", matchPaths: ["/settings"] },
+  { label: "Settings", path: "/settings", icon: "tune", matchPaths: ["/settings"] },
 ];
 
 export const getActiveNavigationLabel = (pathname: string): string | undefined =>

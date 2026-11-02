@@ -1,3 +1,5 @@
+import type { CanonicalTrackerRecord, TrackerTarget } from "./tracker";
+
 export type Modality =
   | "abstinence"
   | "harm_reduction"
@@ -33,6 +35,7 @@ export interface GoalConfig {
   curfewTime?: string;
   startDate?: string;
   rationale?: string;
+  target?: TrackerTarget;
 }
 
 export type CheckInsMap = Record<string, boolean>;
@@ -52,6 +55,7 @@ export interface NoteEntry {
   isGeneral: boolean;
   date: string;
   text: string;
+  trackerId?: string;
 }
 
 export type ThemeMode = "light" | "dark";
@@ -91,6 +95,13 @@ export interface BackupPayload {
 }
 
 export interface RecoveryContextType {
+  canonicalTrackers: CanonicalTrackerRecord[];
+  setTrackerDayRecord: (trackerId: string, dateStr: string, record: import("./tracker").DayRecord | null) => void;
+  logTrackerDayStatus: (trackerId: string, dateStr: string, status: import("./tracker").DayRecordStatus, value?: number) => void;
+  saveTrackerGeneralNote: (trackerId: string, note: string) => void;
+  saveTrackerDayNote: (trackerId: string, dateStr: string, note: string) => void;
+  deleteTrackerDayNote: (trackerId: string, dateStr: string) => void;
+  migrationError?: string | null;
   trackers: TrackerRecord[];
   addictions: string[];
   generalNotes: GeneralNotesMap;
@@ -108,8 +119,8 @@ export interface RecoveryContextType {
   completeDailyCheckin: (dateStr: string, mood?: string, note?: string) => void;
   savePornNotes: (text: string) => void;
   addGoal: (goalConfig: GoalConfig) => ActionResult;
-  updateGoal: (oldName: string, newConfig: Partial<GoalConfig>) => ActionResult;
-  deleteGoal: (goalToDelete: string) => void;
+  updateGoal: (trackerId: string, newConfig: Partial<GoalConfig>) => ActionResult;
+  deleteGoal: (trackerId: string) => void;
   saveNote: (habitName: string, dateStr: string, text: string) => void;
   deleteNote: (habitName: string, dateStr: string) => void;
   getNote: (habitName: string, dateStr: string) => string;
@@ -139,3 +150,5 @@ export interface ThemeContextType {
   discreetMode: boolean;
   setDiscreetMode: React.Dispatch<React.SetStateAction<boolean>>;
 }
+
+export * from "./tracker";

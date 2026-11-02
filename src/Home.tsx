@@ -5,26 +5,18 @@ import Layout from "./components/Layout";
 import { useTheme } from "./context/ThemeContext";
 import { useUser } from "./context/UserContext";
 import { useRecovery } from "./context/RecoveryContext";
-
-interface SpecializedModalState {
-  type: "sesh" | "weed" | "porn";
-  count: number;
-}
+import { getHabitIcon } from "./utils/habitIcons";
+import { calculateUnifiedStreak, evaluateDayRecord } from "./utils/unifiedCalculations";
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
   const { discreetMode } = useTheme();
   const { name } = useUser();
   const {
-    trackers,
-    toggleCheckIn,
+    canonicalTrackers,
+    logTrackerDayStatus,
     completeDailyCheckin,
-    calculateStreak,
-    logSpecializedCount,
     getAllNotes,
-    seshData,
-    weedData,
-    pornData,
   } = useRecovery();
 
   const todayStr = format(new Date(), "yyyy-MM-dd");
@@ -43,8 +35,6 @@ const Home: React.FC = () => {
     return localStorage.getItem(`checkedIn_${todayStr}`) === "true";
   });
 
-  const [activeSpecializedModal, setActiveSpecializedModal] = useState<SpecializedModalState | null>(null);
-
   const handleCompleteCheckin = () => {
     completeDailyCheckin(todayStr, selectedMood, checkinNote);
     setHasCompletedTodayCheckin(true);
@@ -52,15 +42,6 @@ const Home: React.FC = () => {
 
   const allNotes = useMemo(() => getAllNotes(), [getAllNotes]);
   const latestNote = allNotes.length > 0 ? allNotes[0] : null;
-
-  const getHabitIcon = (habitName: string): string => {
-    const lower = (habitName || "").toLowerCase();
-    if (lower.includes("alcohol") || lower.includes("drink") || lower.includes("sobriety")) return "water_drop";
-    if (lower.includes("sesh") || lower.includes("smoke") || lower.includes("nicotine")) return "air";
-    if (lower.includes("weed") || lower.includes("cannabis")) return "nature";
-    if (lower.includes("porn") || lower.includes("screen") || lower.includes("curfew")) return "bedtime";
-    return "spa";
-  };
 
   const getDisplayName = (habitName: string): string => {
     if (discreetMode) {
@@ -73,40 +54,29 @@ const Home: React.FC = () => {
     return habitName;
   };
 
-  const getSpecializedCurrentCount = (type: "sesh" | "weed" | "porn"): number => {
-    if (type === "sesh") return seshData[todayStr] ?? 0;
-    if (type === "weed") return weedData[todayStr] ?? 0;
-    if (type === "porn") return pornData[todayStr] ?? 0;
-    return 0;
-  };
-
-  const saveSpecializedCount = () => {
-    if (!activeSpecializedModal) return;
-    const { type, count } = activeSpecializedModal;
-    logSpecializedCount(type, todayStr, count);
-    setActiveSpecializedModal(null);
-  };
-
   return (
     <Layout title="Home">
       <div className="max-w-2xl mx-auto py-4 sm:py-6 space-y-8">
         {/* Welcoming Header */}
         <header className="space-y-1">
-          <p className="text-xs text-[#6B5B54] dark:text-[#A99A8F]">
+          <p className="text-xs uppercase tracking-widest text-[#78564F] dark:text-[#A99A8F] font-semibold">
             {todayDisplay}
           </p>
           <h1 className="font-serif text-3xl sm:text-4xl font-medium tracking-tight text-[#261810] dark:text-[#F4EFEA]">
             {name ? `Hello, ${name}` : "Today"}
           </h1>
+          <p className="text-xs sm:text-sm text-[#78564F] dark:text-[#A99A8F]">
+            Gentle awareness for today. You are meeting each breath as it arrives.
+          </p>
         </header>
 
         {/* 1. How are you feeling today? */}
-        <section aria-labelledby="mood-heading" className="bg-white dark:bg-[#2A2522] rounded-2xl p-5 border border-[#D2C3BE] dark:border-[#39302B] space-y-4">
+        <section aria-labelledby="mood-heading" className="bg-white dark:bg-[#24201D] rounded-2xl p-5 sm:p-6 border border-[#D2C3BE] dark:border-[#39302B] shadow-[0_1px_3px_rgba(38,24,16,0.04)] space-y-4">
           <div className="space-y-1">
             <h2 id="mood-heading" className="font-serif text-xl font-medium text-[#261810] dark:text-[#F4EFEA]">
               How are you feeling?
             </h2>
-            <p className="text-xs text-[#6B5B54] dark:text-[#A99A8F]">
+            <p className="text-xs text-[#78564F] dark:text-[#A99A8F]">
               A simple daily check-in for your own record.
             </p>
           </div>
@@ -125,13 +95,20 @@ const Home: React.FC = () => {
                   type="button"
                   aria-pressed={isSelected}
                   onClick={() => setSelectedMood(chip.id)}
-                  className={`min-h-11 px-3 py-2 rounded-xl text-xs font-semibold transition-colors ${
+                  className={`min-h-11 px-3 py-2 rounded-xl text-xs transition-all flex items-center justify-center gap-1.5 ${
                     isSelected
                       ? "mood-chip-selected"
-                      : "bg-[#FBF2E7] dark:bg-[#1E1B18] text-[#5E4D45] dark:text-[#D0C4BA] border border-[#D2C3BE]/50 dark:border-[#39302B] hover:border-[#B06060]/40"
+                      : "bg-[#FBF2E7] dark:bg-[#1E1B18] text-[#78564F] dark:text-[#D0C4BA] border border-[#D2C3BE]/60 dark:border-[#39302B] hover:bg-[#F6EDE2] dark:hover:bg-[#2A2522] font-semibold"
                   }`}
                 >
-                  {chip.label}
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full ${
+                      isSelected
+                        ? "bg-[#261810] dark:bg-[#1A1614]"
+                        : "bg-[#78564F]/50 dark:bg-[#A99A8F]/50"
+                    }`}
+                  />
+                  <span>{chip.label}</span>
                 </button>
               );
             })}
@@ -143,19 +120,19 @@ const Home: React.FC = () => {
             onChange={(e) => setCheckinNote(e.target.value)}
             placeholder="Add an optional note (e.g. slept well, feeling tired)..."
             aria-label="Daily note"
-            className="w-full min-h-11 px-3.5 py-2 text-xs rounded-xl bg-[#FBF2E7] dark:bg-[#1E1B18] text-[#261810] dark:text-[#F4EFEA] placeholder:text-[#6B5B54]/70 border border-[#D2C3BE]/50 dark:border-[#39302B] focus:outline-none focus:border-[#3D2C24] dark:focus:border-[#D47A55]"
+            className="w-full min-h-11 px-3.5 py-2 text-xs rounded-xl bg-[#FBF2E7] dark:bg-[#1E1B18] text-[#261810] dark:text-[#F4EFEA] placeholder:text-[#78564F]/60 dark:placeholder:text-[#A99A8F]/60 border border-[#D2C3BE]/60 dark:border-[#39302B] focus:outline-none focus:border-[#78564F] dark:focus:border-[#D47A55]"
           />
 
           <button
             type="button"
             onClick={handleCompleteCheckin}
-            className={`w-full min-h-11 py-2.5 px-4 rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-2 ${
+            className={`w-full min-h-11 py-2.5 px-4 rounded-full text-xs font-semibold transition-all flex items-center justify-center gap-2 ${
               hasCompletedTodayCheckin
                 ? "btn-primary-soft"
                 : "btn-primary"
             }`}
           >
-            <span className="material-symbols-outlined text-[16px]">
+            <span className="material-symbols-outlined text-[18px]">
               {hasCompletedTodayCheckin ? "check" : "check_circle"}
             </span>
             <span>{hasCompletedTodayCheckin ? "Update check-in" : "Save check-in"}</span>
@@ -165,115 +142,36 @@ const Home: React.FC = () => {
         {/* 2. Your trackers */}
         <section aria-labelledby="trackers-heading" className="space-y-3">
           <div className="flex items-center justify-between">
-            <h2 id="trackers-heading" className="font-serif text-xl font-medium text-[#261810] dark:text-[#F4EFEA]">
-              Your trackers
-            </h2>
-            <button
-              type="button"
-              onClick={() => navigate("/add-addiction")}
-              className="inline-flex min-h-11 items-center gap-1 text-xs font-semibold text-[#3D2C24] dark:text-[#D47A55] hover:underline px-2"
-            >
-              <span className="material-symbols-outlined text-[16px]">add</span>
-              <span>Add a tracker</span>
-            </button>
+            <h2 id="trackers-heading" className="font-serif text-xl font-medium text-[#261810] dark:text-[#F4EFEA]">Your trackers</h2>
+            <button type="button" onClick={() => navigate("/add-addiction")} className="inline-flex min-h-11 items-center gap-1 text-xs font-semibold text-[#78564F] dark:text-[#D47A55] hover:underline px-2"><span>Add a tracker</span></button>
           </div>
-
-          {trackers.length === 0 ? (
-            <div className="bg-white dark:bg-[#2A2522] rounded-2xl p-6 text-center border border-[#D2C3BE] dark:border-[#39302B] space-y-3">
-              <p className="text-xs text-[#6B5B54] dark:text-[#A99A8F] max-w-sm mx-auto">
-                No active trackers yet. Add a habit or commitment you would like to track.
-              </p>
-              <button
-                type="button"
-                onClick={() => navigate("/add-addiction")}
-                className="inline-flex min-h-11 items-center gap-1.5 px-4 py-2 rounded-xl btn-primary text-xs font-semibold"
-              >
-                <span>Add a tracker</span>
-              </button>
+          {canonicalTrackers.filter((tracker) => !tracker.isArchived).length === 0 ? (
+            <div className="bg-white dark:bg-[#24201D] rounded-2xl p-6 text-center border border-[#D2C3BE] dark:border-[#39302B] space-y-3">
+              <p className="text-sm text-[#78564F] dark:text-[#A99A8F]">No active trackers yet. Add something you would like to follow over time.</p>
+              <button type="button" onClick={() => navigate("/add-addiction")} className="min-h-11 px-4 rounded-full btn-primary text-sm">Add a tracker</button>
             </div>
-          ) : (
-            <div className="space-y-2.5">
-              {trackers.map((tracker) => {
-                const habitName = tracker.name;
-                const checkIns = tracker.checkIns || {};
-                const isCheckedToday = Boolean(checkIns[todayStr]);
-                const streak = calculateStreak(checkIns);
-                const lower = habitName.toLowerCase();
-                const isSpecialized = lower === "sesh" || lower === "weed" || lower === "porn";
-                const specCount = isSpecialized
-                  ? getSpecializedCurrentCount(lower as "sesh" | "weed" | "porn")
-                  : 0;
-
-                return (
-                  <article
-                    key={tracker.id || habitName}
-                    className="bg-white dark:bg-[#2A2522] rounded-2xl p-4 border border-[#D2C3BE] dark:border-[#39302B] flex flex-col sm:flex-row sm:items-center justify-between gap-3"
-                  >
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className="icon-badge">
-                        <span className="material-symbols-outlined text-[20px]">
-                          {getHabitIcon(habitName)}
-                        </span>
-                      </div>
-                      <div className="min-w-0">
-                        <h3 className="font-semibold text-sm text-[#261810] dark:text-[#F4EFEA] truncate">
-                          {getDisplayName(habitName)}
-                        </h3>
-                        <p className="text-xs text-[#6B5B54] dark:text-[#A99A8F]">
-                          {streak > 0 ? `${streak} ${streak === 1 ? "day" : "days"}` : "0 days"}
-                          {isSpecialized && ` · Count today: ${specCount}`}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
-                      {isSpecialized && (
-                        <button
-                          type="button"
-                          aria-label={`Record count for ${getDisplayName(habitName)}`}
-                          onClick={() => {
-                            const specType = lower as "sesh" | "weed" | "porn";
-                            setActiveSpecializedModal({
-                              type: specType,
-                              count: specCount,
-                            });
-                          }}
-                          className="min-h-11 px-3 py-1.5 rounded-xl border border-[#D2C3BE] dark:border-[#39302B] text-xs font-semibold text-[#5E4D45] dark:text-[#D0C4BA] hover:bg-[#FBF2E7] dark:hover:bg-[#1E1B18] transition-colors"
-                        >
-                          Log count
-                        </button>
-                      )}
-
-                      <button
-                        type="button"
-                        aria-label={
-                          isCheckedToday
-                            ? `Remove check-in for ${getDisplayName(habitName)}`
-                            : `Check in for ${getDisplayName(habitName)}`
-                        }
-                        aria-pressed={isCheckedToday}
-                        onClick={() => toggleCheckIn(habitName, todayStr)}
-                        className={`min-h-11 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-colors ${
-                          isCheckedToday
-                            ? "btn-primary-soft"
-                            : "btn-primary"
-                        }`}
-                      >
-                        <span className="material-symbols-outlined text-[16px]">
-                          {isCheckedToday ? "check" : "radio_button_unchecked"}
-                        </span>
-                        <span>{isCheckedToday ? "Checked" : "Check in"}</span>
-                      </button>
-                    </div>
-                  </article>
-                );
-              })}
-            </div>
-          )}
+          ) : <div className="space-y-2.5">
+            {canonicalTrackers.filter((tracker) => !tracker.isArchived).map((tracker) => {
+              const record = tracker.records[todayStr];
+              const evaluation = evaluateDayRecord(tracker, todayStr);
+              const streak = calculateUnifiedStreak(tracker);
+              const statusLabel = evaluation.isPlannedSkip ? "Planned rest" : evaluation.isLapseOrBreach ? (tracker.modality === "boundary" ? "Breach recorded" : "Lapse recorded") : evaluation.isSuccess ? "Recorded successfully" : record?.note ? "Note only" : "Not logged";
+              const detail = () => navigate(`/tracker/${encodeURIComponent(tracker.id)}?date=${todayStr}`);
+              return <article key={tracker.id} className="bg-white dark:bg-[#24201D] rounded-2xl p-4 sm:p-5 border border-[#D2C3BE] dark:border-[#39302B] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-3.5 min-w-0"><div className="icon-badge"><span className="material-symbols-outlined text-[20px]">{getHabitIcon(tracker.name)}</span></div><div className="min-w-0"><h3 className="font-semibold text-sm truncate">{getDisplayName(tracker.name)}</h3><p className="text-xs text-[#78564F] dark:text-[#A99A8F]">{tracker.category} · {streak} day streak · {statusLabel}{record?.value !== undefined ? ` · ${record.value}` : ""}</p></div></div>
+                <div className="flex flex-wrap items-center gap-2 self-end sm:self-center">
+                  {tracker.modality === "abstinence" && <><button type="button" aria-pressed={record?.status === "confirmed_clean"} onClick={() => logTrackerDayStatus(tracker.id, todayStr, "confirmed_clean")} className="min-h-11 px-3 rounded-full btn-primary text-xs">Clean day</button><button type="button" aria-pressed={record?.status === "lapsed"} onClick={() => logTrackerDayStatus(tracker.id, todayStr, "lapsed")} className="min-h-11 px-3 rounded-full btn-secondary text-xs">Lapse</button></>}
+                  {tracker.modality === "frequency" && <><button type="button" aria-pressed={record?.status === "recorded" && record.value === 0} onClick={() => logTrackerDayStatus(tracker.id, todayStr, "recorded", 0)} className="min-h-11 px-3 rounded-full btn-primary text-xs">Log zero</button><button type="button" onClick={detail} className="min-h-11 px-3 rounded-full btn-secondary text-xs">Record quantity</button></>}
+                  {tracker.modality === "daily_habit" && <><button type="button" aria-pressed={record?.status === "completed"} onClick={() => logTrackerDayStatus(tracker.id, todayStr, "completed")} className="min-h-11 px-3 rounded-full btn-primary text-xs">Completed</button><button type="button" aria-pressed={record?.status === "skipped"} onClick={() => logTrackerDayStatus(tracker.id, todayStr, "skipped")} className="min-h-11 px-3 rounded-full btn-secondary text-xs">Planned rest</button></>}
+                  {tracker.modality === "boundary" && <><button type="button" aria-pressed={record?.status === "adhered"} onClick={() => logTrackerDayStatus(tracker.id, todayStr, "adhered")} className="min-h-11 px-3 rounded-full btn-primary text-xs">Adhered</button><button type="button" aria-pressed={record?.status === "breached"} onClick={() => logTrackerDayStatus(tracker.id, todayStr, "breached")} className="min-h-11 px-3 rounded-full btn-secondary text-xs">Breach</button></>}
+                  <button type="button" aria-label={`Open ${getDisplayName(tracker.name)} tracker details`} onClick={detail} className="min-h-11 px-3.5 rounded-full btn-secondary text-xs">Details</button>
+                </div>
+              </article>;
+            })}
+          </div>}
         </section>
-
         {/* 3. Subtle link to recent journal entries */}
-        <section aria-labelledby="recent-journal-heading" className="pt-2 border-t border-[#D2C3BE]/50 dark:border-[#39302B]">
+        <section aria-labelledby="recent-journal-heading" className="pt-2 border-t border-[#D2C3BE]/60 dark:border-[#39302B]">
           <div className="flex items-center justify-between mb-3">
             <h2 id="recent-journal-heading" className="font-serif text-lg font-medium text-[#261810] dark:text-[#F4EFEA]">
               Recent entry
@@ -281,9 +179,9 @@ const Home: React.FC = () => {
             <button
               type="button"
               onClick={() => navigate("/notes")}
-              className="min-h-11 px-2 text-xs font-semibold text-[#3D2C24] dark:text-[#D47A55] hover:underline"
+              className="min-h-11 px-2 text-xs font-semibold text-[#78564F] dark:text-[#D47A55] hover:text-[#261810] dark:hover:text-[#F4EFEA] hover:underline transition-colors"
             >
-              Open journal
+              Open journal â†’
             </button>
           </div>
 
@@ -295,25 +193,25 @@ const Home: React.FC = () => {
               onKeyDown={(e) => {
                 if (e.key === "Enter" || e.key === " ") navigate("/notes");
               }}
-              className="bg-white dark:bg-[#2A2522] rounded-2xl p-4 border border-[#D2C3BE] dark:border-[#39302B] cursor-pointer hover:border-[#3D2C24]/40 transition-colors space-y-2"
+              className="bg-white dark:bg-[#24201D] rounded-2xl p-5 border border-[#D2C3BE] dark:border-[#39302B] shadow-[0_1px_3px_rgba(38,24,16,0.04)] cursor-pointer hover:border-[#78564F]/50 transition-colors space-y-2.5"
             >
-              <p className="font-serif italic text-sm text-[#261810] dark:text-[#F4EFEA] line-clamp-3">
-                “{latestNote.text}”
+              <p className="font-serif italic text-sm sm:text-base text-[#261810] dark:text-[#F4EFEA] leading-relaxed line-clamp-3">
+                â€œ{latestNote.text}â€
               </p>
-              <div className="flex items-center justify-between text-xs text-[#6B5B54] dark:text-[#A99A8F]">
-                <span>{latestNote.habit}</span>
+              <div className="flex items-center justify-between text-xs text-[#78564F] dark:text-[#A99A8F]">
+                <span className="font-medium">{latestNote.habit}</span>
                 <span>{latestNote.date}</span>
               </div>
             </div>
           ) : (
-            <div className="bg-white dark:bg-[#2A2522] rounded-2xl p-4 border border-[#D2C3BE] dark:border-[#39302B] flex items-center justify-between">
-              <span className="text-xs text-[#6B5B54] dark:text-[#A99A8F]">
+            <div className="bg-white dark:bg-[#24201D] rounded-2xl p-5 border border-[#D2C3BE] dark:border-[#39302B] shadow-[0_1px_3px_rgba(38,24,16,0.04)] flex items-center justify-between">
+              <span className="text-xs text-[#78564F] dark:text-[#A99A8F]">
                 No entries written yet.
               </span>
               <button
                 type="button"
                 onClick={() => navigate("/notes")}
-                className="text-xs font-semibold text-[#3D2C24] dark:text-[#D47A55] hover:underline"
+                className="text-xs font-semibold text-[#78564F] dark:text-[#D47A55] hover:underline"
               >
                 Write an entry
               </button>
@@ -322,90 +220,6 @@ const Home: React.FC = () => {
         </section>
       </div>
 
-      {/* Simplified Count Modal */}
-      {activeSpecializedModal && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="count-modal-title"
-            className="w-full max-w-xs bg-white dark:bg-[#2A2522] rounded-2xl p-5 border border-[#D2C3BE] dark:border-[#39302B] shadow-xl space-y-4"
-          >
-            <div className="flex items-center justify-between">
-              <h3 id="count-modal-title" className="font-serif text-lg font-medium text-[#261810] dark:text-[#F4EFEA]">
-                Record count
-              </h3>
-              <button
-                type="button"
-                onClick={() => setActiveSpecializedModal(null)}
-                className="min-h-11 min-w-11 flex items-center justify-center text-[#6B5B54] dark:text-[#A99A8F] hover:text-[#261810]"
-                aria-label="Close"
-              >
-                <span className="material-symbols-outlined text-[18px]">close</span>
-              </button>
-            </div>
-
-            <p className="text-xs text-[#6B5B54] dark:text-[#A99A8F]">
-              Set count for today ({todayDisplay}). Enter 0 for none.
-            </p>
-
-            <div className="flex items-center justify-center gap-3 py-2">
-              <button
-                type="button"
-                aria-label="Decrease count"
-                onClick={() =>
-                  setActiveSpecializedModal((prev) =>
-                    prev ? { ...prev, count: Math.max(0, (prev.count || 0) - 1) } : null
-                  )
-                }
-                className="min-h-11 min-w-11 rounded-xl bg-[#FBF2E7] dark:bg-[#1E1B18] border border-[#D2C3BE] dark:border-[#39302B] text-base font-semibold flex items-center justify-center"
-              >
-                -
-              </button>
-              <input
-                type="number"
-                aria-label="Count"
-                min="0"
-                value={activeSpecializedModal.count}
-                onChange={(e) => {
-                  const val = Math.max(0, parseInt(e.target.value, 10) || 0);
-                  setActiveSpecializedModal((prev) => (prev ? { ...prev, count: val } : null));
-                }}
-                className="font-serif text-2xl font-medium w-16 text-center text-[#261810] dark:text-[#F4EFEA] bg-transparent border-b border-[#D2C3BE] dark:border-[#39302B] focus:outline-none"
-              />
-              <button
-                type="button"
-                aria-label="Increase count"
-                onClick={() =>
-                  setActiveSpecializedModal((prev) =>
-                    prev ? { ...prev, count: (prev.count || 0) + 1 } : null
-                  )
-                }
-                className="min-h-11 min-w-11 rounded-xl bg-[#FBF2E7] dark:bg-[#1E1B18] border border-[#D2C3BE] dark:border-[#39302B] text-base font-semibold flex items-center justify-center"
-              >
-                +
-              </button>
-            </div>
-
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={saveSpecializedCount}
-                className="min-h-11 flex-1 py-2 px-3 rounded-xl btn-primary text-xs font-semibold"
-              >
-                Save
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveSpecializedModal(null)}
-                className="min-h-11 py-2 px-4 rounded-xl border border-[#D2C3BE] dark:border-[#39302B] text-xs font-semibold text-[#5E4D45] dark:text-[#D0C4BA]"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </Layout>
   );
 };

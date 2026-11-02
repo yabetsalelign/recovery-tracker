@@ -1,122 +1,25 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "./components/Layout";
-import { useTheme } from "./context/ThemeContext";
 import { useRecovery } from "./context/RecoveryContext";
+import { calculateUnifiedMetrics } from "./utils/unifiedCalculations";
 
+const milestoneSteps = [7, 14, 30, 60, 90];
 const Streaks: React.FC = () => {
   const navigate = useNavigate();
-  const { discreetMode } = useTheme();
-  const { trackers, calculateStreak } = useRecovery();
-
-  const getDisplayName = (name: string): string => {
-    if (discreetMode) {
-      const lower = (name || "").toLowerCase();
-      if (lower === "sesh") return "Habit S";
-      if (lower === "weed") return "Habit W";
-      if (lower === "porn") return "Habit P";
-      return name ? name.slice(0, 1).toUpperCase() + " Tracker" : "Tracker";
-    }
-    return name;
-  };
-
-  const getHabitIcon = (name: string): string => {
-    const lower = (name || "").toLowerCase();
-    if (lower.includes("alcohol") || lower.includes("drink") || lower.includes("sobriety")) return "water_drop";
-    if (lower.includes("sesh") || lower.includes("smoke") || lower.includes("nicotine")) return "air";
-    if (lower.includes("weed") || lower.includes("cannabis")) return "nature";
-    if (lower.includes("porn") || lower.includes("screen") || lower.includes("curfew")) return "bedtime";
-    return "spa";
-  };
-
-  return (
-    <Layout title="Milestones">
-      <div className="max-w-2xl mx-auto py-4 sm:py-6 space-y-6">
-        <header className="flex items-center justify-between">
-          <div>
-            <h1 className="font-serif text-3xl sm:text-4xl font-medium tracking-tight text-[#261810] dark:text-[#F4EFEA]">
-              Milestones
-            </h1>
-            <p className="text-xs text-[#6B5B54] dark:text-[#A99A8F] mt-0.5">
-              Milestone progress for your trackers.
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={() => navigate("/progress")}
-            className="min-h-11 px-3 rounded-xl border border-[#D2C3BE] dark:border-[#39302B] bg-white dark:bg-[#2A2522] text-xs font-semibold text-[#261810] dark:text-[#F4EFEA] hover:bg-[#FBF2E7] dark:hover:bg-[#1E1B18] transition-colors"
-          >
-            ← Progress
-          </button>
-        </header>
-
-        {trackers.length === 0 ? (
-          <div className="bg-white dark:bg-[#2A2522] rounded-2xl p-6 text-center border border-[#D2C3BE] dark:border-[#39302B] space-y-3">
-            <p className="text-xs text-[#6B5B54] dark:text-[#A99A8F]">
-              No active trackers. Add a tracker to start recording milestones.
-            </p>
-            <button
-              type="button"
-              onClick={() => navigate("/add-addiction")}
-              className="min-h-11 px-4 py-2 btn-primary rounded-xl text-xs font-semibold"
-            >
-              Add a tracker
-            </button>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {trackers.map((tracker) => {
-              const habitName = tracker.name;
-              const streak = calculateStreak(tracker.checkIns);
-              const nextTarget = streak >= 60 ? 90 : streak >= 30 ? 60 : streak >= 14 ? 30 : streak >= 7 ? 14 : 7;
-              const progressPct = Math.min(100, Math.round((streak / nextTarget) * 100));
-
-              return (
-                <div
-                  key={tracker.id || habitName}
-                  className="p-5 bg-white dark:bg-[#2A2522] border border-[#D2C3BE] dark:border-[#39302B] rounded-2xl space-y-3"
-                >
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      <div className="icon-badge w-9 h-9">
-                        <span className="material-symbols-outlined text-[20px]">
-                          {getHabitIcon(habitName)}
-                        </span>
-                      </div>
-                      <div>
-                        <h2 className="text-sm font-semibold text-[#261810] dark:text-[#F4EFEA]">
-                          {getDisplayName(habitName)}
-                        </h2>
-                        <span className="text-xs text-[#6B5B54] dark:text-[#A99A8F]">
-                          Next goal: {nextTarget} days
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="text-right">
-                      <span className="font-serif text-2xl font-medium text-[#261810] dark:text-[#F4EFEA]">
-                        {streak}
-                      </span>
-                      <span className="text-xs text-[#6B5B54] dark:text-[#A99A8F] ml-1">
-                        {streak === 1 ? "day" : "days"}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="w-full bg-[#FBF2E7] dark:bg-[#1E1B18] h-1.5 rounded-full overflow-hidden">
-                    <div
-                      className="bg-[#B06060] dark:bg-[#C47A6A] h-full rounded-full transition-all"
-                      style={{ width: `${progressPct}%` }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
-    </Layout>
-  );
+  const { canonicalTrackers } = useRecovery();
+  const trackers = canonicalTrackers.filter((tracker) => !tracker.isArchived);
+  return <Layout title="Milestones"><main className="max-w-2xl mx-auto px-4 sm:px-6 py-5 sm:py-8 space-y-6">
+    <header className="flex items-center justify-between gap-3"><div><h1 className="font-serif text-3xl sm:text-4xl font-medium">Milestones</h1><p className="text-sm text-[#78564F] dark:text-[#A99A8F] mt-1">Meaningful progress for each kind of tracking.</p></div><button type="button" onClick={() => navigate("/progress")} className="min-h-11 px-3.5 rounded-full btn-secondary text-sm">Progress</button></header>
+    {trackers.length === 0 ? <section className="vesper-card p-6 text-center space-y-3"><p className="text-sm text-[#78564F] dark:text-[#A99A8F]">No active trackers yet.</p><button type="button" onClick={() => navigate("/add-addiction")} className="min-h-11 px-5 btn-primary rounded-full text-sm">Add a tracker</button></section> : <div className="space-y-3">{trackers.map((tracker) => {
+      const metrics = calculateUnifiedMetrics(tracker);
+      const isHabit = tracker.modality === "daily_habit";
+      const value = isHabit ? metrics.totalActiveSuccessDays : metrics.currentStreak;
+      const title = tracker.modality === "abstinence" ? "Consecutive clean days" : tracker.modality === "frequency" ? tracker.target.rule === "zero" ? "Consecutive zero-count days" : "Consecutive target days" : tracker.modality === "boundary" ? "Consecutive adherent days" : "Completed days";
+      const next = milestoneSteps.find((step) => step > value) ?? 90;
+      const percent = Math.min(100, Math.round((value / next) * 100));
+      return <article key={tracker.id} className="vesper-card p-5 space-y-3"><div className="flex items-center justify-between gap-3"><div><button type="button" onClick={() => navigate(`/tracker/${encodeURIComponent(tracker.id)}`)} className="min-h-11 text-left font-serif text-lg hover:underline">{tracker.name}</button><p className="text-xs text-[#78564F] dark:text-[#A99A8F]">{title}</p></div><div className="text-right"><span className="font-serif text-2xl">{value}</span><span className="ml-1 text-xs text-[#78564F] dark:text-[#A99A8F]">{isHabit ? "completed" : "days"}</span></div></div><div className="w-full bg-[#F6EDE2] dark:bg-[#1E1B18] h-2 rounded-full overflow-hidden" role="progressbar" aria-label={`${tracker.name}: ${title}`} aria-valuemin={0} aria-valuemax={next} aria-valuenow={Math.min(value, next)}><div className="bg-[#D47A55] h-full rounded-full" style={{ width: `${percent}%` }} /></div><p className="text-xs text-[#78564F] dark:text-[#A99A8F]">{isHabit ? `${metrics.totalPlannedSkips} planned rest days kept separate` : `Next milestone: ${next} ${next === 1 ? "day" : "days"}`}</p></article>;
+    })}</div>}
+  </main></Layout>;
 };
-
 export default Streaks;

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useTheme } from "../context/ThemeContext";
+import ThemePreview from "./ThemePreview";
 
 const ThemeModal: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
@@ -52,33 +53,16 @@ const ThemeModal: React.FC = () => {
         </p>
 
         <div className="grid grid-cols-2 gap-2.5 pt-1">
-          <button
-            type="button"
-            aria-pressed={theme === "light"}
-            onClick={() => handleThemeSelect("light")}
-            className={`min-h-11 p-3 rounded-xl border text-left transition-colors ${
-              theme === "light"
-                ? "border-[#3D2C24] bg-[#FBF2E7]"
-                : "border-[#D2C3BE]/60 bg-white"
-            }`}
-          >
-            <span className="block font-semibold text-xs text-[#261810]">Warm Paper</span>
-            <span className="text-[11px] text-[#6B5B54]">Ivory & cream</span>
-          </button>
-
-          <button
-            type="button"
-            aria-pressed={theme === "dark"}
-            onClick={() => handleThemeSelect("dark")}
-            className={`min-h-11 p-3 rounded-xl border text-left transition-colors ${
-              theme === "dark"
-                ? "border-[#D47A55] bg-[#1E1B18]"
-                : "border-[#39302B] bg-[#1E1B18]"
-            }`}
-          >
-            <span className="block font-semibold text-xs text-[#F4EFEA]">Charcoal Night</span>
-            <span className="text-[11px] text-[#A99A8F]">Warm dark charcoal</span>
-          </button>
+          <ThemePreview
+            theme="light"
+            selected={theme === "light"}
+            onSelect={() => handleThemeSelect("light")}
+          />
+          <ThemePreview
+            theme="dark"
+            selected={theme === "dark"}
+            onSelect={() => handleThemeSelect("dark")}
+          />
         </div>
       </div>
     </div>

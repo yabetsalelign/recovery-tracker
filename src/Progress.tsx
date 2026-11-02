@@ -1,262 +1,80 @@
-import React, { useState, useMemo } from "react";
-import { format, subDays, eachDayOfInterval } from "date-fns";
+import React, { useMemo, useState } from "react";
+import { eachDayOfInterval, format, subDays } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import Layout from "./components/Layout";
 import { useRecovery } from "./context/RecoveryContext";
+import { calculateUnifiedMetrics, calculateUnifiedLongestStreak, evaluateDayRecord } from "./utils/unifiedCalculations";
 
 const Progress: React.FC = () => {
   const navigate = useNavigate();
-  const {
-    trackers,
-    calculateLongestStreak,
-    calculateStreak,
-  } = useRecovery();
+  const { canonicalTrackers, generalNotes } = useRecovery();
+  const [selectedDay, setSelectedDay] = useState<string | null>(null);
+  const [timeHorizon, setTimeHorizon] = useState("30");
+  const today = format(new Date(), "yyyy-MM-dd");
+  const days = timeHorizon === "all" ? 0 : Number(timeHorizon);
+  const activeTrackers = canonicalTrackers.filter((tracker) => !tracker.isArchived);
 
-  const [timeHorizon, setTimeHorizon] = useState<string>("30");
-
-  const horizonNum = timeHorizon === "all" ? 90 : parseInt(timeHorizon, 10) || 30;
-
-  const { presenceDays, longestStreak } = useMemo(() => {
-    const daysInHorizon = eachDayOfInterval({
-      start: subDays(new Date(), horizonNum - 1),
-      end: new Date(),
-    });
-
-    let pDays = 0;
-    daysInHorizon.forEach((dateObj) => {
-      const dateStr = format(dateObj, "yyyy-MM-dd");
-      const anyChecked = trackers.some((t) => t.checkIns?.[dateStr]);
-      if (anyChecked) pDays++;
-    });
-
-    const maxStreaks = trackers.map((t) => calculateLongestStreak(t.checkIns));
-    const lStreak = maxStreaks.length > 0 ? Math.max(...maxStreaks) : 0;
-
+  const trackerSummaries = useMemo(() => activeTrackers.map((tracker) => {
+    const metrics = calculateUnifiedMetrics(tracker, today);
+    const windowStart = days === 0 ? tracker.startDate : format(new Date(Math.max(new Date(`${tracker.startDate}T12:00:00`).getTime(), subDays(new Date(), days - 1).getTime())), "yyyy-MM-dd");
+    const range = windowStart <= today ? eachDayOfInterval({ start: new Date(`${windowStart}T12:00:00`), end: new Date(`${today}T12:00:00`) }) : [];
+    const evaluations = range.map((date) => evaluateDayRecord(tracker, format(date, "yyyy-MM-dd")));
+    const countRecords = range.reduce((total, date) => total + (tracker.records[format(date, "yyyy-MM-dd")]?.status === "recorded" ? 1 : 0), 0);
+    const quantityTotal = range.reduce((total, date) => {
+      const record = tracker.records[format(date, "yyyy-MM-dd")];
+      return total + (record?.status === "recorded" && typeof record.value === "number" ? record.value : 0);
+    }, 0);
     return {
-      presenceDays: pDays,
-      longestStreak: lStreak,
+      tracker,
+      metrics,
+      window: {
+        successes: evaluations.filter((entry) => entry.isSuccess).length,
+        planned: evaluations.filter((entry) => entry.isPlannedSkip).length,
+        lapses: evaluations.filter((entry) => entry.isLapseOrBreach).length,
+        unlogged: evaluations.filter((entry) => !entry.isLogged && !entry.note).length,
+        countRecords,
+        quantityTotal,
+      },
     };
-  }, [horizonNum, trackers, calculateLongestStreak]);
+  }), [activeTrackers, today, days]);
 
-  // Timeline bars (last 21 days)
-  const timelineDays = useMemo(() => {
-    return eachDayOfInterval({
-      start: subDays(new Date(), 20),
-      end: new Date(),
-    });
-  }, []);
+  const timeline = useMemo(() => eachDayOfInterval({ start: subDays(new Date(), 20), end: new Date() }).map((date) => {
+    const day = format(date, "yyyy-MM-dd");
+    const evaluations = activeTrackers.filter((tracker) => !tracker.isArchived && tracker.startDate <= day).map((tracker) => evaluateDayRecord(tracker, day));
+    const successes = evaluations.filter((entry) => entry.isSuccess).length;
+    const rests = evaluations.filter((entry) => entry.isPlannedSkip).length;
+    const lapses = evaluations.filter((entry) => entry.isLapseOrBreach).length;
+    const notes = Boolean(generalNotes[day]) || activeTrackers.some((tracker) => Boolean(tracker.records[day]?.note));
+    return { date, key: day, successes, rests, lapses, notes };
+  }), [activeTrackers, generalNotes]);
+  const hasTimelineActivity = timeline.some((day) => day.successes + day.rests + day.lapses > 0 || day.notes);
+  const windowLabel = timeHorizon === "all" ? "Since each tracker began" : `Last ${days} days`;
 
-  const timelineData = useMemo(
-    () =>
-      timelineDays.map((day) => {
-        const date = format(day, "yyyy-MM-dd");
-        const checksCount = trackers.filter((tracker) => tracker.checkIns?.[date]).length;
-        const hasNote = trackers.some((tracker) => tracker.notes?.[date]?.trim());
-        const complete = checksCount === trackers.length && trackers.length > 0;
-        return { day, date, checksCount, hasNote, complete };
-      }),
-    [timelineDays, trackers]
-  );
+  const primaryMetric = (modality: string, metrics: ReturnType<typeof calculateUnifiedMetrics>, window: { successes: number; planned: number; lapses: number }) => {
+    if (modality === "abstinence") return { value: `${window.successes} clean`, detail: `${metrics.currentStreak} consecutive now` };
+    if (modality === "frequency") return { value: `${window.successes} target days`, detail: `${metrics.currentStreak} day target streak` };
+    if (modality === "daily_habit") return { value: `${window.successes} completed`, detail: `${window.planned} planned rest days` };
+    return { value: `${window.successes} adherent`, detail: `${window.lapses} breaches` };
+  };
 
-  const hasTimelineActivity = timelineData.some(({ checksCount, hasNote }) => checksCount > 0 || hasNote);
+  return <Layout title="Progress">
+    <main className="max-w-3xl mx-auto px-4 sm:px-6 py-5 sm:py-8 space-y-6">
+      <header className="space-y-1"><h1 className="font-serif text-3xl sm:text-4xl font-medium tracking-tight">Progress</h1><p className="text-sm text-[#78564F] dark:text-[#A99A8F]">A quiet view of the days you have recorded.</p></header>
+      <div role="group" aria-label="Select time horizon" className="p-1 rounded-full bg-[#FBF2E7] dark:bg-[#1E1B18] border border-[#D2C3BE]/50 dark:border-[#39302B] flex gap-1">{[{ id: "7", label: "7 days" }, { id: "30", label: "30 days" }, { id: "90", label: "90 days" }, { id: "all", label: "All time" }].map((item) => <button key={item.id} type="button" aria-pressed={timeHorizon === item.id} onClick={() => setTimeHorizon(item.id)} className={`min-h-11 flex-1 px-2 rounded-full text-xs font-semibold ${timeHorizon === item.id ? "bg-[#FDD0C6] text-[#261810]" : "text-[#78564F] dark:text-[#A99A8F]"}`}>{item.label}</button>)}</div>
 
-  // Active streaks count
-  const activeStreakMax = useMemo(() => {
-    const streaks = trackers.map((t) => calculateStreak(t.checkIns));
-    return streaks.length > 0 ? Math.max(...streaks) : 0;
-  }, [trackers, calculateStreak]);
+      <section aria-labelledby="tracker-progress-heading" className="space-y-3"><div className="flex items-baseline justify-between gap-3"><h2 id="tracker-progress-heading" className="font-serif text-xl">By tracker</h2><span className="text-xs text-[#78564F] dark:text-[#A99A8F]">{windowLabel}</span></div>
+        {trackerSummaries.length === 0 ? <p className="text-sm text-[#78564F] dark:text-[#A99A8F]">Add a tracker to see your progress here.</p> : trackerSummaries.map(({ tracker, metrics, window }) => {
+          const primary = primaryMetric(tracker.modality, metrics, window);
+          return <article key={tracker.id} className="border-b border-[#D2C3BE]/70 dark:border-[#39302B] py-3"><button type="button" onClick={() => navigate(`/tracker/${encodeURIComponent(tracker.id)}`)} className="text-left min-h-11 font-serif text-lg font-medium hover:underline">{tracker.name}</button><p className="text-sm text-[#78564F] dark:text-[#A99A8F]">{primary.value} · {primary.detail}</p><p className="text-xs text-[#78564F] dark:text-[#A99A8F]">Longest historical streak: {calculateUnifiedLongestStreak(tracker, today)} days</p><p className="mt-1 text-xs text-[#78564F] dark:text-[#A99A8F]">{window.successes} successful · {window.planned} planned rest · {window.lapses} lapse or breach · {window.unlogged} unlogged{tracker.modality === "frequency" ? ` · ${window.countRecords} days logged, ${window.quantityTotal} ${tracker.target.rule === "at_most" ? tracker.target.unit || "units" : "total count"}` : ""}</p></article>;
+        })}
+      </section>
 
-  return (
-    <Layout title="Progress">
-      <div className="max-w-2xl mx-auto py-4 sm:py-6 space-y-6">
-        <header className="space-y-1">
-          <h1 className="font-serif text-3xl sm:text-4xl font-medium tracking-tight text-[#261810] dark:text-[#F4EFEA]">
-            Progress
-          </h1>
-          <p className="text-xs text-[#6B5B54] dark:text-[#A99A8F]">
-            A quiet view of your consistency over time.
-          </p>
-        </header>
+      <section aria-labelledby="timeline-heading" className="vesper-card p-5 sm:p-6 space-y-4"><div><h2 id="timeline-heading" className="font-serif text-xl">Recent days</h2><p className="text-xs text-[#78564F] dark:text-[#A99A8F]">Select a day to inspect tracker activity and reflections.</p></div>{!hasTimelineActivity && <p className="text-sm text-[#78564F] dark:text-[#A99A8F]">Your recent activity will appear as you add records.</p>}<div aria-label="Twenty-one day tracker activity timeline" className="flex h-24 w-full items-end justify-between gap-1">{timeline.map(({ date, key, successes, rests, lapses, notes }, index) => { const activity = successes + rests + lapses; const height = activity ? `${Math.max(18, Math.min(100, activity * 20))}%` : notes ? "12%" : "4%"; const color = lapses ? "bg-[#D47A55]" : successes ? "bg-[#46644B] dark:bg-[#8EAA92]" : rests ? "bg-[#D9C4AC]" : notes ? "bg-[#FDD0C6]" : "bg-[#E9E0D8] dark:bg-[#39302B]"; const label = `${format(date, "EEE, MMM d")}: ${successes} successful, ${rests} planned rest, ${lapses} lapse or breach${notes ? ", note" : ""}`; return <button key={key} type="button" aria-label={label} aria-pressed={selectedDay === key} onClick={() => setSelectedDay(key)} className={`flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-1 rounded-sm focus-visible:outline focus-visible:outline-2 ${selectedDay === key ? "outline outline-2 outline-[#78564F]" : ""}`}><div className={`w-full rounded-t-sm ${color}`} style={{ height }} aria-hidden="true" /><span className="h-3 text-[10px] text-[#78564F] dark:text-[#A99A8F]">{index === 0 || index === 20 || (index + 1) % 5 === 0 ? format(date, "d") : ""}</span></button>; })}</div><div className="flex flex-wrap gap-4 border-t border-[#D2C3BE]/60 dark:border-[#39302B] pt-3 text-xs text-[#78564F] dark:text-[#A99A8F]"><span>Successful activity</span><span>Planned rest stays separate</span><span>Lapses / breaches</span><span>Unlogged days are not failures</span></div>
+        {selectedDay && <section aria-live="polite" aria-label={`Details for ${selectedDay}`} className="border-t border-[#D2C3BE]/60 dark:border-[#39302B] pt-4 space-y-2"><h3 className="font-serif text-lg">{format(new Date(`${selectedDay}T12:00:00`), "EEEE, MMMM d")}</h3>{activeTrackers.filter((tracker) => tracker.startDate <= selectedDay).map((tracker) => { const result = evaluateDayRecord(tracker, selectedDay); const record = tracker.records[selectedDay]; const state = result.isPlannedSkip ? "Planned rest" : result.isLapseOrBreach ? "Lapse or breach" : result.isSuccess ? "Successful" : record?.status ? "Recorded" : record?.note ? "Note only" : "Unlogged"; return <p key={tracker.id} className="text-sm text-[#78564F] dark:text-[#A99A8F]"><strong className="text-[#261810] dark:text-[#F4EFEA]">{tracker.name}:</strong> {state}{record?.value !== undefined ? ` · ${record.value} ${tracker.target.rule === "at_most" ? tracker.target.unit || "units" : ""}` : ""}{record?.note ? ` · ${record.note}` : ""}</p>; })}{generalNotes[selectedDay] && <p className="text-sm"><strong>Reflection:</strong> {generalNotes[selectedDay]}</p>}{!activeTrackers.some((tracker) => tracker.startDate <= selectedDay) && <p className="text-sm">No trackers had started on this date.</p>}</section>}
+      </section>
 
-        {/* Time Horizon Selector */}
-        <div role="group" aria-label="Select time horizon" className="p-1 rounded-xl bg-[#FBF2E7] dark:bg-[#1E1B18] flex items-center gap-1">
-          {[
-            { id: "7", label: "7 days" },
-            { id: "30", label: "30 days" },
-            { id: "90", label: "90 days" },
-            { id: "all", label: "All time" },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              aria-pressed={timeHorizon === tab.id}
-              onClick={() => setTimeHorizon(tab.id)}
-              className={`min-h-11 flex-1 py-1.5 px-2 rounded-lg text-xs font-semibold transition-colors ${
-                timeHorizon === tab.id
-                  ? "bg-white dark:bg-[#2A2522] text-[#261810] dark:text-[#F4EFEA] shadow-xs"
-                  : "text-[#6B5B54] dark:text-[#A99A8F] hover:text-[#261810]"
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Summary Metric Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div className="bg-white dark:bg-[#2A2522] rounded-2xl p-5 border border-[#D2C3BE] dark:border-[#39302B] space-y-1">
-            <span className="text-xs font-semibold text-[#6B5B54] dark:text-[#A99A8F]">
-              Days with entries
-            </span>
-            <div className="flex items-baseline gap-1.5">
-              <span className="font-serif text-3xl sm:text-4xl font-medium text-[#261810] dark:text-[#F4EFEA]">
-                {presenceDays}
-              </span>
-              <span className="text-xs text-[#6B5B54] dark:text-[#A99A8F]">
-                of {horizonNum} days
-              </span>
-            </div>
-          </div>
-
-          <div className="bg-white dark:bg-[#2A2522] rounded-2xl p-5 border border-[#D2C3BE] dark:border-[#39302B] space-y-1">
-            <span className="text-xs font-semibold text-[#6B5B54] dark:text-[#A99A8F]">
-              Longest streak
-            </span>
-            <div className="flex items-baseline gap-1.5">
-              <span className="font-serif text-3xl sm:text-4xl font-medium text-[#261810] dark:text-[#F4EFEA]">
-                {longestStreak}
-              </span>
-              <span className="text-xs text-[#6B5B54] dark:text-[#A99A8F]">
-                {longestStreak === 1 ? "day" : "consecutive days"}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* 21-Day Timeline Chart */}
-        <section aria-labelledby="timeline-heading" className="bg-white dark:bg-[#2A2522] rounded-2xl border border-[#D2C3BE] dark:border-[#39302B] p-5 space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 id="timeline-heading" className="font-serif text-lg font-medium text-[#261810] dark:text-[#F4EFEA]">
-              Last 21 days
-            </h2>
-            <span className="text-xs text-[#6B5B54] dark:text-[#A99A8F]">
-              Current streak: {activeStreakMax} {activeStreakMax === 1 ? "day" : "days"}
-            </span>
-          </div>
-
-          <div className="pt-2">
-            {!hasTimelineActivity && (
-              <p className="mb-3 rounded-xl bg-[#FBF2E7] dark:bg-[#1E1B18] px-3.5 py-2.5 text-xs text-[#6B5B54] dark:text-[#A99A8F]">
-                Your recent rhythm will take shape as you record check-ins or reflections.
-              </p>
-            )}
-
-            <div
-              role="img"
-              aria-label="Daily activity for the past 21 days. Select View daily details for exact dates."
-              className={`flex w-full items-end justify-between gap-1 ${
-                hasTimelineActivity ? "h-20 sm:h-24" : "h-14"
-              }`}
-            >
-              {timelineData.map(({ day, date, checksCount, hasNote, complete }, index) => {
-                const barHeight = complete ? "95%" : checksCount > 0 || hasNote ? "60%" : "15%";
-                const barColor = complete
-                  ? "bg-[#46644B] dark:bg-[#8EAA92]"
-                  : checksCount > 0 || hasNote
-                  ? "bg-[#D47A55]"
-                  : "bg-[#D2C3BE]/40 dark:bg-[#39302B]";
-                const showDate = index === 0 || index === 20 || (index + 1) % 5 === 0;
-
-                return (
-                  <div key={date} className="flex h-full flex-1 flex-col items-center justify-end gap-1">
-                    <div
-                      className={`w-full rounded-t-sm transition-all ${barColor}`}
-                      style={{ height: barHeight }}
-                      aria-hidden="true"
-                    />
-                    <span className="h-3 text-[10px] font-mono leading-3 text-[#6B5B54] dark:text-[#A99A8F]">
-                      {showDate ? format(day, "d") : ""}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Legend */}
-          <div className="flex items-center justify-center gap-4 pt-3 border-t border-[#D2C3BE]/50 dark:border-[#39302B] text-xs text-[#6B5B54] dark:text-[#A99A8F]">
-            <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-[#46644B] dark:bg-[#8EAA92]" />
-              <span>All checked</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-[#D47A55]" />
-              <span>Partial / note</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-[#D2C3BE]/60 dark:bg-[#39302B]" />
-              <span>Rest day</span>
-            </div>
-          </div>
-
-          {/* Details */}
-          <details className="border-t border-[#D2C3BE]/50 dark:border-[#39302B] pt-2">
-            <summary className="min-h-11 cursor-pointer text-xs font-semibold text-[#3D2C24] dark:text-[#D47A55] flex items-center">
-              View daily details
-            </summary>
-            <ul className="grid gap-1 sm:grid-cols-2 pt-2">
-              {timelineData.map(({ day, date, checksCount, hasNote, complete }) => {
-                const status = complete
-                  ? "All trackers checked"
-                  : checksCount > 0 || hasNote
-                  ? "Partial activity"
-                  : "No activity";
-                return (
-                  <li
-                    key={date}
-                    className="rounded-xl bg-[#FBF2E7] dark:bg-[#1E1B18] px-3 py-2 text-xs text-[#5E4D45] dark:text-[#D0C4BA]"
-                  >
-                    <time dateTime={date} className="font-semibold">{format(day, "EEE, MMM d")}</time>
-                    <span>: {status}</span>
-                    {hasNote && <span>, note recorded</span>}
-                  </li>
-                );
-              })}
-            </ul>
-          </details>
-        </section>
-
-        {/* Milestone and Counter Links */}
-        <div className="grid grid-cols-2 gap-3 pt-2">
-          <button
-            type="button"
-            onClick={() => navigate("/streaks")}
-            className="p-4 bg-white dark:bg-[#2A2522] rounded-2xl border border-[#D2C3BE] dark:border-[#39302B] text-left hover:border-[#3D2C24]/30 transition-colors"
-          >
-            <span className="font-semibold text-xs text-[#261810] dark:text-[#F4EFEA] block">
-              Milestones →
-            </span>
-            <span className="text-xs text-[#6B5B54] dark:text-[#A99A8F]">
-              View habit milestone goals
-            </span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => navigate("/counter")}
-            className="p-4 bg-white dark:bg-[#2A2522] rounded-2xl border border-[#D2C3BE] dark:border-[#39302B] text-left hover:border-[#3D2C24]/30 transition-colors"
-          >
-            <span className="font-semibold text-xs text-[#261810] dark:text-[#F4EFEA] block">
-              Day counter →
-            </span>
-            <span className="text-xs text-[#6B5B54] dark:text-[#A99A8F]">
-              Continuous sobriety timer
-            </span>
-          </button>
-        </div>
-      </div>
-    </Layout>
-  );
+      <div className="flex flex-wrap gap-3"><button type="button" onClick={() => navigate("/streaks")} className="min-h-11 px-4 rounded-full btn-secondary text-sm">Milestones</button><button type="button" onClick={() => navigate("/counter")} className="min-h-11 px-4 rounded-full btn-secondary text-sm">Day counter</button></div>
+    </main>
+  </Layout>;
 };
-
 export default Progress;

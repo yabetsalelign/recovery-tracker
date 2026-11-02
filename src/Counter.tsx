@@ -43,14 +43,14 @@ const Counter: React.FC = () => {
           <button
             type="button"
             onClick={() => navigate("/progress")}
-            className="min-h-11 px-3 rounded-xl border border-[#D2C3BE] dark:border-[#39302B] bg-white dark:bg-[#2A2522] text-xs font-semibold text-[#261810] dark:text-[#F4EFEA] hover:bg-[#FBF2E7] dark:hover:bg-[#1E1B18] transition-colors"
+            className="min-h-11 px-3.5 rounded-full btn-secondary text-xs font-semibold"
           >
             ← Progress
           </button>
         </header>
 
         {/* Counter Hero */}
-        <div className="p-6 bg-white dark:bg-[#2A2522] rounded-2xl border border-[#D2C3BE] dark:border-[#39302B] text-center space-y-3">
+        <div className="p-6 vesper-card text-center space-y-3">
           <span className="font-serif text-5xl sm:text-6xl text-[#261810] dark:text-[#F4EFEA] font-medium leading-none block">
             {elapsedDays}
           </span>
@@ -67,13 +67,13 @@ const Counter: React.FC = () => {
               type="date"
               value={counterStartDate}
               onChange={(e) => setCounterStartDate(e.target.value)}
-              className="px-2.5 py-1 rounded-xl border border-[#D2C3BE] dark:border-[#39302B] bg-[#FBF2E7] dark:bg-[#1E1B18] text-[#261810] dark:text-[#F4EFEA] font-medium focus:outline-none"
+              className="px-2.5 py-1 rounded-xl border border-[#D2C3BE] dark:border-[#39302B] bg-[#FFFDFB] dark:bg-[#1E1B18] text-[#261810] dark:text-[#F4EFEA] font-medium focus:outline-none"
             />
           </div>
         </div>
 
         {/* Milestones list */}
-        <div className="bg-white dark:bg-[#2A2522] rounded-2xl border border-[#D2C3BE] dark:border-[#39302B] p-5 space-y-3">
+        <div className="vesper-card p-5 space-y-3">
           <h2 className="font-serif text-lg font-medium text-[#261810] dark:text-[#F4EFEA]">
             Milestones
           </h2>
@@ -86,7 +86,7 @@ const Counter: React.FC = () => {
                   key={m.target}
                   className={`p-3 rounded-xl flex items-center justify-between transition-colors ${
                     reached
-                      ? "bg-[#FBF2E7] dark:bg-[#1E1B18]"
+                      ? "bg-[#FDD0C6]/20 dark:bg-[#FDD0C6]/10 border border-[#FDD0C6]/40 dark:border-[#FDD0C6]/20"
                       : "opacity-60"
                   }`}
                 >
@@ -96,10 +96,10 @@ const Counter: React.FC = () => {
                   <span className="text-xs text-[#6B5B54] dark:text-[#A99A8F] flex items-center gap-1">
                     {reached ? (
                       <>
-                        <span className="material-symbols-outlined text-[16px] text-[#46644B] dark:text-[#8EAA92]">
+                        <span className="material-symbols-outlined text-[18px] text-[#46644B] dark:text-[#8EAA92]">
                           check
                         </span>
-                        <span>Reached</span>
+                        <span className="font-medium text-[#46644B] dark:text-[#8EAA92]">Reached</span>
                       </>
                     ) : (
                       <span>{m.target - elapsedDays} days remaining</span>

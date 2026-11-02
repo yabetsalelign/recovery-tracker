@@ -8,7 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "test": "node --experimental-strip-types --test tests/verify-workflows.test.js"
+    "test": "node --experimental-strip-types --test tests/verify-workflows.test.js tests/unified-calculations.test.js tests/unified-migration.test.js tests/recovery-context-integration.test.js tests/universal-tracker.test.js"
   },
   "dependencies": {
     "@capacitor/android": "^7.6.9",
@@ -19,7 +19,8 @@
     "react": "^18.3.0",
     "react-chartjs-2": "^5.3.0",
     "react-dom": "^18.3.0",
-    "react-router-dom": "^6.23.0"
+    "react-router-dom": "^6.23.0",
+    "vercel": "^65.9.0"
   },
   "devDependencies": {
     "@capacitor/cli": "^7.6.9",

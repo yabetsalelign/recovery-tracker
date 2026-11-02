@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Layout from "./components/Layout";
 import { useTheme } from "./context/ThemeContext";
 import { useRecovery } from "./context/RecoveryContext";
+import { getHabitIcon } from "./utils/habitIcons";
 
 const Day: React.FC = () => {
   const navigate = useNavigate();
@@ -23,15 +24,6 @@ const Day: React.FC = () => {
       return name ? name.slice(0, 1).toUpperCase() + " Tracker" : "Tracker";
     }
     return name;
-  };
-
-  const getHabitIcon = (name: string): string => {
-    const lower = (name || "").toLowerCase();
-    if (lower.includes("alcohol") || lower.includes("drink") || lower.includes("sobriety")) return "water_drop";
-    if (lower.includes("sesh") || lower.includes("smoke") || lower.includes("nicotine")) return "air";
-    if (lower.includes("weed") || lower.includes("cannabis")) return "nature";
-    if (lower.includes("porn") || lower.includes("screen") || lower.includes("curfew")) return "bedtime";
-    return "spa";
   };
 
   const selectedDateObj = new Date(targetDateStr + "T00:00:00");
@@ -114,7 +106,7 @@ const Day: React.FC = () => {
                           : `Check in for ${getDisplayName(habitName)}`
                       }
                       aria-pressed={isChecked}
-                      onClick={() => toggleCheckIn(habitName, targetDateStr)}
+                      onClick={() => toggleCheckIn(String(tracker.id), targetDateStr)}
                       className={`min-h-11 px-3 py-1.5 text-xs rounded-xl font-semibold transition-colors flex items-center gap-1.5 ${
                         isChecked
                           ? "bg-[#3D2C24] dark:bg-[#D47A55] text-white dark:text-[#211710]"
